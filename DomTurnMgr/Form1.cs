@@ -15,6 +15,16 @@ namespace DomTurnMgr
     public Form1()
     {
       InitializeComponent();
+
+      //var recTurns = GMailHelpers.GetRecievedTurns(GmailService, "turns@llamaserver.net", "davrodmomma");
+      var sentTurns = GMailHelpers.GetSentTurns(Program.GmailService, "turns@llamaserver.net", "davrodmomma");
+      for (int i = 1; i < sentTurns.Length; i++)
+      {
+        if (sentTurns[i] != null)
+        {
+          listView1.Items.Add(i + ": " + sentTurns[i]);
+        }
+      }
     }
   }
 }

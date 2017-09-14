@@ -66,6 +66,62 @@ namespace DomTurnMgr
       return retVal;
     }
 
+    // TODO: construct the search string elsehere and pass it in. Rather than building it here
+    public static string[] GetSentTurns(GmailService service, string senderAddress, string gameName)
+    {
+      string[] retVal = null;
+
+      // Define parameters of request.
+      UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List("me");
+      // TODO: Ensure valid email address
+      string s = "from:{0} subject:\"New turn file: {1}\"";
+      request.Q = string.Format(s, senderAddress, gameName);
+
+      // List labels.
+      IList<Google.Apis.Gmail.v1.Data.Message> msgs = request.Execute().Messages;
+      if (msgs != null && msgs.Count > 0)
+      {
+        // TODO: Return a list of structs (Id, Subject, Turn number). Reverse sort this list based on turn number
+        retVal = new string[msgs.Count+10];
+
+        foreach (var msg in msgs)
+        {
+          MessagePart payload = service.Users.Messages.Get("me", msg.Id).Execute().Payload;
+          if (payload == null || payload.Headers == null)
+            continue;
+
+          bool foundSubject = false;
+          bool foundFrom = false;
+          string subject = "";
+          string from = "";
+          // See if this message has the correct headers that we're interested in
+          foreach (var header in payload.Headers)
+          {
+
+            if (header.Name.Equals("Subject") && header.Value.Contains("New turn file: davrodmomma"))
+            {
+              subject = header.Value;
+              foundSubject = true;
+            }
+            if (header.Name.Equals("From") && header.Value.Contains("turns@llamaserver.net"))
+            {
+              from = header.Value;
+              foundFrom = true;
+            }
+            if (foundSubject && foundFrom)
+            {
+              string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+              retVal[int.Parse(turnIndex)] = msg.Id;
+              break;
+            }
+          }
+        }
+      }
+
+      // TODO: Store all styrings and sort by latest turn (and date recieved and make sure they match up.
+      return retVal;
+    }
+
     public static void GetAttachments(GmailService service, String userId, String messageId, String outputDir)
     {
       try
