@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Google.Apis.Gmail.v1.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,6 +13,38 @@ namespace DomTurnMgr
 {
   public partial class Form1 : Form
   {
+    class Turn
+    {
+      internal string RecMsgID;
+      internal string SentMsgID;
+      internal enum Status
+      {
+        PendingApply, // trn has be recieved but is not in Dom folder, .2h hasnt been sent and doesn't exist in Dom folder (or is for previous turn)
+        Active, // trn has be recieved & is in Dom folder, .2h hasnt been sent and doesn't exist in Dom folder (or is for previous turn)
+        PendingReturn, // trn has be recieved & is in Dom folder, .2h exists in Dom folder (unique amongst all turns) but hasn't yet been sent
+        Complete, // trn has be recieved, .2h has been sent
+        Archived, // complete but there have been more recent turns
+        Unknown // attachment hasn't been downloaded and inspected yet
+      };
+      //Status Status;
+    }
+
+    private int getTurnNumberFromSubject(string subject)
+    {
+      int turnNumber = 0;
+
+      string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+      if (!int.TryParse(turnIndexString, out turnNumber))
+      {
+        // perhaps this is the first turn
+        if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
+        {
+          turnNumber = 1;
+        }
+      }
+      return turnNumber;
+    }
+
     public Form1()
     {
       InitializeComponent();
@@ -41,17 +74,31 @@ namespace DomTurnMgr
       var recTurns = GMailHelpers.GetTurns(Program.GmailService, Properties.Settings.Default.RecTurnsSearchString);
       var sentTurns = GMailHelpers.GetTurns(Program.GmailService, Properties.Settings.Default.SentTurnsSearchString);
 
-      // Build a sorted list of turns. Note that the subject of the first turn is different!
-      /*
-          MessagePart payload = service.Users.Messages.Get("me", msg.Id).Execute().Payload;
-          if (payload == null || payload.Headers == null)
-            continue;
+      SortedList<int, Turn> Turns = new SortedList<int, Turn>();
 
-          string subject = GetMessageHeader(service, msg.Id, "Subject");
+      foreach (var msgID in recTurns)
+      {
+        Turn turn = new Turn();
+        turn.RecMsgID = msgID;
 
-          string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
-          retVal[int.Parse(turnIndex)] = msg.Id;
-       */
+        // now work out which turn this applies to
+        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+        int turnNumber = getTurnNumberFromSubject(subject);
+
+        if (turnNumber > 0)
+          Turns[turnNumber] = turn;
+      }
+
+      // Fill in the sent message IDs
+      foreach (var msgID in sentTurns)
+      {
+        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+        int turnIndex = getTurnNumberFromSubject(subject);
+        if (Turns.ContainsKey(turnIndex))
+        {
+          Turns[turnIndex].SentMsgID = msgID;
+        }
+      }
 
       foreach (var sentTurn in sentTurns)
       {
