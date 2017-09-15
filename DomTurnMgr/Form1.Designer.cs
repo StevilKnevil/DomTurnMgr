@@ -35,6 +35,8 @@
       this.button3 = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
       this.listView1 = new System.Windows.Forms.ListView();
+      this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+      this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.menuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -98,6 +100,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.listView1.CheckBoxes = true;
+      this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2});
       this.listView1.FullRowSelect = true;
       this.listView1.Location = new System.Drawing.Point(12, 27);
       this.listView1.MultiSelect = false;
@@ -105,7 +110,16 @@
       this.listView1.Size = new System.Drawing.Size(383, 199);
       this.listView1.TabIndex = 4;
       this.listView1.UseCompatibleStateImageBehavior = false;
-      this.listView1.View = System.Windows.Forms.View.List;
+      this.listView1.View = System.Windows.Forms.View.Details;
+      // 
+      // columnHeader1
+      // 
+      this.columnHeader1.Text = "Turn";
+      this.columnHeader1.Width = 34;
+      // 
+      // columnHeader2
+      // 
+      this.columnHeader2.Text = "Status";
       // 
       // Form1
       // 
@@ -136,6 +150,8 @@
     private System.Windows.Forms.Button button3;
     private System.Windows.Forms.Button button1;
     private System.Windows.Forms.ListView listView1;
+    private System.Windows.Forms.ColumnHeader columnHeader1;
+    private System.Windows.Forms.ColumnHeader columnHeader2;
   }
 }
 

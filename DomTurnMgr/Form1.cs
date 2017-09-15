@@ -100,14 +100,16 @@ namespace DomTurnMgr
         }
       }
 
-      foreach (var sentTurn in sentTurns)
+      foreach (var turn in Turns)
       {
-        listView1.Items.Add("Sent: " + GMailHelpers.GetMessageHeader(Program.GmailService, sentTurn, "Subject"));
+        listView1.Items.Add(
+          new ListViewItem(new[] {
+            GMailHelpers.GetMessageHeader(Program.GmailService, turn.Value.RecMsgID, "Subject"),
+            "Status"
+          }));
       }
-      foreach (var recTurn in recTurns)
-      {
-        listView1.Items.Add("Recieved: " + GMailHelpers.GetMessageHeader(Program.GmailService, recTurn, "Subject"));
-      }
+      listView1.Columns[0].Width = -1;
+      listView1.Columns[1].Width = -1;
 
     }
   }
