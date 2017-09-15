@@ -45,9 +45,9 @@ namespace DomTurnMgr
     }
     
     // TODO: construct the search string elsehere and pass it in. Rather than building it here
-    public static SortedList<int, string> GetTurns(GmailService service, string searchString)
+    public static IList<string> GetTurns(GmailService service, string searchString)
     {
-      SortedList<int, string> retVal = new SortedList<int, string>();
+      IList<string> retVal = new List<string>();
 
       // Define parameters of request.
       UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List("me");
@@ -59,14 +59,7 @@ namespace DomTurnMgr
       {
         foreach (var msg in msgs)
         {
-          MessagePart payload = service.Users.Messages.Get("me", msg.Id).Execute().Payload;
-          if (payload == null || payload.Headers == null)
-            continue;
-
-          string subject = GetMessageHeader(service, msg.Id, "Subject");
-
-          string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
-          retVal[int.Parse(turnIndex)] = msg.Id;
+          retVal.Add(msg.Id);
         }
       }
 
