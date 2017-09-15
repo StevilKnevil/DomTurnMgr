@@ -44,7 +44,7 @@
             this.editToolStripMenuItem});
       this.menuStrip1.Location = new System.Drawing.Point(0, 0);
       this.menuStrip1.Name = "menuStrip1";
-      this.menuStrip1.Size = new System.Drawing.Size(302, 24);
+      this.menuStrip1.Size = new System.Drawing.Size(488, 24);
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
       // 
@@ -65,7 +65,7 @@
       // button2
       // 
       this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button2.Location = new System.Drawing.Point(215, 83);
+      this.button2.Location = new System.Drawing.Point(401, 83);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(75, 50);
       this.button2.TabIndex = 1;
@@ -75,7 +75,7 @@
       // button3
       // 
       this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button3.Location = new System.Drawing.Point(215, 139);
+      this.button3.Location = new System.Drawing.Point(401, 139);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(75, 50);
       this.button3.TabIndex = 2;
@@ -85,7 +85,7 @@
       // button1
       // 
       this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button1.Location = new System.Drawing.Point(215, 27);
+      this.button1.Location = new System.Drawing.Point(401, 27);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(75, 50);
       this.button1.TabIndex = 0;
@@ -102,7 +102,7 @@
       this.listView1.Location = new System.Drawing.Point(12, 27);
       this.listView1.MultiSelect = false;
       this.listView1.Name = "listView1";
-      this.listView1.Size = new System.Drawing.Size(197, 199);
+      this.listView1.Size = new System.Drawing.Size(383, 199);
       this.listView1.TabIndex = 4;
       this.listView1.UseCompatibleStateImageBehavior = false;
       this.listView1.View = System.Windows.Forms.View.List;
@@ -111,7 +111,7 @@
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(302, 238);
+      this.ClientSize = new System.Drawing.Size(488, 238);
       this.Controls.Add(this.listView1);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.button3);

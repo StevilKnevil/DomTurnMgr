@@ -13,6 +13,7 @@ namespace DomTurnMgr
 {
   class GMailHelpers
   {
+    private static Dictionary<string, Dictionary<string, string>> messageHeaderCache = new Dictionary<string, Dictionary<string, string>>();
 
     // TODO: construct the search string elsehere and pass it in. Rather than building it here
     public static string GetLatestTurn(GmailService service, string senderAddress, string gameName)
@@ -66,10 +67,37 @@ namespace DomTurnMgr
       return retVal;
     }
 
-    // TODO: construct the search string elsehere and pass it in. Rather than building it here
-    public static string[] GetSentTurns(GmailService service, string senderAddress, string gameName)
+    public static void populateMessgeHeaderCache(GmailService service, string msgID)
     {
-      string[] retVal = null;
+      MessagePart payload = service.Users.Messages.Get("me", msgID).Execute().Payload;
+      if (payload == null || payload.Headers == null)
+        return;
+
+      Dictionary<string, string> headerDict = new Dictionary<string, string>();
+      foreach (var header in payload.Headers)
+      {
+        // don't support mutliple headers with same name (e.g. recieved) Could move to an array value for single key, but meh
+        if (!headerDict.ContainsKey(header.Name))
+        {
+          headerDict.Add(header.Name, header.Value);
+        }
+      }
+      messageHeaderCache.Add(msgID, headerDict);
+    }
+
+    public static string GetHeader(GmailService service, string msgID, string headerName)
+    {
+      if (!messageHeaderCache.ContainsKey(msgID))
+      {
+        populateMessgeHeaderCache(service, msgID);
+      }
+      return messageHeaderCache[msgID][headerName];
+    }
+
+    // TODO: construct the search string elsehere and pass it in. Rather than building it here
+    public static SortedList<int, string> GetSentTurns(GmailService service, string senderAddress, string gameName)
+    {
+      SortedList<int, string> retVal = new SortedList<int, string>();
 
       // Define parameters of request.
       UsersResource.MessagesResource.ListRequest request = service.Users.Messages.List("me");
@@ -81,15 +109,19 @@ namespace DomTurnMgr
       IList<Google.Apis.Gmail.v1.Data.Message> msgs = request.Execute().Messages;
       if (msgs != null && msgs.Count > 0)
       {
-        // TODO: Return a list of structs (Id, Subject, Turn number). Reverse sort this list based on turn number
-        retVal = new string[msgs.Count+10];
-
         foreach (var msg in msgs)
         {
           MessagePart payload = service.Users.Messages.Get("me", msg.Id).Execute().Payload;
           if (payload == null || payload.Headers == null)
             continue;
 
+          string subject = GetHeader(service, msg.Id, "Subject");
+
+          string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+          retVal[int.Parse(turnIndex)] = msg.Id;
+
+          // Do we need this? If the search string above is accurate enough then we should be fine.
+          /*
           bool foundSubject = false;
           bool foundFrom = false;
           string subject = "";
@@ -97,7 +129,6 @@ namespace DomTurnMgr
           // See if this message has the correct headers that we're interested in
           foreach (var header in payload.Headers)
           {
-
             if (header.Name.Equals("Subject") && header.Value.Contains("New turn file: davrodmomma"))
             {
               subject = header.Value;
@@ -109,12 +140,13 @@ namespace DomTurnMgr
               foundFrom = true;
             }
             if (foundSubject && foundFrom)
-            {
-              string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+          {
+            string turnIndex = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
               retVal[int.Parse(turnIndex)] = msg.Id;
               break;
             }
           }
+            */
         }
       }
 
