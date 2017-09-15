@@ -16,12 +16,19 @@ namespace DomTurnMgr
     {
       InitializeComponent();
 
-      //var recTurns = GMailHelpers.GetRecievedTurns(GmailService, "turns@llamaserver.net", "davrodmomma");
-      var sentTurns = GMailHelpers.GetSentTurns(Program.GmailService, "turns@llamaserver.net", "davrodmomma");
+      // TODO: Ensure valid email address
+      string serverAddress = "turns@llamaserver.net";
+      string gameName = "davrodmomma";
+      string searchStringFmt = "from:{0} subject:\"New turn file: {1}\"";
+
+      //var recTurns = GMailHelpers.GetTurns(Program.GmailService, string.Format(searchStringFmt, playerAddress, gameName));
+      var sentTurns = GMailHelpers.GetTurns(Program.GmailService, string.Format(searchStringFmt, serverAddress, gameName));
+
       foreach (var sentTurn in sentTurns)
       {
-        listView1.Items.Add(sentTurn.Key + ": " + GMailHelpers.GetHeader(Program.GmailService, sentTurn.Value, "Subject"));
+        listView1.Items.Add("Sent: " + GMailHelpers.GetMessageHeader(Program.GmailService, sentTurn.Value, "Subject"));
       }
+
     }
   }
 }
