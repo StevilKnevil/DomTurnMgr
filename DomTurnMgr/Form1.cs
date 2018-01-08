@@ -142,7 +142,7 @@ namespace DomTurnMgr
       }
 
       listView1.Items.Clear();
-
+      
       foreach (Turn turn in Turns.Values)
       {
         string status = "default";
