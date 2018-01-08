@@ -46,6 +46,7 @@ namespace DomTurnMgr
     static string ApplicationName = "Domionions Turn Manager";
     internal static GmailService GmailService;
 
+    [STAThreadAttribute]
     static void Main(string[] args)
     {
       UserCredential credential;

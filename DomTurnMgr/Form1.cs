@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -49,68 +50,136 @@ namespace DomTurnMgr
     {
       InitializeComponent();
 
-      if (Properties.Settings.Default.SentTurnsSearchString == "" ||
-        Properties.Settings.Default.RecTurnsSearchString == "")
+      // set up initial preferences
       {
-        string serverAddress = "turns@llamaserver.net";
-        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+        bool showPrefs = false;
+
         // set defaults
-        if (Properties.Settings.Default.SentTurnsSearchString == "")
+        if (Properties.Settings.Default.ServerAddress == "")
         {
-          string searchStringFmt = "to:{0} from:{1} has:attachment";
-          Properties.Settings.Default.SentTurnsSearchString = string.Format(searchStringFmt, serverAddress, playerAddress);
-        }
-        if (Properties.Settings.Default.RecTurnsSearchString == "")
-        {
-          string searchStringFmt = "from:{0} to:{1} has:attachment";
-          Properties.Settings.Default.RecTurnsSearchString = string.Format(searchStringFmt, serverAddress, playerAddress);
+          showPrefs = true;
+          Properties.Settings.Default.ServerAddress = "turns@llamaserver.net";
+          Properties.Settings.Default.Save();
         }
 
-        // TODO: show preferences
-        // TODO: Ensure valid email address
-        // Properties.Settings.Default.Save();
+        if (Properties.Settings.Default.DominionsExecutable == "")
+        {
+          showPrefs = true;
+        }
+
+        if (showPrefs)
+        {
+          PreferencesForm pf = new PreferencesForm();
+          pf.ShowDialog();
+        }
       }
 
-      var recTurns = GMailHelpers.GetTurns(Program.GmailService, Properties.Settings.Default.RecTurnsSearchString);
-      var sentTurns = GMailHelpers.GetTurns(Program.GmailService, Properties.Settings.Default.SentTurnsSearchString);
+      UpdateList();
+    }
+
+    private void UpdateList()
+    {
+      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+      string sentTurnsSearchString = "";
+      string recTurnsSearchString = "";
+      {
+        string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
+        sentTurnsSearchString = string.Format(
+          searchStringFmt,
+          Properties.Settings.Default.ServerAddress,
+          playerAddress,
+          Properties.Settings.Default.GameName);
+        Properties.Settings.Default.Save();
+      }
+
+      {
+        string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
+        recTurnsSearchString = string.Format(
+          searchStringFmt,
+          Properties.Settings.Default.ServerAddress,
+          playerAddress,
+          Properties.Settings.Default.GameName);
+        Properties.Settings.Default.Save();
+      }
+
+      // TODO: Async
+      var recTurns = GMailHelpers.GetTurns(Program.GmailService, sentTurnsSearchString);
+      var sentTurns = GMailHelpers.GetTurns(Program.GmailService, recTurnsSearchString);
 
       SortedList<int, Turn> Turns = new SortedList<int, Turn>();
-
-      foreach (var msgID in recTurns)
-      {
-        Turn turn = new Turn();
-        turn.RecMsgID = msgID;
-
-        // now work out which turn this applies to
-        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        int turnNumber = getTurnNumberFromSubject(subject);
-
-        if (turnNumber > 0)
-          Turns[turnNumber] = turn;
-      }
 
       // Fill in the sent message IDs
       foreach (var msgID in sentTurns)
       {
+        Turn turn = new Turn();
+        turn.SentMsgID = msgID;
+
         string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
         int turnIndex = getTurnNumberFromSubject(subject);
-        if (Turns.ContainsKey(turnIndex))
+        if (turnIndex > 0)
         {
-          Turns[turnIndex].SentMsgID = msgID;
+          if (Turns.ContainsKey(turnIndex))
+          {
+            MessageBox.Show(
+              string.Format("Duplicate turn number found wiuth following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
+              recTurnsSearchString));
+            break;
+          }
+          Turns[turnIndex] = turn;
         }
       }
 
-      foreach (var turn in Turns)
+      foreach (var msgID in recTurns)
       {
+        // now work out which turn this applies to
+        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+        int turnIndex = getTurnNumberFromSubject(subject);
+
+        if (Turns.ContainsKey(turnIndex))
+        {
+          Turns[turnIndex].RecMsgID = msgID;
+        }
+      }
+
+      listView1.Items.Clear();
+
+      foreach (Turn turn in Turns.Values)
+      {
+        string status = "default";
+        if (turn.RecMsgID == null)
+        {
+          status = "Outstanding";
+        }
+        else
+        {
+          status = "Recieved";
+        }
         listView1.Items.Add(
           new ListViewItem(new[] {
-            GMailHelpers.GetMessageHeader(Program.GmailService, turn.Value.RecMsgID, "Subject"),
-            "Status"
+            GMailHelpers.GetMessageHeader(Program.GmailService, turn.SentMsgID, "Subject"),
+            status
           }));
       }
       listView1.Columns[0].Width = -1;
       listView1.Columns[1].Width = -1;
+    }
 
+    private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      PreferencesForm pf = new PreferencesForm();
+      pf.ShowDialog();
+      UpdateList();
+    }
+
+    private void button2_Click(object sender, EventArgs e)
+    {
+      Process process = new Process();
+      // Configure the process using the StartInfo properties.
+      process.StartInfo.FileName = Properties.Settings.Default.DominionsExecutable;
+      process.StartInfo.Arguments = Properties.Settings.Default.GameName;
+      process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+      process.Start();
+      process.WaitForExit();// Waits here for the process to exit.
     }
   }
 }

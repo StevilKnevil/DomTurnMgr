@@ -2,10 +2,13 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="DomTurnMgr.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="SentTurnsSearchString" Type="System.String" Scope="User">
+    <Setting Name="ServerAddress" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="RecTurnsSearchString" Type="System.String" Scope="User">
+    <Setting Name="GameName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="DominionsExecutable" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>

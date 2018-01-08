@@ -26,24 +26,36 @@ namespace DomTurnMgr.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string SentTurnsSearchString {
+        public string ServerAddress {
             get {
-                return ((string)(this["SentTurnsSearchString"]));
+                return ((string)(this["ServerAddress"]));
             }
             set {
-                this["SentTurnsSearchString"] = value;
+                this["ServerAddress"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string RecTurnsSearchString {
+        public string GameName {
             get {
-                return ((string)(this["RecTurnsSearchString"]));
+                return ((string)(this["GameName"]));
             }
             set {
-                this["RecTurnsSearchString"] = value;
+                this["GameName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DominionsExecutable {
+            get {
+                return ((string)(this["DominionsExecutable"]));
+            }
+            set {
+                this["DominionsExecutable"] = value;
             }
         }
     }
