@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -48,6 +49,31 @@ namespace DomTurnMgr
 
     private void browseForExe()
     {
+      openFileDialog1.InitialDirectory = tbDominionsLocation.Text;
+      if (!System.IO.Directory.Exists(openFileDialog1.InitialDirectory))
+      {
+        // Find the install dir for Dom5 from the registry.
+        // Opening the registry key
+        RegistryKey rk = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+        // Open a subKey as read-only
+        RegistryKey sk1 = rk.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 722060");
+        // If the RegistrySubKey doesn't exist -> (null)
+        if (sk1 != null)
+        {
+          try
+          {
+            // If the RegistryKey exists I get its value
+            // or null is returned.
+            openFileDialog1.InitialDirectory = (string)sk1.GetValue(@"InstallLocation");
+          }
+          catch (Exception e)
+          {
+            // AAAAAAAAAAARGH, an error!
+            MessageBox.Show(e.ToString(), "Reading registry " + @"InstallLocation");
+          }
+        }
+      }
+
       var result = openFileDialog1.ShowDialog();
       if (result == DialogResult.OK)
       {

@@ -54,21 +54,21 @@
       this.label1.TabIndex = 0;
       this.label1.Text = "Game Name";
       // 
-      // textBox1
+      // tbGameName
       // 
       this.tbGameName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tbGameName.Location = new System.Drawing.Point(119, 13);
-      this.tbGameName.Name = "textBox1";
+      this.tbGameName.Name = "tbGameName";
       this.tbGameName.Size = new System.Drawing.Size(289, 20);
       this.tbGameName.TabIndex = 1;
       // 
-      // textBox2
+      // tbServerAddress
       // 
       this.tbServerAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tbServerAddress.Location = new System.Drawing.Point(119, 39);
-      this.tbServerAddress.Name = "textBox2";
+      this.tbServerAddress.Name = "tbServerAddress";
       this.tbServerAddress.Size = new System.Drawing.Size(289, 20);
       this.tbServerAddress.TabIndex = 3;
       // 
@@ -81,12 +81,12 @@
       this.label2.TabIndex = 2;
       this.label2.Text = "Server";
       // 
-      // textBox3
+      // tbDominionsLocation
       // 
       this.tbDominionsLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.tbDominionsLocation.Location = new System.Drawing.Point(119, 65);
-      this.tbDominionsLocation.Name = "textBox3";
+      this.tbDominionsLocation.Name = "tbDominionsLocation";
       this.tbDominionsLocation.Size = new System.Drawing.Size(269, 20);
       this.tbDominionsLocation.TabIndex = 5;
       // 
@@ -113,12 +113,13 @@
       // button2
       // 
       this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.button2.BackColor = System.Drawing.SystemColors.Control;
       this.button2.Location = new System.Drawing.Point(384, 65);
       this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(23, 19);
+      this.button2.Size = new System.Drawing.Size(23, 20);
       this.button2.TabIndex = 7;
       this.button2.Text = "...";
-      this.button2.UseVisualStyleBackColor = true;
+      this.button2.UseVisualStyleBackColor = false;
       this.button2.Click += new System.EventHandler(this.button2_Click);
       // 
       // PreferencesForm
