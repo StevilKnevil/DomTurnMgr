@@ -58,5 +58,17 @@ namespace DomTurnMgr.Properties {
                 this["DominionsExecutable"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SavegamesLocation {
+            get {
+                return ((string)(this["SavegamesLocation"]));
+            }
+            set {
+                this["SavegamesLocation"] = value;
+            }
+        }
     }
 }

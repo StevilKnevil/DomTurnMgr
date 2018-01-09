@@ -23,10 +23,15 @@ namespace DomTurnMgr
       tbGameName.Text = Properties.Settings.Default.GameName;
       tbServerAddress.Text = Properties.Settings.Default.ServerAddress;
       tbDominionsLocation.Text = Properties.Settings.Default.DominionsExecutable;
+      tbSavegamesLoction.Text = Properties.Settings.Default.SavegamesLocation;
 
       if (!System.IO.File.Exists(Properties.Settings.Default.DominionsExecutable))
       {
         browseForExe();
+      }
+      if (!System.IO.File.Exists(Properties.Settings.Default.SavegamesLocation))
+      {
+        browseForSaveGames();
       }
     }
 
@@ -39,6 +44,7 @@ namespace DomTurnMgr
       Properties.Settings.Default.GameName = tbGameName.Text;
       Properties.Settings.Default.ServerAddress = tbServerAddress.Text;
       Properties.Settings.Default.DominionsExecutable = tbDominionsLocation.Text;
+      Properties.Settings.Default.SavegamesLocation = tbSavegamesLoction.Text;
       this.Hide();
     }
 
@@ -47,9 +53,15 @@ namespace DomTurnMgr
       browseForExe();
     }
 
+    private void button3_Click(object sender, EventArgs e)
+    {
+      browseForSaveGames();
+    }
+
     private void browseForExe()
     {
-      openFileDialog1.InitialDirectory = tbDominionsLocation.Text;
+      this.openFileDialog1.InitialDirectory = tbDominionsLocation.Text;
+
       if (!System.IO.Directory.Exists(openFileDialog1.InitialDirectory))
       {
         // Find the install dir for Dom5 from the registry.
@@ -81,6 +93,21 @@ namespace DomTurnMgr
       }
     }
 
-
+    private void browseForSaveGames()
+    {
+      Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
+      dialog.IsFolderPicker = true;
+      dialog.InitialDirectory = tbSavegamesLoction.Text;
+      if (!System.IO.Directory.Exists(dialog.InitialDirectory))
+      {
+        dialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\Dominions5\savedgames";
+      }
+      
+      var result = dialog.ShowDialog();
+      if (result == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
+      {
+        tbSavegamesLoction.Text = dialog.FileName;
+      }
+    }
   }
 }
