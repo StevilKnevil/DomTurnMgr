@@ -29,7 +29,7 @@ namespace DomTurnMgr
       {
         browseForExe();
       }
-      if (!System.IO.File.Exists(Properties.Settings.Default.SavegamesLocation))
+      if (!System.IO.Directory.Exists(Properties.Settings.Default.SavegamesLocation))
       {
         browseForSaveGames();
       }
