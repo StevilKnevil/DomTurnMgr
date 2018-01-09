@@ -80,8 +80,8 @@ namespace DomTurnMgr
     private void UpdateList()
     {
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      string sentTurnsSearchString = "";
       string recTurnsSearchString = "";
+      string sentTurnsSearchString = "";
       {
         string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
         sentTurnsSearchString = string.Format(
@@ -145,34 +145,44 @@ namespace DomTurnMgr
       
       foreach (Turn turn in Turns.Values)
       {
-        string status = "default";
-        if (turn.RecMsgID == null)
-        {
-          status = "Outstanding";
-        }
-        else
+        string status = "Outstanding";
+        var col = SystemColors.WindowText;
+
+        // Render differently if finished turn
+        if (turn.RecMsgID != null)
         {
           status = "Recieved";
+          col = SystemColors.GrayText;
         }
-        listView1.Items.Add(
-          new ListViewItem(new[] {
+
+        var lvi = new ListViewItem(new[] {
             GMailHelpers.GetMessageHeader(Program.GmailService, turn.SentMsgID, "Subject"),
             status
-          }));
+          });
+        lvi.ForeColor = SystemColors.GrayText;
+        lvi.Tag = turn;
+        listView1.Items.Add(lvi);
+          
       }
       listView1.Columns[0].Width = -1;
       listView1.Columns[1].Width = -1;
     }
 
-    private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+    private void menuItemPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();
       UpdateList();
     }
 
-    private void button2_Click(object sender, EventArgs e)
+    private void btnStartDominions_Click(object sender, EventArgs e)
     {
+      if (!System.IO.Directory.Exists(Properties.Settings.Default.DominionsExecutable))
+      {
+        PreferencesForm pf = new PreferencesForm();
+        pf.ShowDialog();
+      }
+
       Process process = new Process();
       // Configure the process using the StartInfo properties.
       process.StartInfo.FileName = Properties.Settings.Default.DominionsExecutable;
@@ -180,6 +190,31 @@ namespace DomTurnMgr
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
       process.Start();
       process.WaitForExit();// Waits here for the process to exit.
+    }
+
+    private void btnGetLatest_Click(object sender, EventArgs e)
+    {
+      // Make sure that we have selected a sensible turn
+      Debug.Assert(listView1.SelectedItems.Count == 1);
+
+      if (!System.IO.Directory.Exists(Properties.Settings.Default.SavegamesLocation))
+      {
+        PreferencesForm pf = new PreferencesForm();
+        pf.ShowDialog();
+      }
+
+      string saveGameDir = Properties.Settings.Default.SavegamesLocation;
+
+      // delete current files from save game location
+      System.IO.File.Delete(saveGameDir + @"\*.trn");
+      System.IO.File.Delete(saveGameDir + @"\*.2h");
+
+      // Get the attchment from the selected message
+
+      string msgId = (listView1.SelectedItems[0].Tag as Turn).RecMsgID;
+      GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
+
+      // copy the attchment to the save game location
     }
   }
 }
