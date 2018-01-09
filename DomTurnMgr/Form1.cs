@@ -16,8 +16,8 @@ namespace DomTurnMgr
   {
     class Turn
     {
-      internal string RecMsgID;
-      internal string SentMsgID;
+      internal string outboundMsgID;
+      internal string inboundMsgID;
       internal enum Status
       {
         PendingApply, // trn has be recieved but is not in Dom folder, .2h hasnt been sent and doesn't exist in Dom folder (or is for previous turn)
@@ -80,11 +80,11 @@ namespace DomTurnMgr
     private void UpdateList()
     {
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      string recTurnsSearchString = "";
-      string sentTurnsSearchString = "";
+      string inboundMessageSearchString = "";
+      string outboundMessageSearchString= "";
       {
         string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
-        sentTurnsSearchString = string.Format(
+        outboundMessageSearchString = string.Format(
           searchStringFmt,
           Properties.Settings.Default.ServerAddress,
           playerAddress,
@@ -94,7 +94,7 @@ namespace DomTurnMgr
 
       {
         string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-        recTurnsSearchString = string.Format(
+        inboundMessageSearchString = string.Format(
           searchStringFmt,
           Properties.Settings.Default.ServerAddress,
           playerAddress,
@@ -103,16 +103,16 @@ namespace DomTurnMgr
       }
 
       // TODO: Async
-      var recTurns = GMailHelpers.GetTurns(Program.GmailService, sentTurnsSearchString);
-      var sentTurns = GMailHelpers.GetTurns(Program.GmailService, recTurnsSearchString);
+      var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
+      var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
 
       SortedList<int, Turn> Turns = new SortedList<int, Turn>();
 
       // Fill in the sent message IDs
-      foreach (var msgID in sentTurns)
+      foreach (var msgID in inboundTurns)
       {
         Turn turn = new Turn();
-        turn.SentMsgID = msgID;
+        turn.inboundMsgID = msgID;
 
         string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
         int turnIndex = getTurnNumberFromSubject(subject);
@@ -122,14 +122,14 @@ namespace DomTurnMgr
           {
             MessageBox.Show(
               string.Format("Duplicate turn number found wiuth following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
-              recTurnsSearchString));
+              inboundMessageSearchString));
             break;
           }
           Turns[turnIndex] = turn;
         }
       }
 
-      foreach (var msgID in recTurns)
+      foreach (var msgID in outboundTurns)
       {
         // now work out which turn this applies to
         string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
@@ -137,7 +137,7 @@ namespace DomTurnMgr
 
         if (Turns.ContainsKey(turnIndex))
         {
-          Turns[turnIndex].RecMsgID = msgID;
+          Turns[turnIndex].outboundMsgID = msgID;
         }
       }
 
@@ -149,14 +149,14 @@ namespace DomTurnMgr
         var col = SystemColors.WindowText;
 
         // Render differently if finished turn
-        if (turn.RecMsgID != null)
+        if (turn.outboundMsgID != null)
         {
           status = "Recieved";
           col = SystemColors.GrayText;
         }
 
         var lvi = new ListViewItem(new[] {
-            GMailHelpers.GetMessageHeader(Program.GmailService, turn.SentMsgID, "Subject"),
+            GMailHelpers.GetMessageHeader(Program.GmailService, turn.inboundMsgID, "Subject"),
             status
           });
         lvi.ForeColor = SystemColors.GrayText;
@@ -210,8 +210,7 @@ namespace DomTurnMgr
       System.IO.File.Delete(saveGameDir + @"\*.2h");
 
       // Get the attchment from the selected message
-
-      string msgId = (listView1.SelectedItems[0].Tag as Turn).RecMsgID;
+      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
       GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
 
       // copy the attchment to the save game location
