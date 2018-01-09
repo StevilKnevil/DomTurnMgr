@@ -63,7 +63,7 @@ namespace DomTurnMgr
         }
       }
 
-      // TODO: Store all styrings and sort by latest turn (and date recieved and make sure they match up.
+      // TODO: Store all strings and sort by latest turn (and date recieved and make sure they match up.
       return retVal;
     }
     
