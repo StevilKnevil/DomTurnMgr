@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -145,13 +146,13 @@ namespace DomTurnMgr
       
       foreach (Turn turn in Turns.Values)
       {
-        string status = "Outstanding";
+        string status = "Turn Outstanding";
         var col = SystemColors.WindowText;
 
         // Render differently if finished turn
         if (turn.outboundMsgID != null)
         {
-          status = "Recieved";
+          status = "Turn Complete";
           col = SystemColors.GrayText;
         }
 
@@ -159,7 +160,7 @@ namespace DomTurnMgr
             GMailHelpers.GetMessageHeader(Program.GmailService, turn.inboundMsgID, "Subject"),
             status
           });
-        lvi.ForeColor = SystemColors.GrayText;
+        lvi.ForeColor = col;
         lvi.Tag = turn;
         listView1.Items.Add(lvi);
           
@@ -177,7 +178,7 @@ namespace DomTurnMgr
 
     private void btnStartDominions_Click(object sender, EventArgs e)
     {
-      if (!System.IO.Directory.Exists(Properties.Settings.Default.DominionsExecutable))
+      if (!File.Exists(Properties.Settings.Default.DominionsExecutable))
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
@@ -192,28 +193,46 @@ namespace DomTurnMgr
       process.WaitForExit();// Waits here for the process to exit.
     }
 
-    private void btnGetLatest_Click(object sender, EventArgs e)
+    private void btnGetTrn_Click(object sender, EventArgs e)
     {
       // Make sure that we have selected a sensible turn
       Debug.Assert(listView1.SelectedItems.Count == 1);
 
-      if (!System.IO.Directory.Exists(Properties.Settings.Default.SavegamesLocation))
+      if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
+        Properties.Settings.Default.GameName == "")
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
 
-      string saveGameDir = Properties.Settings.Default.SavegamesLocation;
+      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + Properties.Settings.Default.GameName;
+
+      if (!Directory.Exists(saveGameDir))
+      {
+        // first time - create dir
+        Directory.CreateDirectory(saveGameDir);
+      }
 
       // delete current files from save game location
-      System.IO.File.Delete(saveGameDir + @"\*.trn");
-      System.IO.File.Delete(saveGameDir + @"\*.2h");
-
+      foreach (string f in Directory.EnumerateFiles(saveGameDir, "*.2h"))
+      {
+        File.Delete(f);
+      }
+      foreach (string f in Directory.EnumerateFiles(saveGameDir, "*.trn"))
+      {
+        File.Delete(f);
+      }
+      
       // Get the attchment from the selected message
       string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
       GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
 
       // copy the attchment to the save game location
+    }
+
+    private void btnSend2h_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }
