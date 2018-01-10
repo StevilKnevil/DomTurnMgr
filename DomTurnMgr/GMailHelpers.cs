@@ -67,7 +67,13 @@ namespace DomTurnMgr
       // TODO: Store all strings and sort by latest turn (and date recieved and make sure they match up.
       return retVal;
     }
-    
+
+    public static DateTime GetMessageTime(GmailService service, String userId, String messageId)
+    {
+      return DateTime.Parse(GetMessageHeader(service, messageId, "Date"));
+    }
+
+
     public static void GetAttachments(GmailService service, String userId, String messageId, String outputDir)
     {
       try
