@@ -23,8 +23,8 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>https://raw.githubusercontent.com/StevilKnevil/DomTurnMgr/master/DomTurnMgr/DomTurnMgr/publish/</InstallUrl>
-    <ApplicationRevision>4</ApplicationRevision>
+    <InstallUrl>https://raw.githubusercontent.com/StevilKnevil/DomTurnMgr/master/DomTurnMgr/publish/</InstallUrl>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
