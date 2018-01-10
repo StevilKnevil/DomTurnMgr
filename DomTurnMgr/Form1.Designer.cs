@@ -83,7 +83,7 @@
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(75, 50);
       this.button3.TabIndex = 2;
-      this.button3.Text = "Send Latest";
+      this.button3.Text = "Send Completed Turn";
       this.button3.UseVisualStyleBackColor = true;
       this.button3.Click += new System.EventHandler(this.btnSend2h_Click);
       // 
@@ -94,7 +94,7 @@
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(75, 50);
       this.button1.TabIndex = 0;
-      this.button1.Text = "Get Latest";
+      this.button1.Text = "Get Turn";
       this.button1.UseVisualStyleBackColor = true;
       this.button1.Click += new System.EventHandler(this.btnGetTrn_Click);
       // 
