@@ -204,7 +204,8 @@ namespace DomTurnMgr
       listView1.Columns[0].Width = -1;
       listView1.Columns[1].Width = -1;
 
-      listView1.Items[0].Selected = true;
+      if (listView1.Items.Count > 0)
+        listView1.Items[0].Selected = true;
 
       Cursor.Current = Cursors.Default;
     }
