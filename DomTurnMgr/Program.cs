@@ -42,7 +42,7 @@ namespace DomTurnMgr
   {
     // If modifying these scopes, delete your previously saved credentials
     // at ~/.credentials/skapps-domTurnManager.json
-    static string[] Scopes = { GmailService.Scope.GmailReadonly };
+    static string[] Scopes = { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailSend };
     static string ApplicationName = "Domionions Turn Manager";
     internal static GmailService GmailService;
 
