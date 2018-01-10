@@ -106,6 +106,11 @@ namespace DomTurnMgr
       var result = dialog.ShowDialog();
       if (result == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
       {
+        string dirname = System.IO.Path.GetFileName(dialog.FileName);
+        if (System.IO.Path.GetFileName(dialog.FileName) != "savedgames")
+        {
+          MessageBox.Show("Expected the last directory to be 'savedgames', got: " + dirname);
+        }
         tbSavegamesLoction.Text = dialog.FileName;
       }
     }
