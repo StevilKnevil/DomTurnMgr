@@ -31,6 +31,35 @@ namespace DomTurnMgr
       //Status Status;
     }
 
+    class TurnDateComparer : IComparer<Turn>
+    {
+      public int Compare(Turn x, Turn y)
+      {
+        if (x.outboundMsgID == null && y.outboundMsgID == null)
+        {
+          // Sort by date of incoming message
+          DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
+          DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
+          return xD.CompareTo(yD);
+        }
+        else if (x.outboundMsgID == null)
+        {
+          return -1;
+        }
+        else if (y.outboundMsgID == null)
+        {
+          return 1;
+        }
+        else
+        {
+          // Sort by date of outgoing message
+          DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
+          DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
+          return xD.CompareTo(yD);
+        }
+      }
+    }
+
     private int getTurnNumberFromSubject(string subject)
     {
       int turnNumber = 0;
@@ -80,6 +109,8 @@ namespace DomTurnMgr
 
     private void UpdateList()
     {
+      Cursor.Current = Cursors.WaitCursor;
+
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
       string inboundMessageSearchString = "";
       string outboundMessageSearchString= "";
@@ -107,7 +138,7 @@ namespace DomTurnMgr
       var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
       var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
 
-      SortedList<int, Turn> Turns = new SortedList<int, Turn>();
+      Dictionary<int, Turn> t = new Dictionary<int, Turn>();
 
       // Fill in the sent message IDs
       foreach (var msgID in inboundTurns)
@@ -119,14 +150,14 @@ namespace DomTurnMgr
         int turnIndex = getTurnNumberFromSubject(subject);
         if (turnIndex > 0)
         {
-          if (Turns.ContainsKey(turnIndex))
+          if (t.ContainsKey(turnIndex))
           {
             MessageBox.Show(
               string.Format("Duplicate turn number found wiuth following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
               inboundMessageSearchString));
             break;
           }
-          Turns[turnIndex] = turn;
+          t[turnIndex] = turn;
         }
       }
 
@@ -136,15 +167,20 @@ namespace DomTurnMgr
         string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
         int turnIndex = getTurnNumberFromSubject(subject);
 
-        if (Turns.ContainsKey(turnIndex))
+        if (t.ContainsKey(turnIndex))
         {
-          Turns[turnIndex].outboundMsgID = msgID;
+          t[turnIndex].outboundMsgID = msgID;
         }
       }
 
       listView1.Items.Clear();
-      
-      foreach (Turn turn in Turns.Values)
+
+      // generate a list of turns sorted correctly.
+      List<Turn> turns = new List<Turn>();
+      turns.AddRange(t.Values);
+      turns.Sort(new TurnDateComparer());
+
+      foreach (Turn turn in turns)
       {
         string status = "Turn Outstanding";
         var col = SystemColors.WindowText;
@@ -167,13 +203,10 @@ namespace DomTurnMgr
       }
       listView1.Columns[0].Width = -1;
       listView1.Columns[1].Width = -1;
-    }
 
-    private void menuItemPrefs_Click(object sender, EventArgs e)
-    {
-      PreferencesForm pf = new PreferencesForm();
-      pf.ShowDialog();
-      UpdateList();
+      listView1.Items[0].Selected = true;
+
+      Cursor.Current = Cursors.Default;
     }
 
     private void btnStartDominions_Click(object sender, EventArgs e)
@@ -196,7 +229,9 @@ namespace DomTurnMgr
     private void btnGetTrn_Click(object sender, EventArgs e)
     {
       // Make sure that we have selected a sensible turn
-      Debug.Assert(listView1.SelectedItems.Count == 1);
+      if (listView1.SelectedItems.Count != 1)
+        return;
+      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
 
       if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
         Properties.Settings.Default.GameName == "")
@@ -213,27 +248,58 @@ namespace DomTurnMgr
         Directory.CreateDirectory(saveGameDir);
       }
 
-      // delete current files from save game location
-      foreach (string f in Directory.EnumerateFiles(saveGameDir, "*.2h"))
+      // Make sure that we only have files for a single race
+      var twohFiles = Directory.EnumerateFiles(saveGameDir, "*.2h");
+      var trnFiles = Directory.EnumerateFiles(saveGameDir, "*.trn");
+      bool okToContinue = true;
+      if (okToContinue && twohFiles.Count() > 1)
       {
-        File.Delete(f);
+        DialogResult r = MessageBox.Show("Multiple .2h files detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
+        okToContinue = (r == DialogResult.OK);
       }
-      foreach (string f in Directory.EnumerateFiles(saveGameDir, "*.trn"))
+      if (okToContinue && trnFiles.Count() > 1)
       {
-        File.Delete(f);
+        DialogResult r = MessageBox.Show("Multiple .trn files detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
+        okToContinue = (r == DialogResult.OK);
       }
-      
-      // Get the attchment from the selected message
-      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
-      GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
+      // Make sure that we the files we are deleting are older than the last message that we recieved
+      if (okToContinue)
+      {
+        var mailTime = GMailHelpers.GetMessageTime(Program.GmailService, "me", msgId);
+        foreach (string f in twohFiles)
+        {
+          var fileTime = File.GetLastWriteTimeUtc(f);
+          if (mailTime < fileTime)
+          {
+            DialogResult r = MessageBox.Show("Turn files newer than selected email have been detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
+            okToContinue = (r == DialogResult.OK);
+            break;
+          }
+        }
+      }
 
-      // copy the attchment to the save game location
+      if (okToContinue)
+      {
+        // delete current files from save game location
+        foreach (string f in twohFiles)
+        {
+          File.Delete(f);
+        }
+        foreach (string f in trnFiles)
+        {
+          File.Delete(f);
+        }
+
+        // Get the attchment from the selected message
+        GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
+      }
     }
 
     private void btnSend2h_Click(object sender, EventArgs e)
     {
       // Make sure that we have selected a sensible turn
-      Debug.Assert(listView1.SelectedItems.Count == 1);
+      if (listView1.SelectedItems.Count != 1)
+        return;
 
       if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
         Properties.Settings.Default.GameName == "")
@@ -246,11 +312,37 @@ namespace DomTurnMgr
 
       Debug.Assert(Directory.Exists(saveGameDir));
 
+      var twohFiles = Directory.EnumerateFiles(saveGameDir, "*.2h");
+      if (twohFiles.Count() > 1)
+      {
+        MessageBox.Show("Multiple .2h files detected\n\nCurrently only one race per game is supported", "Error", MessageBoxButtons.OK);
+        return;
+      }
+      if (twohFiles.Count() == 0)
+      {
+        MessageBox.Show("Couldn't find .2h file. Have you played your turn?\n\n" + saveGameDir, "Error", MessageBoxButtons.OK);
+        return;
+      }
+
+      string twohFile = twohFiles.First();
+
       // Get the attchment from the selected message
       string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
-      GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, saveGameDir + @"\" + @"mid_agartha.2h");
+      GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
       // copy the attchment to the save game location
+    }
+
+    private void toolStripMenuItem1_Click(object sender, EventArgs e)
+    {
+      UpdateList();
+    }
+
+    private void editToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      PreferencesForm pf = new PreferencesForm();
+      pf.ShowDialog();
+      UpdateList();
     }
   }
 }

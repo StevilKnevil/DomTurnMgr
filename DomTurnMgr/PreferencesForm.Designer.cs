@@ -35,7 +35,7 @@
       this.label2 = new System.Windows.Forms.Label();
       this.tbDominionsLocation = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
-      this.button1 = new System.Windows.Forms.Button();
+      this.btnOK = new System.Windows.Forms.Button();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
       this.tbSavegamesLoction = new System.Windows.Forms.TextBox();
@@ -101,16 +101,16 @@
       this.label3.TabIndex = 4;
       this.label3.Text = "Dominions Location";
       // 
-      // button1
+      // btnOK
       // 
-      this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.button1.Location = new System.Drawing.Point(333, 121);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(75, 23);
-      this.button1.TabIndex = 6;
-      this.button1.Text = "OK";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Click += new System.EventHandler(this.button1_Click);
+      this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.btnOK.Location = new System.Drawing.Point(333, 121);
+      this.btnOK.Name = "btnOK";
+      this.btnOK.Size = new System.Drawing.Size(75, 23);
+      this.btnOK.TabIndex = 6;
+      this.btnOK.Text = "OK";
+      this.btnOK.UseVisualStyleBackColor = true;
+      this.btnOK.Click += new System.EventHandler(this.button1_Click);
       // 
       // button2
       // 
@@ -156,6 +156,7 @@
       // 
       // PreferencesForm
       // 
+      this.AcceptButton = this.btnOK;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(420, 156);
@@ -163,7 +164,7 @@
       this.Controls.Add(this.tbSavegamesLoction);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.button2);
-      this.Controls.Add(this.button1);
+      this.Controls.Add(this.btnOK);
       this.Controls.Add(this.tbDominionsLocation);
       this.Controls.Add(this.label3);
       this.Controls.Add(this.tbServerAddress);
@@ -187,7 +188,7 @@
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.TextBox tbDominionsLocation;
     private System.Windows.Forms.Label label3;
-    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Button btnOK;
     private System.Windows.Forms.Button button2;
     private System.Windows.Forms.Button button3;
     private System.Windows.Forms.TextBox tbSavegamesLoction;
