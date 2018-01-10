@@ -8,6 +8,7 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using System.IO;
 
 namespace DomTurnMgr
 {
@@ -82,10 +83,7 @@ namespace DomTurnMgr
 
             // Converting from RFC 4648 base64 to base64url encoding
             // see http://en.wikipedia.org/wiki/Base64#Implementations_and_history
-            String attachData = attachPart.Data.Replace('-', '+');
-            attachData = attachData.Replace('_', '/');
-
-            byte[] data = Convert.FromBase64String(attachData);
+            byte[] data = Base64UrlDecode(attachPart.Data);
             System.IO.File.WriteAllBytes(System.IO.Path.Combine(outputDir, part.Filename), data);
           }
         }
@@ -96,5 +94,124 @@ namespace DomTurnMgr
       }
     }
 
+    public static void ReplyToMessage(GmailService service, String userId, String messageId, String attachmentFile)
+    {
+      // Use mimekit: https://stackoverflow.com/questions/47217335/reply-to-email-in-c-sharp
+      var emailInfoReq = service.Users.Messages.Get("me", messageId);
+      emailInfoReq.Format = UsersResource.MessagesResource.GetRequest.FormatEnum.Raw;
+      var emailInfoResponse = emailInfoReq.Execute();
+      if (emailInfoResponse != null)
+      {
+        var srcMsgRaw = emailInfoResponse.Raw;
+        byte[] srcMsgeBytes = Base64UrlDecode(srcMsgRaw);
+        MemoryStream mm = new MemoryStream(srcMsgeBytes);
+        MimeKit.MimeMessage srcMimeMsg = MimeKit.MimeMessage.Load(mm);
+        MimeKit.MimeMessage replyMimeMessage = Reply(srcMimeMsg, attachmentFile, false);
+        //replyMimeMessage.From.Add(new MimeKit.MailboxAddress("Steve Thompson", "steeveeet@gmail.com"));
+        Message replyMsg = new Message();
+        replyMsg.Raw = Base64UrlEncode(Encoding.ASCII.GetBytes(replyMimeMessage.ToString()));
+        var result = service.Users.Messages.Send(replyMsg, "me").Execute();
+      }
+    }
+
+    public static MimeKit.MimeMessage Reply(MimeKit.MimeMessage srcMsg, String attachmentFile, bool replyToAll)
+    {
+      var replyMsg = new MimeKit.MimeMessage();
+      if (srcMsg.ReplyTo.Count > 0)
+      {
+        replyMsg.To.AddRange(srcMsg.ReplyTo);
+      }
+      else if (srcMsg.From.Count > 0)
+      {
+        replyMsg.To.AddRange(srcMsg.From);
+      }
+      else if (srcMsg.Sender != null)
+      {
+        replyMsg.To.Add(srcMsg.Sender);
+      }
+      if (replyToAll)
+      {
+        replyMsg.To.AddRange(srcMsg.To);
+        replyMsg.Cc.AddRange(srcMsg.Cc);
+      }
+      if (!srcMsg.Subject.StartsWith("Re:", StringComparison.OrdinalIgnoreCase))
+        replyMsg.Subject = "Re:" + srcMsg.Subject;
+      else
+        replyMsg.Subject = srcMsg.Subject;
+      if (!string.IsNullOrEmpty(srcMsg.MessageId))
+      {
+        replyMsg.InReplyTo = srcMsg.MessageId;
+        foreach (var id in srcMsg.References)
+          replyMsg.References.Add(id);
+        replyMsg.References.Add(srcMsg.MessageId);
+      }
+
+      var body = new MimeKit.TextPart("plain");
+      var attachment = new MimeKit.MimePart("application", "octet-stream");
+
+      // build the body part
+      using (var quoted = new StringWriter())
+      {
+        var sender = srcMsg.Sender ?? srcMsg.From.Mailboxes.FirstOrDefault();
+        quoted.WriteLine("On {0}, {1} wrote:", srcMsg.Date.ToString("f"), !string.IsNullOrEmpty(sender.Name) ? sender.Name : sender.Address);
+        using (var reader = new StringReader(srcMsg.TextBody))
+        {
+          string line;
+          while ((line = reader.ReadLine()) != null)
+          {
+            quoted.Write("> ");
+            quoted.WriteLine(line);
+          }
+        }
+        body.Text = quoted.ToString();
+      }
+
+      // Build the attachment part
+      {
+        attachment.Content = new MimeKit.MimeContent(File.OpenRead(attachmentFile), MimeKit.ContentEncoding.Default);
+        attachment.ContentDisposition = new MimeKit.ContentDisposition(MimeKit.ContentDisposition.Attachment);
+        attachment.ContentTransferEncoding = MimeKit.ContentEncoding.Base64;
+        attachment.FileName = Path.GetFileName(attachmentFile);
+      };
+
+      // now create the multipart/mixed container to hold the message text and the
+      // image attachment
+      var multipart = new MimeKit.Multipart("mixed");
+      multipart.Add(body);
+      multipart.Add(attachment);
+
+      replyMsg.Body = multipart;
+
+      return replyMsg;
+    }
+
+    static string Base64UrlEncode(byte[] arg)
+    {
+      return Base64UrlEncode(Convert.ToBase64String(arg)); // Regular base64 encoder
+    }
+
+    static string Base64UrlEncode(string arg)
+    {
+      string s = arg;
+      s = s.Split('=')[0]; // Remove any trailing '='s
+      s = s.Replace('+', '-'); // 62nd char of encoding
+      s = s.Replace('/', '_'); // 63rd char of encoding
+      return s;
+    }
+
+    static byte[] Base64UrlDecode(string arg)
+    {
+      string s = arg;
+      s = s.Replace('-', '+'); // 62nd char of encoding
+      s = s.Replace('_', '/'); // 63rd char of encoding
+      switch (s.Length % 4) // Pad with trailing '='s
+      {
+        case 0: break; // No pad chars in this case
+        case 2: s += "=="; break; // Two pad chars
+        case 3: s += "="; break; // One pad char
+        default:
+          throw new System.Exception("Illegal base64url string!");}
+      return Convert.FromBase64String(s); // Standard base64 decoder
+    }
   }
 }

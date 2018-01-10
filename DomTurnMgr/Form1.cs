@@ -232,7 +232,25 @@ namespace DomTurnMgr
 
     private void btnSend2h_Click(object sender, EventArgs e)
     {
+      // Make sure that we have selected a sensible turn
+      Debug.Assert(listView1.SelectedItems.Count == 1);
 
+      if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
+        Properties.Settings.Default.GameName == "")
+      {
+        PreferencesForm pf = new PreferencesForm();
+        pf.ShowDialog();
+      }
+
+      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + Properties.Settings.Default.GameName;
+
+      Debug.Assert(Directory.Exists(saveGameDir));
+
+      // Get the attchment from the selected message
+      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
+      GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, saveGameDir + @"\" + @"mid_agartha.2h");
+
+      // copy the attchment to the save game location
     }
   }
 }
