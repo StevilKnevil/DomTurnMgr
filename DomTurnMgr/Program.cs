@@ -49,36 +49,55 @@ namespace DomTurnMgr
     [STAThreadAttribute]
     static void Main(string[] args)
     {
-      MessageBox.Show("Hello");
+      //System.Diagnostics.Trace.Listeners.Clear();
+      //System.Diagnostics.Trace.Listeners.Add(
+      //   new System.Diagnostics.TextWriterTraceListener(@"c:\domTurnManager.log"));
+
+      System.Diagnostics.Trace.WriteLine("Start");
+      System.Diagnostics.Trace.Flush();
+
       UserCredential credential;
       using (var stream =
           new FileStream(@"client_secret.json", FileMode.Open, FileAccess.Read))
       {
+        System.Diagnostics.Trace.WriteLine("Start Credpath");
+        System.Diagnostics.Trace.Flush();
         string credPath = System.Environment.GetFolderPath(
             System.Environment.SpecialFolder.Personal);
         credPath = Path.Combine(credPath, ".credentials/skapps-domTurnManager.json");
 
+        System.Diagnostics.Trace.WriteLine("Credpath: " + credPath);
+        System.Diagnostics.Trace.Flush();
+
+        System.Diagnostics.Trace.WriteLine("Start Authorise");
+        System.Diagnostics.Trace.Flush();
         credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
             GoogleClientSecrets.Load(stream).Secrets,
             Scopes,
             "user",
             CancellationToken.None,
             new FileDataStore(credPath, true)).Result;
-        Console.WriteLine("Credential file saved to: " + credPath);
-
+        System.Diagnostics.Trace.WriteLine("Credential file saved to: " + credPath);
+        System.Diagnostics.Trace.Flush();
       }
 
       // Create Gmail API service.
+      System.Diagnostics.Trace.WriteLine("start Create Service");
+      System.Diagnostics.Trace.Flush();
       GmailService = new GmailService(new BaseClientService.Initializer()
       {
         HttpClientInitializer = credential,
         ApplicationName = ApplicationName,
       });
 
+      System.Diagnostics.Trace.WriteLine("start Form");
+      System.Diagnostics.Trace.Flush();
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new Form1());
+      System.Diagnostics.Trace.WriteLine("End");
+      System.Diagnostics.Trace.Flush();
     }
-    
+
   }
 }
