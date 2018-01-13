@@ -49,6 +49,7 @@ namespace DomTurnMgr
     [STAThreadAttribute]
     static void Main(string[] args)
     {
+      MessageBox.Show("Hello");
       UserCredential credential;
       using (var stream =
           new FileStream(@"client_secret.json", FileMode.Open, FileAccess.Read))
