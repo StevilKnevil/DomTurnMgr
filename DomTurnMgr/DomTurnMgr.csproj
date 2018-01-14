@@ -27,7 +27,7 @@
     <ProductName>Dominions Turn Manager</ProductName>
     <PublisherName>SKApps</PublisherName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>28</ApplicationRevision>
+    <ApplicationRevision>29</ApplicationRevision>
     <ApplicationVersion>0.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -68,6 +68,9 @@
   <PropertyGroup />
   <PropertyGroup>
     <TargetZone>Internet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
@@ -176,6 +179,7 @@
     </None>
     <None Include="DomTurnMgr_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

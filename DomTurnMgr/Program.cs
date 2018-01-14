@@ -73,7 +73,7 @@ namespace DomTurnMgr
         // 
         f.DefaultExt = "json";
         f.Filter = "JSON Files|*.json";
-        f.FileName = "client_secret.json";
+        //f.FileName = "client_secret.json";
         f.Title = "Please navigate to 'client_secret.json'";
         f.CheckFileExists = true;
         f.Multiselect = false;
