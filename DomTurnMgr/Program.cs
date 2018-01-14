@@ -49,54 +49,94 @@ namespace DomTurnMgr
     [STAThreadAttribute]
     static void Main(string[] args)
     {
-      //System.Diagnostics.Trace.Listeners.Clear();
-      //System.Diagnostics.Trace.Listeners.Add(
-      //   new System.Diagnostics.TextWriterTraceListener(@"c:\domTurnManager.log"));
-
-      System.Diagnostics.Trace.WriteLine("Start");
-      System.Diagnostics.Trace.Flush();
-
       UserCredential credential;
-      using (var stream =
-          new FileStream(@"client_secret.json", FileMode.Open, FileAccess.Read))
+      string secretName = @"client_secret.json";
+      if (!File.Exists(secretName))
       {
-        System.Diagnostics.Trace.WriteLine("Start Credpath");
-        System.Diagnostics.Trace.Flush();
-        string credPath = System.Environment.GetFolderPath(
-            System.Environment.SpecialFolder.Personal);
-        credPath = Path.Combine(credPath, ".credentials/skapps-domTurnManager.json");
+        // prompt the user for it and add it
+        OpenFileDialog f = new OpenFileDialog();
 
-        System.Diagnostics.Trace.WriteLine("Credpath: " + credPath);
-        System.Diagnostics.Trace.Flush();
+        // 
+        // openFileDialog1
+        // 
+        f.DefaultExt = "json";
+        f.Filter = "JSON Files|*.json";
+        f.FileName = "client_secret.json";
+        f.Title = "Please navigate to 'client_secret.json'";
+        f.CheckFileExists = true;
+        f.Multiselect = false;
+        var result = DialogResult.OK;
+        while (result == DialogResult.OK)
+        {
+          result = f.ShowDialog();
+          if (result == DialogResult.OK)
+          {
+            if (Path.GetFileName(f.FileName) != secretName)
+            {
+              MessageBox.Show("Expected filename 'client_secret.json', got: " + Path.GetFileName(f.FileName), "Error");
+            }
+            else
+            {
+              if (!File.Exists(f.FileName))
+              {
+                MessageBox.Show(f.FileName + "doesn't exist", "Error");
+              }
+              else
+              {
+                // copy client secret to correct location.
+                File.Copy(f.FileName, secretName);
+              }
+            }
+          }
+        }
 
-        System.Diagnostics.Trace.WriteLine("Start Authorise");
-        System.Diagnostics.Trace.Flush();
-        credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-            GoogleClientSecrets.Load(stream).Secrets,
-            Scopes,
-            "user",
-            CancellationToken.None,
-            new FileDataStore(credPath, true)).Result;
-        System.Diagnostics.Trace.WriteLine("Credential file saved to: " + credPath);
-        System.Diagnostics.Trace.Flush();
+        if (result != DialogResult.OK)
+        {
+          MessageBox.Show("Unable to find client_secret.json", "Error");
+          // Early out
+          return;
+        }
+
       }
 
-      // Create Gmail API service.
-      System.Diagnostics.Trace.WriteLine("start Create Service");
-      System.Diagnostics.Trace.Flush();
-      GmailService = new GmailService(new BaseClientService.Initializer()
+      try
       {
-        HttpClientInitializer = credential,
-        ApplicationName = ApplicationName,
-      });
+        System.Diagnostics.Debug.Assert(File.Exists(secretName));
+        using (var stream =
+            new FileStream(secretName, FileMode.Open, FileAccess.Read))
+        {
+          string credPath = System.Environment.GetFolderPath(
+              System.Environment.SpecialFolder.Personal);
+          credPath = Path.Combine(credPath, ".credentials/skapps-domTurnManager.json");
 
-      System.Diagnostics.Trace.WriteLine("start Form");
-      System.Diagnostics.Trace.Flush();
+          credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+              GoogleClientSecrets.Load(stream).Secrets,
+              Scopes,
+              "user",
+              CancellationToken.None,
+              new FileDataStore(credPath, true)).Result;
+          System.Diagnostics.Trace.WriteLine("Credential file saved to: " + credPath);
+          System.Diagnostics.Trace.Flush();
+        }
+
+
+        // Create Gmail API service.
+        GmailService = new GmailService(new BaseClientService.Initializer()
+        {
+          HttpClientInitializer = credential,
+          ApplicationName = ApplicationName,
+        });
+      }
+      catch (Exception e)
+      {
+        MessageBox.Show("Unhandled Exception: " + e.ToString(), "Error");
+        // Early out
+        return;
+      }
+
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new Form1());
-      System.Diagnostics.Trace.WriteLine("End");
-      System.Diagnostics.Trace.Flush();
     }
 
   }
