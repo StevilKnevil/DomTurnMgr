@@ -46,11 +46,20 @@ namespace DomTurnMgr
     static string ApplicationName = "Domionions Turn Manager";
     internal static GmailService GmailService;
 
+    static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+      // TODO: improve logging and reporting
+      MessageBox.Show(e.ExceptionObject.ToString());
+      Environment.Exit(-1);
+    }
+
     [STAThreadAttribute]
     static void Main(string[] args)
     {
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
+      Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+      AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
       UserCredential credential;
       string secretName = @"client_secret.json";
