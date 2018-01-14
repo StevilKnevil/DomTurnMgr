@@ -109,6 +109,17 @@ namespace DomTurnMgr
 
     private void UpdateList()
     {
+      if (Properties.Settings.Default.GameName == "")
+      {
+        MessageBox.Show("Please specify the game name");
+        PreferencesForm pf = new PreferencesForm();
+        pf.Show();
+        if (Properties.Settings.Default.GameName == "")
+        {
+          // if game name is still invalid - quit
+          return;
+        }
+      }
       Cursor.Current = Cursors.WaitCursor;
 
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
@@ -331,15 +342,15 @@ namespace DomTurnMgr
       string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
-      // copy the attchment to the save game location
+      UpdateList();
     }
 
-    private void toolStripMenuItem1_Click(object sender, EventArgs e)
+    private void refresh_Click(object sender, EventArgs e)
     {
       UpdateList();
     }
 
-    private void editToolStripMenuItem_Click(object sender, EventArgs e)
+    private void showPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();

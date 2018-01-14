@@ -39,7 +39,7 @@ namespace DomTurnMgr
     {
     }
 
-    private void button1_Click(object sender, EventArgs e)
+    private void btnOK_Click(object sender, EventArgs e)
     {
       Properties.Settings.Default.GameName = tbGameName.Text;
       Properties.Settings.Default.ServerAddress = tbServerAddress.Text;

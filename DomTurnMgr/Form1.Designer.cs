@@ -120,7 +120,7 @@
       this.toolStripMenuItem1.Name = "toolStripMenuItem1";
       this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
       this.toolStripMenuItem1.Text = "Refresh";
-      this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
       // 
       // editToolStripMenuItem
       // 
@@ -129,7 +129,7 @@
       this.editToolStripMenuItem.Name = "editToolStripMenuItem";
       this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
       this.editToolStripMenuItem.Text = "Preferences";
-      this.editToolStripMenuItem.Click += new System.EventHandler(this.editToolStripMenuItem_Click);
+      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
       // 
       // Form1
       // 
