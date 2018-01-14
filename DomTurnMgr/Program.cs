@@ -44,7 +44,19 @@ namespace DomTurnMgr
     // at ~/.credentials/skapps-domTurnManager.json
     static string[] Scopes = { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailSend };
     static string ApplicationName = "Domionions Turn Manager";
-    internal static GmailService GmailService;
+    private static GmailService gmailService;
+    internal static GmailService GmailService
+    {
+      get
+      {
+        // lazy instantiation
+        if (gmailService == null)
+        {
+          createGmailService();
+        }
+        return gmailService;
+      }
+    }
 
     static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
@@ -60,7 +72,11 @@ namespace DomTurnMgr
       Application.SetCompatibleTextRenderingDefault(false);
       //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
       AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+      Application.Run(new Form1());
+    }
 
+    private static void createGmailService()
+    {
       UserCredential credential;
       string secretName = @"client_secret.json";
       if (!File.Exists(secretName))
@@ -134,7 +150,7 @@ namespace DomTurnMgr
 
 
         // Create Gmail API service.
-        GmailService = new GmailService(new BaseClientService.Initializer()
+        gmailService = new GmailService(new BaseClientService.Initializer()
         {
           HttpClientInitializer = credential,
           ApplicationName = ApplicationName,
@@ -146,8 +162,6 @@ namespace DomTurnMgr
         // Early out
         return;
       }
-
-      Application.Run(new Form1());
     }
 
   }
