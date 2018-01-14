@@ -59,7 +59,7 @@ namespace DomTurnMgr
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-      //AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+      AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
       UserCredential credential;
       string secretName = @"client_secret.json";
@@ -73,7 +73,7 @@ namespace DomTurnMgr
         // 
         f.DefaultExt = "json";
         f.Filter = "JSON Files|*.json";
-        //f.FileName = "client_secret.json";
+        f.FileName = "client_secret.json";
         f.Title = "Please navigate to 'client_secret.json'";
         f.CheckFileExists = true;
         f.Multiselect = false;
