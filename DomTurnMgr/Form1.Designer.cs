@@ -29,15 +29,17 @@
     private void InitializeComponent()
     {
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+      System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
+      System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
       this.listView1 = new System.Windows.Forms.ListView();
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
@@ -51,6 +53,24 @@
       this.menuStrip1.Size = new System.Drawing.Size(488, 24);
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
+      // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem1.Image")));
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
+      this.toolStripMenuItem1.Text = "Refresh";
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
+      // 
+      // editToolStripMenuItem
+      // 
+      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
+      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.editToolStripMenuItem.Text = "Preferences";
+      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
       // 
       // button2
       // 
@@ -90,11 +110,17 @@
       this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.listView1.CheckBoxes = true;
       this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
       this.listView1.FullRowSelect = true;
+      listViewGroup1.Header = "Pending Turns";
+      listViewGroup1.Name = "pendingGroup";
+      listViewGroup2.Header = "Completed Turns";
+      listViewGroup2.Name = "completeGroup";
+      this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
+            listViewGroup1,
+            listViewGroup2});
       this.listView1.HideSelection = false;
       this.listView1.Location = new System.Drawing.Point(12, 27);
       this.listView1.MultiSelect = false;
@@ -112,24 +138,6 @@
       // columnHeader2
       // 
       this.columnHeader2.Text = "Status";
-      // 
-      // toolStripMenuItem1
-      // 
-      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem1.Image")));
-      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
-      this.toolStripMenuItem1.Text = "Refresh";
-      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
-      // 
-      // editToolStripMenuItem
-      // 
-      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
-      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
-      this.editToolStripMenuItem.Text = "Preferences";
-      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
       // 
       // Form1
       // 

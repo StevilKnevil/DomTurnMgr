@@ -195,12 +195,14 @@ namespace DomTurnMgr
       {
         string status = "Turn Outstanding";
         var col = SystemColors.WindowText;
+        var group = listView1.Groups["pendingGroup"];
 
         // Render differently if finished turn
         if (turn.outboundMsgID != null)
         {
           status = "Turn Complete";
           col = SystemColors.GrayText;
+          group = listView1.Groups["completeGroup"];
         }
 
         var lvi = new ListViewItem(new[] {
@@ -209,6 +211,7 @@ namespace DomTurnMgr
           });
         lvi.ForeColor = col;
         lvi.Tag = turn;
+        lvi.Group = group;
         listView1.Items.Add(lvi);
           
       }
