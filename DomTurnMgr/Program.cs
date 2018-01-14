@@ -49,6 +49,9 @@ namespace DomTurnMgr
     [STAThreadAttribute]
     static void Main(string[] args)
     {
+      Application.EnableVisualStyles();
+      Application.SetCompatibleTextRenderingDefault(false);
+
       UserCredential credential;
       string secretName = @"client_secret.json";
       if (!File.Exists(secretName))
@@ -85,6 +88,7 @@ namespace DomTurnMgr
               {
                 // copy client secret to correct location.
                 File.Copy(f.FileName, secretName);
+                break;
               }
             }
           }
@@ -134,8 +138,6 @@ namespace DomTurnMgr
         return;
       }
 
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
       Application.Run(new Form1());
     }
 
