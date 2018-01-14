@@ -59,7 +59,7 @@ namespace DomTurnMgr
       Application.EnableVisualStyles();
       Application.SetCompatibleTextRenderingDefault(false);
       //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-      AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+      //AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
       UserCredential credential;
       string secretName = @"client_secret.json";
