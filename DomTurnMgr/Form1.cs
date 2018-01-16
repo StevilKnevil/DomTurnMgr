@@ -40,7 +40,7 @@ namespace DomTurnMgr
           // Sort by date of incoming message
           DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
           DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
-          return xD.CompareTo(yD);
+          return yD.CompareTo(xD);
         }
         else if (x.outboundMsgID == null)
         {
@@ -55,7 +55,7 @@ namespace DomTurnMgr
           // Sort by date of outgoing message
           DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
           DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
-          return xD.CompareTo(yD);
+          return yD.CompareTo(xD);
         }
       }
     }
@@ -358,6 +358,12 @@ namespace DomTurnMgr
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();
       UpdateList();
+    }
+
+    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      if (listView1.Items.Count > 0)
+        listView1.Items[0].Selected = true;
     }
   }
 }
