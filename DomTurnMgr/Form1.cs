@@ -19,45 +19,36 @@ namespace DomTurnMgr
     {
       internal string outboundMsgID;
       internal string inboundMsgID;
-      internal enum Status
-      {
-        PendingApply, // trn has be recieved but is not in Dom folder, .2h hasnt been sent and doesn't exist in Dom folder (or is for previous turn)
-        Active, // trn has be recieved & is in Dom folder, .2h hasnt been sent and doesn't exist in Dom folder (or is for previous turn)
-        PendingReturn, // trn has be recieved & is in Dom folder, .2h exists in Dom folder (unique amongst all turns) but hasn't yet been sent
-        Complete, // trn has be recieved, .2h has been sent
-        Archived, // complete but there have been more recent turns
-        Unknown // attachment hasn't been downloaded and inspected yet
-      };
-      //Status Status;
-    }
 
-    class TurnDateComparer : IComparer<Turn>
-    {
-      public int Compare(Turn x, Turn y)
+      internal class DateComparer : IComparer<Turn>
       {
-        if (x.outboundMsgID == null && y.outboundMsgID == null)
+        public int Compare(Turn x, Turn y)
         {
-          // Sort by date of incoming message
-          DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
-          DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
-          return yD.CompareTo(xD);
-        }
-        else if (x.outboundMsgID == null)
-        {
-          return -1;
-        }
-        else if (y.outboundMsgID == null)
-        {
-          return 1;
-        }
-        else
-        {
-          // Sort by date of outgoing message
-          DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
-          DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
-          return yD.CompareTo(xD);
+          if (x.outboundMsgID == null && y.outboundMsgID == null)
+          {
+            // Sort by date of incoming message
+            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
+            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
+            return yD.CompareTo(xD);
+          }
+          else if (x.outboundMsgID == null)
+          {
+            return -1;
+          }
+          else if (y.outboundMsgID == null)
+          {
+            return 1;
+          }
+          else
+          {
+            // Sort by date of outgoing message
+            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
+            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
+            return yD.CompareTo(xD);
+          }
         }
       }
+
     }
 
     private int getTurnNumberFromSubject(string subject)
@@ -189,7 +180,7 @@ namespace DomTurnMgr
       // generate a list of turns sorted correctly.
       List<Turn> turns = new List<Turn>();
       turns.AddRange(t.Values);
-      turns.Sort(new TurnDateComparer());
+      turns.Sort(new Turn.DateComparer());
 
       foreach (Turn turn in turns)
       {
