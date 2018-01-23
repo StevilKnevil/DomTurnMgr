@@ -11,6 +11,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+// TODO:
+/*
+ * Add button tool tips.
+ * add status bar. 
+ * Inherit from status text to have a fading status text. 
+ * Add a refresh timer. 
+ * Merge the game browser and savegame browser. Once you have the specific save game, you know the save game folder location.
+ * Add dom 5 inspector launcher button
+ * Split out func tionality from Form 1 - create a new panel UI component (panel) that takes a game name and shows all the info for that game.
+ * Add game info panel from parsed info from Llama server - when turn hosts and who has submitted. 
+ * Add mutliple games with a tabbed panel for each. 
+ */
+
 namespace DomTurnMgr
 {
   public partial class Form1 : Form
