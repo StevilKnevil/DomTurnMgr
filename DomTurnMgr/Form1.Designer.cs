@@ -41,7 +41,9 @@
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.menuStrip1.SuspendLayout();
+      this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
       // menuStrip1
@@ -145,11 +147,19 @@
       // 
       // statusStrip1
       // 
+      this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fadingStatusText1});
       this.statusStrip1.Location = new System.Drawing.Point(0, 426);
       this.statusStrip1.Name = "statusStrip1";
       this.statusStrip1.Size = new System.Drawing.Size(494, 22);
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
+      // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(71, 17);
+      this.fadingStatusText1.Text = "This is a test";
       // 
       // Form1
       // 
@@ -167,6 +177,8 @@
       this.Text = "Dominions Turn Manager";
       this.menuStrip1.ResumeLayout(false);
       this.menuStrip1.PerformLayout();
+      this.statusStrip1.ResumeLayout(false);
+      this.statusStrip1.PerformLayout();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -184,6 +196,7 @@
     private System.Windows.Forms.ColumnHeader columnHeader2;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.StatusStrip statusStrip1;
+    private DomTurnMgr.FadingStatusLabel fadingStatusText1;
   }
 }
 
