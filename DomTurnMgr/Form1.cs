@@ -16,8 +16,8 @@ using System.Windows.Forms;
 // TODO:
 /*
  * Merge the game browser and savegame browser. Once you have the specific save game, you know the save game folder location.
- * Split out func tionality from Form 1 - create a new panel UI component (panel) that takes a game name and shows all the info for that game.
- * Add game info panel from parsed info from Llama server - when turn hosts and who has submitted. 
+ * Split out functionality from Form 1 - create a new panel UI component (panel) that takes a game name and shows all the info for that game.
+ * Add game info panel from parsed info from Llama server - who has submitted. 
  * Add mutliple games with a tabbed panel for each. 
  */
 
