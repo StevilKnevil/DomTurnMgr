@@ -364,5 +364,9 @@ namespace DomTurnMgr
       UpdateList();
     }
 
+    private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Process.Start("https://larzm42.github.io/dom5inspector/");
+    }
   }
 }

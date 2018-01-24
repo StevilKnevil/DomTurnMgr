@@ -34,6 +34,7 @@
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
@@ -50,9 +51,11 @@
       // 
       this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
-            this.editToolStripMenuItem});
+            this.editToolStripMenuItem,
+            this.dom5InspectorToolStripMenuItem});
       this.menuStrip1.Location = new System.Drawing.Point(0, 0);
       this.menuStrip1.Name = "menuStrip1";
+      this.menuStrip1.ShowItemToolTips = true;
       this.menuStrip1.Size = new System.Drawing.Size(494, 24);
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
@@ -76,6 +79,16 @@
       this.editToolStripMenuItem.Text = "Preferences";
       this.editToolStripMenuItem.ToolTipText = "Settings";
       this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
+      // 
+      // dom5InspectorToolStripMenuItem
+      // 
+      this.dom5InspectorToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.dom5InspectorToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.magnifier;
+      this.dom5InspectorToolStripMenuItem.Name = "dom5InspectorToolStripMenuItem";
+      this.dom5InspectorToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.dom5InspectorToolStripMenuItem.Text = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.ToolTipText = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.Click += new System.EventHandler(this.dom5InspectorToolStripMenuItem_Click);
       // 
       // button2
       // 
@@ -158,7 +171,7 @@
       // 
       this.fadingStatusText1.Duration = 3F;
       this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 0);
       // 
       // Form1
       // 
@@ -196,6 +209,7 @@
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
     private System.Windows.Forms.StatusStrip statusStrip1;
     private DomTurnMgr.FadingStatusLabel fadingStatusText1;
+    private System.Windows.Forms.ToolStripMenuItem dom5InspectorToolStripMenuItem;
   }
 }
 
