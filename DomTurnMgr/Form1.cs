@@ -311,6 +311,7 @@ namespace DomTurnMgr
 
         // Get the attchment from the selected message
         GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
+        fadingStatusText1.Text = "Downloaded: " + listView1.SelectedItems[0].Text;
       }
     }
 
@@ -350,7 +351,9 @@ namespace DomTurnMgr
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
       UpdateList();
-    }
+
+      fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
+    } 
 
     private void refresh_Click(object sender, EventArgs e)
     {
