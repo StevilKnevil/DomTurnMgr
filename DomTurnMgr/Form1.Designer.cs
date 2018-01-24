@@ -28,13 +28,10 @@
     /// </summary>
     private void InitializeComponent()
     {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
       System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
@@ -43,6 +40,9 @@
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
@@ -59,36 +59,6 @@
       this.menuStrip1.Size = new System.Drawing.Size(494, 24);
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
-      // 
-      // toolStripMenuItem1
-      // 
-      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem1.Image")));
-      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
-      this.toolStripMenuItem1.Text = "Refresh";
-      this.toolStripMenuItem1.ToolTipText = "Refresh";
-      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
-      // 
-      // editToolStripMenuItem
-      // 
-      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
-      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
-      this.editToolStripMenuItem.Text = "Preferences";
-      this.editToolStripMenuItem.ToolTipText = "Settings";
-      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
-      // 
-      // dom5InspectorToolStripMenuItem
-      // 
-      this.dom5InspectorToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.dom5InspectorToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.magnifier;
-      this.dom5InspectorToolStripMenuItem.Name = "dom5InspectorToolStripMenuItem";
-      this.dom5InspectorToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
-      this.dom5InspectorToolStripMenuItem.Text = "Dom 5 Inspector";
-      this.dom5InspectorToolStripMenuItem.ToolTipText = "Dom 5 Inspector";
-      this.dom5InspectorToolStripMenuItem.Click += new System.EventHandler(this.dom5InspectorToolStripMenuItem_Click);
       // 
       // button2
       // 
@@ -173,6 +143,36 @@
       this.fadingStatusText1.Name = "fadingStatusText1";
       this.fadingStatusText1.Size = new System.Drawing.Size(0, 0);
       // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripMenuItem1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripMenuItem1.Image")));
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
+      this.toolStripMenuItem1.Text = "Refresh";
+      this.toolStripMenuItem1.ToolTipText = "Refresh";
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
+      // 
+      // editToolStripMenuItem
+      // 
+      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
+      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.editToolStripMenuItem.Text = "Preferences";
+      this.editToolStripMenuItem.ToolTipText = "Settings";
+      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
+      // 
+      // dom5InspectorToolStripMenuItem
+      // 
+      this.dom5InspectorToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.dom5InspectorToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.magnifier;
+      this.dom5InspectorToolStripMenuItem.Name = "dom5InspectorToolStripMenuItem";
+      this.dom5InspectorToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.dom5InspectorToolStripMenuItem.Text = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.ToolTipText = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.Click += new System.EventHandler(this.dom5InspectorToolStripMenuItem_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,6 +184,7 @@
       this.Controls.Add(this.button3);
       this.Controls.Add(this.button2);
       this.Controls.Add(this.menuStrip1);
+      this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
       this.MainMenuStrip = this.menuStrip1;
       this.Name = "Form1";
       this.Text = "Dominions Turn Manager";
