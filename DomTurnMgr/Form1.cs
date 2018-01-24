@@ -367,10 +367,5 @@ namespace DomTurnMgr
       UpdateList();
     }
 
-    private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      if (listView1.Items.Count > 0)
-        listView1.Items[0].Selected = true;
-    }
   }
 }
