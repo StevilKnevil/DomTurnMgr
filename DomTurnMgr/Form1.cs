@@ -13,9 +13,6 @@ using System.Windows.Forms;
 
 // TODO:
 /*
- * Add button tool tips.
- * add status bar. 
- * Inherit from status text to have a fading status text. 
  * Add a refresh timer. 
  * Merge the game browser and savegame browser. Once you have the specific save game, you know the save game folder location.
  * Add dom 5 inspector launcher button
