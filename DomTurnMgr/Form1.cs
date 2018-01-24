@@ -7,7 +7,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -106,6 +108,8 @@ namespace DomTurnMgr
       }
 
       UpdateList();
+      UpdateTimeRemaining();
+      updateTimer.Start();
     }
 
     private void UpdateList()
@@ -223,6 +227,51 @@ namespace DomTurnMgr
         listView1.Items[0].Selected = true;
 
       Cursor.Current = Cursors.Default;
+    }
+
+    private void UpdateTimeRemaining()
+    {
+      string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
+
+      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+      HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+      string data = "";
+
+      if (response.StatusCode == HttpStatusCode.OK)
+      {
+        Stream receiveStream = response.GetResponseStream();
+        StreamReader readStream = null;
+
+        if (response.CharacterSet == null)
+        {
+          readStream = new StreamReader(receiveStream);
+        }
+        else
+        {
+          readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+        }
+
+        data = readStream.ReadToEnd();
+
+        response.Close();
+        readStream.Close();
+      }
+
+      // Find the remaining time in the string
+      string pattern = @"Next turn due: (.*)\n";
+      Regex re = new Regex(pattern);
+      MatchCollection matches = re.Matches(data);
+      timeRemainingLbl.Text = "Error retrieving remaining time.";
+      if (matches.Count == 1)
+      {
+        if (matches[0].Captures.Count == 1)
+        {
+          if (matches[0].Groups.Count == 2)
+          {
+            timeRemainingLbl.Text = "Next Turn Due: " + matches[0].Groups[1].Value;
+          }
+        }
+      }
     }
 
     private void btnStartDominions_Click(object sender, EventArgs e)
@@ -367,6 +416,13 @@ namespace DomTurnMgr
     private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Process.Start("https://larzm42.github.io/dom5inspector/");
+    }
+
+    private void updateTimer_Tick(object sender, EventArgs e)
+    {
+      UpdateList();
+      UpdateTimeRemaining();
+      updateTimer.Start();
     }
   }
 }
