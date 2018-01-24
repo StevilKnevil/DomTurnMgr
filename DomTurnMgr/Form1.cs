@@ -397,6 +397,7 @@ namespace DomTurnMgr
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
       UpdateList();
+      UpdateTimeRemaining();
 
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     } 
@@ -404,6 +405,7 @@ namespace DomTurnMgr
     private void refresh_Click(object sender, EventArgs e)
     {
       UpdateList();
+      UpdateTimeRemaining();
     }
 
     private void showPrefs_Click(object sender, EventArgs e)
@@ -411,6 +413,7 @@ namespace DomTurnMgr
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();
       UpdateList();
+      UpdateTimeRemaining();
     }
 
     private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
