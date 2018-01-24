@@ -11,7 +11,7 @@ using Google.Apis.Util.Store;
 using System.IO;
 using System.Text;
 using System.Threading;
-
+using Microsoft.Win32;
 
 namespace DomTurnMgr
 {
@@ -75,6 +75,19 @@ namespace DomTurnMgr
       Application.Run(new Form1());
     }
 
+    // Caller must close the key
+    private static RegistryKey GetClientSecretRegKey()
+    {
+      using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
+      {
+        if (key != null)
+        {
+          return key.CreateSubKey("Dominions Turn Manager");
+        }
+      }
+      return null;
+    }
+
     private static void createGmailService()
     {
       UserCredential credential;
@@ -93,6 +106,15 @@ namespace DomTurnMgr
         f.Title = "Please navigate to 'client_secret.json'";
         f.CheckFileExists = true;
         f.Multiselect = false;
+        // Use the previously stored location, if any
+        using (RegistryKey key = GetClientSecretRegKey())
+        {
+          if (key != null)
+          {
+            f.FileName = key.GetValue("secret_location") as string;
+          }
+        }
+        
         var result = DialogResult.OK;
         while (result == DialogResult.OK)
         {
@@ -113,6 +135,15 @@ namespace DomTurnMgr
               {
                 // copy client secret to correct location.
                 File.Copy(f.FileName, secretName);
+
+                // Store the location for next time
+                using (RegistryKey key = GetClientSecretRegKey())
+                {
+                  if (key != null)
+                  {
+                    key.SetValue("secret_location", f.FileName);
+                  }
+                }
                 break;
               }
             }
