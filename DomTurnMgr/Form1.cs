@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -425,6 +426,15 @@ namespace DomTurnMgr
       UpdateList();
       UpdateTimeRemaining();
       updateTimer.Start();
+    }
+
+    private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      Version myVersion = new Version();
+
+      if (ApplicationDeployment.IsNetworkDeployed)
+        myVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion;
+      MessageBox.Show(String.Format("Version {0}", myVersion.ToString()), "About");
     }
   }
 }

@@ -47,6 +47,7 @@
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.updateTimer = new System.Windows.Forms.Timer(this.components);
+      this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
@@ -56,7 +57,8 @@
       this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem1,
             this.editToolStripMenuItem,
-            this.dom5InspectorToolStripMenuItem});
+            this.dom5InspectorToolStripMenuItem,
+            this.aboutToolStripMenuItem});
       this.menuStrip1.Location = new System.Drawing.Point(0, 0);
       this.menuStrip1.Name = "menuStrip1";
       this.menuStrip1.ShowItemToolTips = true;
@@ -182,7 +184,7 @@
       // toolStripStatusLabel2
       // 
       this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-      this.toolStripStatusLabel2.Size = new System.Drawing.Size(585, 17);
+      this.toolStripStatusLabel2.Size = new System.Drawing.Size(616, 17);
       this.toolStripStatusLabel2.Spring = true;
       // 
       // timeRemainingLbl
@@ -195,6 +197,13 @@
       // 
       this.updateTimer.Interval = 60000;
       this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
+      // 
+      // aboutToolStripMenuItem
+      // 
+      this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+      this.aboutToolStripMenuItem.Size = new System.Drawing.Size(52, 20);
+      this.aboutToolStripMenuItem.Text = "About";
+      this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
       // 
       // Form1
       // 
@@ -237,6 +246,7 @@
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
     private System.Windows.Forms.ToolStripStatusLabel timeRemainingLbl;
     private System.Windows.Forms.Timer updateTimer;
+    private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
   }
 }
 
