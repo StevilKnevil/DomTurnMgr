@@ -15,9 +15,7 @@ using System.Windows.Forms;
 
 // TODO:
 /*
- * Add a refresh timer. 
  * Merge the game browser and savegame browser. Once you have the specific save game, you know the save game folder location.
- * Add dom 5 inspector launcher button
  * Split out func tionality from Form 1 - create a new panel UI component (panel) that takes a game name and shows all the info for that game.
  * Add game info panel from parsed info from Llama server - when turn hosts and who has submitted. 
  * Add mutliple games with a tabbed panel for each. 
@@ -107,9 +105,7 @@ namespace DomTurnMgr
         }
       }
 
-      UpdateList();
-      UpdateTimeRemaining();
-      updateTimer.Start();
+      RefreshUI();
     }
 
     private void UpdateList()
@@ -396,24 +392,21 @@ namespace DomTurnMgr
       string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
-      UpdateList();
-      UpdateTimeRemaining();
+      RefreshUI();
 
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     } 
 
     private void refresh_Click(object sender, EventArgs e)
     {
-      UpdateList();
-      UpdateTimeRemaining();
+      RefreshUI();
     }
 
     private void showPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();
-      UpdateList();
-      UpdateTimeRemaining();
+      RefreshUI();
     }
 
     private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -423,6 +416,12 @@ namespace DomTurnMgr
 
     private void updateTimer_Tick(object sender, EventArgs e)
     {
+      RefreshUI();
+    }
+
+    private void RefreshUI()
+    {
+      updateTimer.Stop();
       UpdateList();
       UpdateTimeRemaining();
       updateTimer.Start();
