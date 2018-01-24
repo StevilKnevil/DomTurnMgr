@@ -157,9 +157,9 @@
       // 
       // fadingStatusText1
       // 
+      this.fadingStatusText1.Duration = 3F;
       this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(71, 17);
-      this.fadingStatusText1.Text = "This is a test";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
       // 
       // Form1
       // 

@@ -17,7 +17,6 @@ namespace DomTurnMgr
     public FadingStatusLabel()
     {
       InitializeComponent();
-      Duration = 10.0f;
     }
 
     public override string Text
@@ -25,11 +24,12 @@ namespace DomTurnMgr
       set
       {
         base.Text = value;
-        startFade();
+        if(!DesignMode)
+          startFade();
       }
     }
 
-    private float opacity = 0;
+    private float opacity = 1;
     private DateTime startTime;
     public float Duration { get; set; }
 
@@ -44,34 +44,10 @@ namespace DomTurnMgr
 
     protected override void OnPaint(PaintEventArgs e)
     {
-#if true
-      if (opacity > 0)
-        base.OnPaint(e);
-#else
-      // need to resolve: https://stackoverflow.com/questions/48405796/overloading-control-drawing-in-c-sharp-has-text-rendering-problems
-      // Create a temp image to draw to and then put that onto the control transparently
-      using (Bitmap bmp = new Bitmap(this.Width, this.Height))
-      {
-        using (Graphics newGraphics = Graphics.FromImage(bmp))
-        {
-          newGraphics.Clear(this.BackColor);
-          PaintEventArgs newEvent = new PaintEventArgs(newGraphics, e.ClipRectangle);
-          newGraphics.CompositingMode = CompositingMode.SourceCopy;
-          base.OnPaint(newEvent);
-          
-          //ColorMatrix colorMatrix = new ColorMatrix();
-          //colorMatrix.Matrix33 = opacity;
-
-          //ImageAttributes imgAttr = new ImageAttributes();
-          //imgAttr.SetColorMatrix(
-          //  colorMatrix);
-
-          e.Graphics.Clear(this.BackColor);
-          e.Graphics.CompositingMode = CompositingMode.SourceOver;
-          e.Graphics.DrawImage(bmp, new Rectangle(0, 0, this.Width, this.Height), 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel);//, imgAttr);
-        }
-      }
-#endif
+      Font font = this.Font;
+      Color textColor = Color.FromArgb((int)(opacity*255F), this.ForeColor);
+      SolidBrush drawBrush = new SolidBrush(textColor);
+      e.Graphics.DrawString(this.Text, font, drawBrush, new Point(0, 0));
     }
 
     private void timer1_Tick(object sender, EventArgs e)
@@ -81,6 +57,7 @@ namespace DomTurnMgr
       opacity = 1 - factor;
       if (opacity > 1) opacity = 1;
       if (opacity < 0) opacity = 0;
+
       // Force redraw
       this.Invalidate();
     }
