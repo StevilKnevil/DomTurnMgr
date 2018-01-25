@@ -265,7 +265,18 @@ namespace DomTurnMgr
         {
           if (matches[0].Groups.Count == 2)
           {
-            timeRemainingLbl.Text = "Next Turn Due: " + matches[0].Groups[1].Value;
+            DateTime result;
+            string s = matches[0].Groups[1].Value;
+            // trim the trainling 'st' 'nd' 'rd' 'th' from the string
+            s = s.Remove(s.Length - 2);
+            if (DateTime.TryParseExact(s/*matches[0].Groups[1].Value*/, 
+              "HH:mm GMT on dddd MMMM d", 
+              new System.Globalization.CultureInfo("en-US"), 
+              System.Globalization.DateTimeStyles.None,
+              out result));
+            {
+              timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
+            }
           }
         }
       }
