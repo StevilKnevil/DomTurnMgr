@@ -276,6 +276,17 @@ namespace DomTurnMgr
               out result));
             {
               timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
+              // TODO: Move to update icon function
+              this.Icon = Properties.Resources.icon_green;
+              if (result-DateTime.Now < new TimeSpan(12,0,0))
+              {
+                this.Icon = Properties.Resources.icon_yellow;
+              }
+              if (result - DateTime.Now < new TimeSpan(6, 0, 0))
+              {
+                this.Icon = Properties.Resources.icon_red;
+              }
+              // TODO: If turn submitted (check with server text) then iceon can be grey
             }
           }
         }
