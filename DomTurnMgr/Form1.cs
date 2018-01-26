@@ -273,7 +273,7 @@ namespace DomTurnMgr
               "HH:mm GMT on dddd MMMM d", 
               new System.Globalization.CultureInfo("en-US"), 
               System.Globalization.DateTimeStyles.None,
-              out result));
+              out result))
             {
               timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
               // TODO: Move to update icon function
