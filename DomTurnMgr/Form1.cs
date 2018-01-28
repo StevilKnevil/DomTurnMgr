@@ -124,68 +124,22 @@ namespace DomTurnMgr
 
     private void UpdateTimeRemaining()
     {
-      string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
-
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-      HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-      string data = "";
-
-      if (response.StatusCode == HttpStatusCode.OK)
+      timeRemainingLbl.Text = "Error retrieving hosting time";
+      if (currentGame.IsValidHostingTime)
       {
-        Stream receiveStream = response.GetResponseStream();
-        StreamReader readStream = null;
-
-        if (response.CharacterSet == null)
+        DateTime result = currentGame.HostingTime;
+        timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
+        // TODO: Move to update icon function
+        this.Icon = Properties.Resources.icon_green;
+        if (result-DateTime.Now < new TimeSpan(12,0,0))
         {
-          readStream = new StreamReader(receiveStream);
+          this.Icon = Properties.Resources.icon_yellow;
         }
-        else
+        if (result - DateTime.Now < new TimeSpan(6, 0, 0))
         {
-          readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+          this.Icon = Properties.Resources.icon_red;
         }
-
-        data = readStream.ReadToEnd();
-
-        response.Close();
-        readStream.Close();
-      }
-
-      // Find the remaining time in the string
-      string pattern = @"Next turn due: (.*)\n";
-      Regex re = new Regex(pattern);
-      MatchCollection matches = re.Matches(data);
-      timeRemainingLbl.Text = "Error retrieving remaining time.";
-      if (matches.Count == 1)
-      {
-        if (matches[0].Captures.Count == 1)
-        {
-          if (matches[0].Groups.Count == 2)
-          {
-            DateTime result;
-            string s = matches[0].Groups[1].Value;
-            // trim the trainling 'st' 'nd' 'rd' 'th' from the string
-            s = s.Remove(s.Length - 2);
-            if (DateTime.TryParseExact(s/*matches[0].Groups[1].Value*/, 
-              "HH:mm GMT on dddd MMMM d", 
-              new System.Globalization.CultureInfo("en-US"), 
-              System.Globalization.DateTimeStyles.None,
-              out result))
-            {
-              timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
-              // TODO: Move to update icon function
-              this.Icon = Properties.Resources.icon_green;
-              if (result-DateTime.Now < new TimeSpan(12,0,0))
-              {
-                this.Icon = Properties.Resources.icon_yellow;
-              }
-              if (result - DateTime.Now < new TimeSpan(6, 0, 0))
-              {
-                this.Icon = Properties.Resources.icon_red;
-              }
-              // TODO: If turn submitted (check with server text) then iceon can be grey
-            }
-          }
-        }
+        // TODO: If turn submitted (check with server text) then iceon can be grey
       }
     }
 
@@ -342,7 +296,7 @@ namespace DomTurnMgr
     {
       updateTimer.Stop();
       Cursor.Current = Cursors.WaitCursor;
-      currentGame.UpdateTurns();
+      currentGame.Update();
       Cursor.Current = Cursors.Default;
       UpdateList();
       UpdateTimeRemaining();

@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DomTurnMgr
@@ -71,7 +75,13 @@ namespace DomTurnMgr
     public Game(string name)
     {
       Name = name;
-      UpdateTurns();
+      Update();
+    }
+
+    public void Update()
+    {
+      updateTurns();
+      updateHostingTime();
     }
 
     public bool IsValid(out string errMsg)
@@ -97,7 +107,7 @@ namespace DomTurnMgr
     public IReadOnlyCollection<Turn> Turns => turns as IReadOnlyCollection<Turn>;
     //public event TurnListChanged;
 
-    public void UpdateTurns()
+    private void updateTurns()
     {
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
       string inboundMessageSearchString = "";
@@ -165,6 +175,71 @@ namespace DomTurnMgr
       turns.AddRange(t.Values);
       turns.Sort(new Turn.DateComparer());
 
+    }
+
+    public bool IsValidHostingTime { get; private set; }
+    private DateTime hostingTime;
+    public DateTime HostingTime {
+      get
+      {
+        Debug.Assert(IsValidHostingTime);
+        return hostingTime;
+      }
+    }
+
+    private void updateHostingTime()
+    {
+      string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
+
+      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+      HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+      string data = "";
+
+      if (response.StatusCode == HttpStatusCode.OK)
+      {
+        Stream receiveStream = response.GetResponseStream();
+        StreamReader readStream = null;
+
+        if (response.CharacterSet == null)
+        {
+          readStream = new StreamReader(receiveStream);
+        }
+        else
+        {
+          readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+        }
+
+        data = readStream.ReadToEnd();
+
+        response.Close();
+        readStream.Close();
+      }
+
+      // Find the remaining time in the string
+      string pattern = @"Next turn due: (.*)\n";
+      Regex re = new Regex(pattern);
+      MatchCollection matches = re.Matches(data);
+      if (matches.Count == 1)
+      {
+        if (matches[0].Captures.Count == 1)
+        {
+          if (matches[0].Groups.Count == 2)
+          {
+            string s = matches[0].Groups[1].Value;
+            // trim the trainling 'st' 'nd' 'rd' 'th' from the string
+            s = s.Remove(s.Length - 2);
+            IsValidHostingTime = false;
+            if (DateTime.TryParseExact(s,
+              "HH:mm GMT on dddd MMMM d",
+              new System.Globalization.CultureInfo("en-US"),
+              System.Globalization.DateTimeStyles.None,
+              out hostingTime))
+            {
+              IsValidHostingTime = true;
+            }
+          }
+        }
+      }
     }
   }
 }
