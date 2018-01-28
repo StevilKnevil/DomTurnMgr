@@ -154,7 +154,7 @@ namespace DomTurnMgr
       Process process = new Process();
       // Configure the process using the StartInfo properties.
       process.StartInfo.FileName = Properties.Settings.Default.DominionsExecutable;
-      process.StartInfo.Arguments = Properties.Settings.Default.GameName;
+      process.StartInfo.Arguments = currentGame.Name;
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
       process.Start();
       process.WaitForExit();// Waits here for the process to exit.
@@ -168,13 +168,13 @@ namespace DomTurnMgr
       string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
 
       if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
-        Properties.Settings.Default.GameName == "")
+        currentGame.Name == "")
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
 
-      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + Properties.Settings.Default.GameName;
+      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + currentGame.Name;
 
       if (!Directory.Exists(saveGameDir))
       {
@@ -237,13 +237,13 @@ namespace DomTurnMgr
         return;
 
       if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
-        Properties.Settings.Default.GameName == "")
+        currentGame.Name == "")
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
 
-      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + Properties.Settings.Default.GameName;
+      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + currentGame.Name;
 
       Debug.Assert(Directory.Exists(saveGameDir));
 
