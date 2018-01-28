@@ -65,14 +65,31 @@ namespace DomTurnMgr
       Environment.Exit(-1);
     }
 
+    static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
     [STAThreadAttribute]
     static void Main(string[] args)
     {
-      Application.EnableVisualStyles();
-      Application.SetCompatibleTextRenderingDefault(false);
-      //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-      AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-      Application.Run(new Form1());
+      // Make sure we only have one instance running
+      // https://stackoverflow.com/a/522874
+      if (mutex.WaitOne(TimeSpan.Zero, true))
+      {
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        Application.Run(new Form1());
+        mutex.ReleaseMutex();
+      }
+      else
+      {
+        // send our Win32 message to make the currently running instance
+        // jump on top of all the other windows
+        NativeMethods.PostMessage(
+            (IntPtr)NativeMethods.HWND_BROADCAST,
+            NativeMethods.WM_SHOWME,
+            IntPtr.Zero,
+            IntPtr.Zero);
+      }
     }
 
     // Caller must close the key

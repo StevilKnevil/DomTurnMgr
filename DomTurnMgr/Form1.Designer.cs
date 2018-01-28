@@ -230,8 +230,7 @@
       this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
       this.notifyIcon1.Text = "Dominions Turn Manager";
       this.notifyIcon1.Visible = true;
-      this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
-      this.notifyIcon1.DoubleClick += new System.EventHandler(this.onRestoreForm);
+      this.notifyIcon1.Click += onRestoreForm;
       // 
       // contextMenuStrip1
       // 

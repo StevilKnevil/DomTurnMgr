@@ -29,6 +29,17 @@ namespace DomTurnMgr
 {
   public partial class Form1 : Form
   {
+
+    // Helper to make sure that we bring this to front if a different instance starts
+    protected override void WndProc(ref System.Windows.Forms.Message m)
+    {
+      if (m.Msg == NativeMethods.WM_SHOWME)
+      {
+        restoreForm();
+      }
+      base.WndProc(ref m);
+    }
+
     Game currentGame;
 
     public Form1()
@@ -319,13 +330,19 @@ namespace DomTurnMgr
       MessageBox.Show(String.Format("Version {0}", myVersion.ToString()), "About");
     }
 
-    private void onRestoreForm(object sender, EventArgs e)
+    private void restoreForm()
     {
+      this.TopMost = true;
       this.WindowState = FormWindowState.Normal;
       this.Show();
       this.Activate();
+      this.TopMost = false;
     }
 
+    private void onRestoreForm(object sender, EventArgs e)
+    {
+      restoreForm();
+    }
 
     private bool doClose = false;
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -342,11 +359,6 @@ namespace DomTurnMgr
     {
       doClose = true;
       this.Close();
-    }
-
-    private void notifyIcon1_Click(object sender, EventArgs e)
-    {
-      contextMenuStrip1.Show(Cursor.Position);
     }
   }
 }
