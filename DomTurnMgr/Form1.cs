@@ -157,7 +157,6 @@ namespace DomTurnMgr
       process.StartInfo.Arguments = currentGame.Name;
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
       process.Start();
-      process.WaitForExit();// Waits here for the process to exit.
     }
 
     private void btnGetTrn_Click(object sender, EventArgs e)
