@@ -16,6 +16,9 @@ using System.Windows.Forms;
 
 // TODO:
 /*
+ * Move the data all out into a 'game' class that can manage the queries to LLamanaserver and gmail
+ * Split the mail querying into a seperate threads
+ * Sanity check the files: Offset 0xE in the save file contains the turn number byte (presumably? - unles syou get more than 255 turns, but deal with that later)
  * Merge the game browser and savegame browser. Once you have the specific save game, you know the save game folder location.
  * Split out functionality from Form 1 - create a new panel UI component (panel) that takes a game name and shows all the info for that game.
  * Add game info panel from parsed info from Llama server - who has submitted. 
