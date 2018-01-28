@@ -29,61 +29,13 @@ namespace DomTurnMgr
 {
   public partial class Form1 : Form
   {
-    class Turn
-    {
-      internal string outboundMsgID;
-      internal string inboundMsgID;
-
-      internal class DateComparer : IComparer<Turn>
-      {
-        public int Compare(Turn x, Turn y)
-        {
-          if (x.outboundMsgID == null && y.outboundMsgID == null)
-          {
-            // Sort by date of incoming message
-            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
-            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
-            return yD.CompareTo(xD);
-          }
-          else if (x.outboundMsgID == null)
-          {
-            return -1;
-          }
-          else if (y.outboundMsgID == null)
-          {
-            return 1;
-          }
-          else
-          {
-            // Sort by date of outgoing message
-            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
-            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
-            return yD.CompareTo(xD);
-          }
-        }
-      }
-
-    }
-
-    private int getTurnNumberFromSubject(string subject)
-    {
-      int turnNumber = 0;
-
-      string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
-      if (!int.TryParse(turnIndexString, out turnNumber))
-      {
-        // perhaps this is the first turn
-        if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
-        {
-          turnNumber = 1;
-        }
-      }
-      return turnNumber;
-    }
+    Game currentGame;
 
     public Form1()
     {
       InitializeComponent();
+      // TODO: find a way of doing this on property changed, but batching up the changes into a single change block
+      Properties.Settings.Default.SettingsSaving += onPropertyChanged;
 
       // set up initial preferences
       {
@@ -94,7 +46,6 @@ namespace DomTurnMgr
         {
           showPrefs = true;
           Properties.Settings.Default.ServerAddress = "turns@llamaserver.net";
-          Properties.Settings.Default.Save();
         }
 
         if (Properties.Settings.Default.DominionsExecutable == "")
@@ -109,6 +60,17 @@ namespace DomTurnMgr
         }
       }
 
+      SetGame(new Game(Properties.Settings.Default.GameName));
+    }
+
+    private void onPropertyChanged(object sender, EventArgs e)
+    {
+      SetGame(new Game(Properties.Settings.Default.GameName));
+    }
+
+    private void SetGame(Game game)
+    {
+      currentGame = game;
       RefreshUI();
     }
 
@@ -125,78 +87,10 @@ namespace DomTurnMgr
           return;
         }
       }
-      Cursor.Current = Cursors.WaitCursor;
-
-      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      string inboundMessageSearchString = "";
-      string outboundMessageSearchString= "";
-      {
-        string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
-        outboundMessageSearchString = string.Format(
-          searchStringFmt,
-          Properties.Settings.Default.ServerAddress,
-          playerAddress,
-          Properties.Settings.Default.GameName);
-        Properties.Settings.Default.Save();
-      }
-
-      {
-        string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-        inboundMessageSearchString = string.Format(
-          searchStringFmt,
-          Properties.Settings.Default.ServerAddress,
-          playerAddress,
-          Properties.Settings.Default.GameName);
-        Properties.Settings.Default.Save();
-      }
-
-      // TODO: Async
-      var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
-      var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
-
-      Dictionary<int, Turn> t = new Dictionary<int, Turn>();
-
-      // Fill in the sent message IDs
-      foreach (var msgID in inboundTurns)
-      {
-        Turn turn = new Turn();
-        turn.inboundMsgID = msgID;
-
-        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        int turnIndex = getTurnNumberFromSubject(subject);
-        if (turnIndex > 0)
-        {
-          if (t.ContainsKey(turnIndex))
-          {
-            MessageBox.Show(
-              string.Format("Duplicate turn number found wiuth following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
-              inboundMessageSearchString));
-            break;
-          }
-          t[turnIndex] = turn;
-        }
-      }
-
-      foreach (var msgID in outboundTurns)
-      {
-        // now work out which turn this applies to
-        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        int turnIndex = getTurnNumberFromSubject(subject);
-
-        if (t.ContainsKey(turnIndex))
-        {
-          t[turnIndex].outboundMsgID = msgID;
-        }
-      }
 
       listView1.Items.Clear();
 
-      // generate a list of turns sorted correctly.
-      List<Turn> turns = new List<Turn>();
-      turns.AddRange(t.Values);
-      turns.Sort(new Turn.DateComparer());
-
-      foreach (Turn turn in turns)
+      foreach (var turn in currentGame.Turns)
       {
         string status = "Turn Outstanding";
         var col = SystemColors.WindowText;
@@ -225,8 +119,6 @@ namespace DomTurnMgr
 
       if (listView1.Items.Count > 0)
         listView1.Items[0].Selected = true;
-
-      Cursor.Current = Cursors.Default;
     }
 
     private void UpdateTimeRemaining()
@@ -318,7 +210,7 @@ namespace DomTurnMgr
       // Make sure that we have selected a sensible turn
       if (listView1.SelectedItems.Count != 1)
         return;
-      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
+      string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
 
       if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
         Properties.Settings.Default.GameName == "")
@@ -415,7 +307,7 @@ namespace DomTurnMgr
       string twohFile = twohFiles.First();
 
       // Get the attchment from the selected message
-      string msgId = (listView1.SelectedItems[0].Tag as Turn).inboundMsgID;
+      string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
       RefreshUI();
@@ -448,6 +340,9 @@ namespace DomTurnMgr
     private void RefreshUI()
     {
       updateTimer.Stop();
+      Cursor.Current = Cursors.WaitCursor;
+      currentGame.UpdateTurns();
+      Cursor.Current = Cursors.Default;
       UpdateList();
       UpdateTimeRemaining();
       updateTimer.Start();

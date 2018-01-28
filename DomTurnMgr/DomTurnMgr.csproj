@@ -158,6 +158,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Game.cs" />
     <Compile Include="GMailHelpers.cs" />
     <Compile Include="PreferencesForm.cs">
       <SubType>Form</SubType>

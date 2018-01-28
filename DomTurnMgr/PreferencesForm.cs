@@ -45,6 +45,7 @@ namespace DomTurnMgr
       Properties.Settings.Default.ServerAddress = tbServerAddress.Text;
       Properties.Settings.Default.DominionsExecutable = tbDominionsLocation.Text;
       Properties.Settings.Default.SavegamesLocation = tbSavegamesLoction.Text;
+      Properties.Settings.Default.Save();
       this.Hide();
     }
 
