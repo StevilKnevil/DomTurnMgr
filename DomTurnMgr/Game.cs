@@ -74,6 +74,23 @@ namespace DomTurnMgr
       UpdateTurns();
     }
 
+    public bool IsValid(out string errMsg)
+    {
+      if (Name == "")
+      {
+        errMsg = "Please specify the game name";
+        return false;
+      }
+      /*
+       * TODO:
+       * Check that the game exists in save game folder
+       * Check that game exists on llama server
+       * Check that only one set of trn/2h files are present, i.e not multiple races
+       */
+      errMsg = "";
+      return true;
+    }
+
     public string Name { get; private set; }
 
     private List<Turn> turns = new List<Turn>();

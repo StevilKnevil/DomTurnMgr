@@ -60,7 +60,11 @@ namespace DomTurnMgr
         }
       }
 
-      SetGame(new Game(Properties.Settings.Default.GameName));
+      if (currentGame == null)
+      {
+        // Game has not yet been setup so do so now.
+        SetGame(new Game(Properties.Settings.Default.GameName));
+      }
     }
 
     private void onPropertyChanged(object sender, EventArgs e)
@@ -76,16 +80,13 @@ namespace DomTurnMgr
 
     private void UpdateList()
     {
-      if (Properties.Settings.Default.GameName == "")
+      string errMsg;
+      if (!currentGame.IsValid(out errMsg))
       {
-        MessageBox.Show("Please specify the game name");
+        MessageBox.Show(errMsg);
         PreferencesForm pf = new PreferencesForm();
         pf.Show();
-        if (Properties.Settings.Default.GameName == "")
-        {
-          // if game name is still invalid - quit
-          return;
-        }
+        return;
       }
 
       listView1.Items.Clear();
