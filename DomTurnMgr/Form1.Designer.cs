@@ -43,14 +43,19 @@
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.updateTimer = new System.Windows.Forms.Timer(this.components);
       this.label1 = new System.Windows.Forms.Label();
       this.lblTurnNumber = new System.Windows.Forms.Label();
+      this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+      this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+      this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
+      this.contextMenuStrip1.SuspendLayout();
       this.SuspendLayout();
       // 
       // menuStrip1
@@ -183,12 +188,6 @@
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
       // 
-      // fadingStatusText1
-      // 
-      this.fadingStatusText1.Duration = 3F;
-      this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
-      // 
       // toolStripStatusLabel2
       // 
       this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
@@ -225,6 +224,43 @@
       this.lblTurnNumber.Text = "64";
       this.lblTurnNumber.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
+      // notifyIcon1
+      // 
+      this.notifyIcon1.BalloonTipTitle = "Dominions Turn Manager";
+      this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
+      this.notifyIcon1.Text = "Dominions Turn Manager";
+      this.notifyIcon1.Visible = true;
+      this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
+      this.notifyIcon1.DoubleClick += new System.EventHandler(this.onRestoreForm);
+      // 
+      // contextMenuStrip1
+      // 
+      this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showToolStripMenuItem,
+            this.exitToolStripMenuItem});
+      this.contextMenuStrip1.Name = "contextMenuStrip1";
+      this.contextMenuStrip1.Size = new System.Drawing.Size(104, 48);
+      // 
+      // showToolStripMenuItem
+      // 
+      this.showToolStripMenuItem.Name = "showToolStripMenuItem";
+      this.showToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+      this.showToolStripMenuItem.Text = "Show";
+      this.showToolStripMenuItem.Click += new System.EventHandler(this.onRestoreForm);
+      // 
+      // exitToolStripMenuItem
+      // 
+      this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+      this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+      this.exitToolStripMenuItem.Text = "Exit";
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+      // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Duration = 3F;
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 0);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -242,10 +278,12 @@
       this.MainMenuStrip = this.menuStrip1;
       this.Name = "Form1";
       this.Text = "Dominions Turn Manager";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
       this.menuStrip1.ResumeLayout(false);
       this.menuStrip1.PerformLayout();
       this.statusStrip1.ResumeLayout(false);
       this.statusStrip1.PerformLayout();
+      this.contextMenuStrip1.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -271,6 +309,10 @@
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label lblTurnNumber;
+    private System.Windows.Forms.NotifyIcon notifyIcon1;
+    private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+    private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
   }
 }
 

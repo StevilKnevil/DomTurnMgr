@@ -131,13 +131,16 @@ namespace DomTurnMgr
         timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
         // TODO: Move to update icon function
         this.Icon = Properties.Resources.icon_green;
+        this.notifyIcon1.Icon = Properties.Resources.icon_green;
         if (result-DateTime.Now < new TimeSpan(12,0,0))
         {
           this.Icon = Properties.Resources.icon_yellow;
+          this.notifyIcon1.Icon = Properties.Resources.icon_yellow;
         }
         if (result - DateTime.Now < new TimeSpan(6, 0, 0))
         {
           this.Icon = Properties.Resources.icon_red;
+          this.notifyIcon1.Icon = Properties.Resources.icon_red;
         }
         // TODO: If turn submitted (check with server text) then icon can be grey
       }
@@ -314,6 +317,36 @@ namespace DomTurnMgr
       if (ApplicationDeployment.IsNetworkDeployed)
         myVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion;
       MessageBox.Show(String.Format("Version {0}", myVersion.ToString()), "About");
+    }
+
+    private void onRestoreForm(object sender, EventArgs e)
+    {
+      this.WindowState = FormWindowState.Normal;
+      this.Show();
+      this.Activate();
+    }
+
+
+    private bool doClose = false;
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      if (!doClose)
+      {
+        // minimise to tray
+        e.Cancel = true;
+        this.Hide();
+      }
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      doClose = true;
+      this.Close();
+    }
+
+    private void notifyIcon1_Click(object sender, EventArgs e)
+    {
+      contextMenuStrip1.Show(Cursor.Position);
     }
   }
 }

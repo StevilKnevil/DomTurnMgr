@@ -56,8 +56,7 @@
     <ManifestCertificateThumbprint>685B5DA3D01EE29072A529E6723495CEE97ECE5A</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>DomTurnMgr_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
