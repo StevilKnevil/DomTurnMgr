@@ -139,11 +139,15 @@ namespace DomTurnMgr
         {
           this.Icon = Properties.Resources.icon_red;
         }
-        // TODO: If turn submitted (check with server text) then iceon can be grey
+        // TODO: If turn submitted (check with server text) then icon can be grey
       }
     }
 
-    private void btnStartDominions_Click(object sender, EventArgs e)
+    private void UpdateCurrentTurnLabel()
+    {
+      lblTurnNumber.Text = currentGame.CurrentTurnNumber.ToString();
+    }
+      private void btnStartDominions_Click(object sender, EventArgs e)
     {
       if (!File.Exists(Properties.Settings.Default.DominionsExecutable))
       {
@@ -299,6 +303,7 @@ namespace DomTurnMgr
       Cursor.Current = Cursors.Default;
       UpdateList();
       UpdateTimeRemaining();
+      UpdateCurrentTurnLabel();
       updateTimer.Start();
     }
 

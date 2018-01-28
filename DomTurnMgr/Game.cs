@@ -177,6 +177,8 @@ namespace DomTurnMgr
 
     }
 
+    public int CurrentTurnNumber{ get; private set; }
+
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime {
@@ -216,30 +218,51 @@ namespace DomTurnMgr
       }
 
       // Find the remaining time in the string
-      string pattern = @"Next turn due: (.*)\n";
-      Regex re = new Regex(pattern);
-      MatchCollection matches = re.Matches(data);
-      if (matches.Count == 1)
       {
-        if (matches[0].Captures.Count == 1)
+        string pattern = @"Next turn due: (.*)\n";
+        Regex re = new Regex(pattern);
+        MatchCollection matches = re.Matches(data);
+        if (matches.Count == 1)
         {
-          if (matches[0].Groups.Count == 2)
+          if (matches[0].Captures.Count == 1)
           {
-            string s = matches[0].Groups[1].Value;
-            // trim the trainling 'st' 'nd' 'rd' 'th' from the string
-            s = s.Remove(s.Length - 2);
-            IsValidHostingTime = false;
-            if (DateTime.TryParseExact(s,
-              "HH:mm GMT on dddd MMMM d",
-              new System.Globalization.CultureInfo("en-US"),
-              System.Globalization.DateTimeStyles.None,
-              out hostingTime))
+            if (matches[0].Groups.Count == 2)
             {
-              IsValidHostingTime = true;
+              string s = matches[0].Groups[1].Value;
+              // trim the trainling 'st' 'nd' 'rd' 'th' from the string
+              s = s.Remove(s.Length - 2);
+              IsValidHostingTime = false;
+              if (DateTime.TryParseExact(s,
+                "HH:mm GMT on dddd MMMM d",
+                new System.Globalization.CultureInfo("en-US"),
+                System.Globalization.DateTimeStyles.None,
+                out hostingTime))
+              {
+                IsValidHostingTime = true;
+              }
             }
           }
         }
       }
+
+      // Find the current turn number
+      {
+        string pattern = @"Turn number (\d*)\n";
+        Regex re = new Regex(pattern);
+        MatchCollection matches = re.Matches(data);
+        if (matches.Count == 1)
+        {
+          if (matches[0].Captures.Count == 1)
+          {
+            if (matches[0].Groups.Count == 2)
+            {
+              string s = matches[0].Groups[1].Value;
+              CurrentTurnNumber = int.Parse(s);
+            }
+          }
+        }
+      }
+
     }
   }
 }

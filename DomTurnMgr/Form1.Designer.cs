@@ -31,8 +31,10 @@
       this.components = new System.ComponentModel.Container();
       System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
       System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
@@ -41,13 +43,12 @@
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.updateTimer = new System.Windows.Forms.Timer(this.components);
-      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
-      this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+      this.label1 = new System.Windows.Forms.Label();
+      this.lblTurnNumber = new System.Windows.Forms.Label();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.SuspendLayout();
@@ -66,6 +67,36 @@
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
       // 
+      // toolStripMenuItem1
+      // 
+      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripMenuItem1.Image = global::DomTurnMgr.Properties.Resources.refresh;
+      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
+      this.toolStripMenuItem1.Text = "Refresh";
+      this.toolStripMenuItem1.ToolTipText = "Refresh";
+      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
+      // 
+      // editToolStripMenuItem
+      // 
+      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
+      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.editToolStripMenuItem.Text = "Preferences";
+      this.editToolStripMenuItem.ToolTipText = "Settings";
+      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
+      // 
+      // dom5InspectorToolStripMenuItem
+      // 
+      this.dom5InspectorToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.dom5InspectorToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.magnifier;
+      this.dom5InspectorToolStripMenuItem.Name = "dom5InspectorToolStripMenuItem";
+      this.dom5InspectorToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
+      this.dom5InspectorToolStripMenuItem.Text = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.ToolTipText = "Dom 5 Inspector";
+      this.dom5InspectorToolStripMenuItem.Click += new System.EventHandler(this.dom5InspectorToolStripMenuItem_Click);
+      // 
       // aboutToolStripMenuItem
       // 
       this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
@@ -76,7 +107,7 @@
       // button2
       // 
       this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button2.Location = new System.Drawing.Point(627, 83);
+      this.button2.Location = new System.Drawing.Point(627, 131);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(75, 50);
       this.button2.TabIndex = 1;
@@ -87,7 +118,7 @@
       // button3
       // 
       this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button3.Location = new System.Drawing.Point(627, 139);
+      this.button3.Location = new System.Drawing.Point(627, 187);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(75, 50);
       this.button3.TabIndex = 2;
@@ -98,7 +129,7 @@
       // button1
       // 
       this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button1.Location = new System.Drawing.Point(627, 27);
+      this.button1.Location = new System.Drawing.Point(627, 75);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(75, 50);
       this.button1.TabIndex = 0;
@@ -152,6 +183,12 @@
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
       // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Duration = 3F;
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
+      // 
       // toolStripStatusLabel2
       // 
       this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
@@ -169,54 +206,39 @@
       this.updateTimer.Interval = 60000;
       this.updateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
       // 
-      // fadingStatusText1
+      // label1
       // 
-      this.fadingStatusText1.Duration = 3F;
-      this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
+      this.label1.Location = new System.Drawing.Point(627, 27);
+      this.label1.Name = "label1";
+      this.label1.Size = new System.Drawing.Size(75, 18);
+      this.label1.TabIndex = 6;
+      this.label1.Text = "Current turn:";
+      this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
-      // toolStripMenuItem1
+      // lblTurnNumber
       // 
-      this.toolStripMenuItem1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.toolStripMenuItem1.Image = global::DomTurnMgr.Properties.Resources.refresh;
-      this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-      this.toolStripMenuItem1.Size = new System.Drawing.Size(28, 20);
-      this.toolStripMenuItem1.Text = "Refresh";
-      this.toolStripMenuItem1.ToolTipText = "Refresh";
-      this.toolStripMenuItem1.Click += new System.EventHandler(this.refresh_Click);
-      // 
-      // editToolStripMenuItem
-      // 
-      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
-      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-      this.editToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
-      this.editToolStripMenuItem.Text = "Preferences";
-      this.editToolStripMenuItem.ToolTipText = "Settings";
-      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
-      // 
-      // dom5InspectorToolStripMenuItem
-      // 
-      this.dom5InspectorToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.dom5InspectorToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.magnifier;
-      this.dom5InspectorToolStripMenuItem.Name = "dom5InspectorToolStripMenuItem";
-      this.dom5InspectorToolStripMenuItem.Size = new System.Drawing.Size(28, 20);
-      this.dom5InspectorToolStripMenuItem.Text = "Dom 5 Inspector";
-      this.dom5InspectorToolStripMenuItem.ToolTipText = "Dom 5 Inspector";
-      this.dom5InspectorToolStripMenuItem.Click += new System.EventHandler(this.dom5InspectorToolStripMenuItem_Click);
+      this.lblTurnNumber.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.lblTurnNumber.Location = new System.Drawing.Point(627, 45);
+      this.lblTurnNumber.Name = "lblTurnNumber";
+      this.lblTurnNumber.Size = new System.Drawing.Size(75, 27);
+      this.lblTurnNumber.TabIndex = 7;
+      this.lblTurnNumber.Text = "64";
+      this.lblTurnNumber.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(714, 452);
+      this.Controls.Add(this.lblTurnNumber);
+      this.Controls.Add(this.label1);
       this.Controls.Add(this.statusStrip1);
       this.Controls.Add(this.listView1);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.button3);
       this.Controls.Add(this.button2);
       this.Controls.Add(this.menuStrip1);
-      this.Icon = ((System.Drawing.Icon)(Properties.Resources.icon_grey));
+      this.Icon = global::DomTurnMgr.Properties.Resources.icon_grey;
       this.MainMenuStrip = this.menuStrip1;
       this.Name = "Form1";
       this.Text = "Dominions Turn Manager";
@@ -247,6 +269,8 @@
     private System.Windows.Forms.ToolStripStatusLabel timeRemainingLbl;
     private System.Windows.Forms.Timer updateTimer;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
+    private System.Windows.Forms.Label label1;
+    private System.Windows.Forms.Label lblTurnNumber;
   }
 }
 
