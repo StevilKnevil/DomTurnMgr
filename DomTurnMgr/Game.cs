@@ -247,7 +247,7 @@ namespace DomTurnMgr
 
       // Find the current turn number
       {
-        string pattern = @"Turn number (\d*)\n";
+        string pattern = @"Turn number (\d*)";
         Regex re = new Regex(pattern);
         MatchCollection matches = re.Matches(data);
         if (matches.Count == 1)
