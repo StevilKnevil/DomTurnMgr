@@ -29,8 +29,8 @@
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
-      System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
+      System.Windows.Forms.ListViewGroup listViewGroup3 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
+      System.Windows.Forms.ListViewGroup listViewGroup4 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,6 +43,7 @@
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.updateTimer = new System.Windows.Forms.Timer(this.components);
@@ -52,7 +53,6 @@
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.contextMenuStrip1.SuspendLayout();
@@ -151,13 +151,13 @@
             this.columnHeader1,
             this.columnHeader2});
       this.listView1.FullRowSelect = true;
-      listViewGroup1.Header = "Pending Turns";
-      listViewGroup1.Name = "pendingGroup";
-      listViewGroup2.Header = "Completed Turns";
-      listViewGroup2.Name = "completeGroup";
+      listViewGroup3.Header = "Pending Turns";
+      listViewGroup3.Name = "pendingGroup";
+      listViewGroup4.Header = "Completed Turns";
+      listViewGroup4.Name = "completeGroup";
       this.listView1.Groups.AddRange(new System.Windows.Forms.ListViewGroup[] {
-            listViewGroup1,
-            listViewGroup2});
+            listViewGroup3,
+            listViewGroup4});
       this.listView1.HideSelection = false;
       this.listView1.Location = new System.Drawing.Point(12, 27);
       this.listView1.MultiSelect = false;
@@ -187,6 +187,12 @@
       this.statusStrip1.Size = new System.Drawing.Size(714, 22);
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
+      // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Duration = 3F;
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
       // 
       // toolStripStatusLabel2
       // 
@@ -230,7 +236,6 @@
       this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
       this.notifyIcon1.Text = "Dominions Turn Manager";
       this.notifyIcon1.Visible = true;
-      this.notifyIcon1.Click += onRestoreForm;
       // 
       // contextMenuStrip1
       // 
@@ -254,12 +259,6 @@
       this.exitToolStripMenuItem.Text = "Exit";
       this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
       // 
-      // fadingStatusText1
-      // 
-      this.fadingStatusText1.Duration = 3F;
-      this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 0);
-      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -278,6 +277,7 @@
       this.Name = "Form1";
       this.Text = "Dominions Turn Manager";
       this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+      this.VisibleChanged += new System.EventHandler(this.Form1_VisibleChanged);
       this.menuStrip1.ResumeLayout(false);
       this.menuStrip1.PerformLayout();
       this.statusStrip1.ResumeLayout(false);

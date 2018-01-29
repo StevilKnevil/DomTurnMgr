@@ -307,6 +307,7 @@ namespace DomTurnMgr
 
     private void updateTimer_Tick(object sender, EventArgs e)
     {
+      // use system.timers.timer to update the notification icon & for update check. The timer won't work unless the form is visible
       RefreshUI();
     }
 
@@ -360,6 +361,15 @@ namespace DomTurnMgr
     {
       doClose = true;
       this.Close();
+    }
+
+    private void Form1_VisibleChanged(object sender, EventArgs e)
+    {
+      // Form has been hidden so perform an app update.
+      if (this.Visible == false && Program.isAppUpdateAvailable())
+      {
+        Program.silentInstallAppUpdate();
+      }
     }
   }
 }

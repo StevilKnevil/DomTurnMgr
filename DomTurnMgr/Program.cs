@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Microsoft.Win32;
+using System.Deployment.Application;
 
 namespace DomTurnMgr
 {
@@ -58,14 +59,19 @@ namespace DomTurnMgr
       }
     }
 
+    /*
     static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
     {
       // TODO: improve logging and reporting
       MessageBox.Show(e.ExceptionObject.ToString());
       Environment.Exit(-1);
     }
+    */
 
-    static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
+    // This mutex will be used to see if this app is already running.
+    private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
+    private static Form1 theForm;
+    private static System.Timers.Timer updateTimer;
     [STAThreadAttribute]
     static void Main(string[] args)
     {
@@ -75,9 +81,16 @@ namespace DomTurnMgr
       {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        //Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-        AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-        Application.Run(new Form1());
+        //AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+        // create a 1 hour timer to check for updates
+        updateTimer = new System.Timers.Timer(1 * 60 * 60 * 1000);
+        updateTimer.Elapsed += updateTimer_Elapsed;
+        updateTimer.Start();
+
+        // create a timer to check for new content.
+
+        theForm = new Form1();
+        Application.Run(theForm);
         mutex.ReleaseMutex();
       }
       else
@@ -92,7 +105,17 @@ namespace DomTurnMgr
       }
     }
 
-    // Caller must close the key
+    private static void updateTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      if (isAppUpdateAvailable() && ! theForm.Visible)
+      {
+        // Only install the update if the user is not using the app
+        silentInstallAppUpdate();
+      }
+      updateTimer.Start();
+    }
+
+    // NOTE: Caller must close the key
     private static RegistryKey GetClientSecretRegKey()
     {
       using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
@@ -211,6 +234,118 @@ namespace DomTurnMgr
         return;
       }
     }
+
+    #region Auto Update
+    private static UpdateCheckInfo getAppInfo(ApplicationDeployment ad)
+    {
+      UpdateCheckInfo info = null;
+      if (ApplicationDeployment.IsNetworkDeployed)
+      {
+        try
+        {
+          info = ad.CheckForDetailedUpdate();
+        }
+        catch (DeploymentDownloadException /*dde*/)
+        {
+          // Fail silently if no network, we can try again later
+          //MessageBox.Show("The new version of the application cannot be downloaded at this time. \n\nPlease check your network connection, or try again later. Error: " + dde.Message);
+        }
+        catch (InvalidDeploymentException ide)
+        {
+          MessageBox.Show(
+            "Cannot check for a new version of the application. The ClickOnce deployment is corrupt. Please redeploy the application and try again. Error: " + ide.Message, 
+            Application.ProductName);
+        }
+        catch (InvalidOperationException ioe)
+        {
+          MessageBox.Show(
+            "This application cannot be updated. It is likely not a ClickOnce application. Error: " + ioe.Message, 
+            Application.ProductName);
+        }
+      }
+      return info;
+    }
+
+
+    internal static bool isAppUpdateAvailable()
+    {
+      bool result = false;
+      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+      if (info != null)
+      {
+        result = info.UpdateAvailable;
+      }
+      return result;
+    }
+
+    internal static void silentInstallAppUpdate()
+    {
+      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+
+      if (info != null)
+      {
+        if (info.UpdateAvailable)
+        {
+          try
+          {
+            ApplicationDeployment.CurrentDeployment.Update();
+            // TODO Store current window state so that it can be returned correctly after restart.
+            Application.Restart();
+          }
+          catch (DeploymentDownloadException)
+          {
+            return;
+          }
+        }
+      }
+    }
+
+    private static void installAppUpdate()
+    {
+      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+
+      if (info != null)
+      {
+        if (info.UpdateAvailable)
+        {
+          bool doUpdate = true;
+
+          if (!info.IsUpdateRequired)
+          {
+            DialogResult dr = MessageBox.Show("An update is available. Would you like to update the application now?", "Update Available", MessageBoxButtons.OKCancel);
+            if (!(DialogResult.OK == dr))
+            {
+              doUpdate = false;
+            }
+          }
+          else
+          {
+            // Display a message that the app MUST reboot. Display the minimum required version.
+            MessageBox.Show("This application has detected a mandatory update from your current " +
+                "version to version " + info.MinimumRequiredVersion.ToString() +
+                ". The application will now install the update and restart.",
+                "Update Available", MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+          }
+
+          if (doUpdate)
+          {
+            try
+            {
+              ApplicationDeployment.CurrentDeployment.Update();
+              MessageBox.Show("The application has been upgraded, and will now restart.");
+              Application.Restart();
+            }
+            catch (DeploymentDownloadException dde)
+            {
+              MessageBox.Show("Cannot install the latest version of the application. \n\nPlease check your network connection, or try again later. Error: " + dde);
+              return;
+            }
+          }
+        }
+      }
+    }
+    #endregion Auto Update
 
   }
 }
