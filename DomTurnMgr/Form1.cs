@@ -161,7 +161,8 @@ namespace DomTurnMgr
     {
       lblTurnNumber.Text = currentGame.CurrentTurnNumber.ToString();
     }
-      private void btnStartDominions_Click(object sender, EventArgs e)
+
+    private void btnStartDominions_Click(object sender, EventArgs e)
     {
       if (!File.Exists(Properties.Settings.Default.DominionsExecutable))
       {
