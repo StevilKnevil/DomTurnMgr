@@ -159,6 +159,7 @@ namespace DomTurnMgr
 
     private void UpdateCurrentTurnLabel()
     {
+      //notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
       lblTurnNumber.Text = currentGame.CurrentTurnNumber.ToString();
     }
 
@@ -349,6 +350,7 @@ namespace DomTurnMgr
     private bool doClose = false;
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
+      // if we have been actually asked to exit then do so, otherwise just hide the form.
       if (!doClose)
       {
         // minimise to tray
