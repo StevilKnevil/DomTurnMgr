@@ -109,72 +109,78 @@ namespace DomTurnMgr
 
     private void updateTurns()
     {
-      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      string inboundMessageSearchString = "";
-      string outboundMessageSearchString = "";
+      try
       {
-        string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
-        outboundMessageSearchString = string.Format(
-          searchStringFmt,
-          Properties.Settings.Default.ServerAddress,
-          playerAddress,
-          Properties.Settings.Default.GameName);
-      }
-
-      {
-        string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-        inboundMessageSearchString = string.Format(
-          searchStringFmt,
-          Properties.Settings.Default.ServerAddress,
-          playerAddress,
-          Properties.Settings.Default.GameName);
-      }
-
-      // TODO: Async
-      var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
-      var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
-
-      Dictionary<int, Turn> t = new Dictionary<int, Turn>();
-
-      // Fill in the sent message IDs
-      foreach (var msgID in inboundTurns)
-      {
-        Turn turn = new Turn();
-        turn.inboundMsgID = msgID;
-
-        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        int turnIndex = getTurnNumberFromSubject(subject);
-        if (turnIndex > 0)
+        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+        string inboundMessageSearchString = "";
+        string outboundMessageSearchString = "";
         {
+          string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
+          outboundMessageSearchString = string.Format(
+            searchStringFmt,
+            Properties.Settings.Default.ServerAddress,
+            playerAddress,
+            Properties.Settings.Default.GameName);
+        }
+
+        {
+          string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
+          inboundMessageSearchString = string.Format(
+            searchStringFmt,
+            Properties.Settings.Default.ServerAddress,
+            playerAddress,
+            Properties.Settings.Default.GameName);
+        }
+
+        // TODO: Async
+        var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
+        var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
+
+        Dictionary<int, Turn> t = new Dictionary<int, Turn>();
+
+        // Fill in the sent message IDs
+        foreach (var msgID in inboundTurns)
+        {
+          Turn turn = new Turn();
+          turn.inboundMsgID = msgID;
+
+          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+          int turnIndex = getTurnNumberFromSubject(subject);
+          if (turnIndex > 0)
+          {
+            if (t.ContainsKey(turnIndex))
+            {
+              // TODO: throw an exception
+              System.Windows.Forms.MessageBox.Show(
+                string.Format("Duplicate turn number found with following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
+                inboundMessageSearchString));
+              break;
+            }
+            t[turnIndex] = turn;
+          }
+        }
+
+        foreach (var msgID in outboundTurns)
+        {
+          // now work out which turn this applies to
+          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+          int turnIndex = getTurnNumberFromSubject(subject);
+
           if (t.ContainsKey(turnIndex))
           {
-            // TODO: throw an exception
-            System.Windows.Forms.MessageBox.Show(
-              string.Format("Duplicate turn number found with following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
-              inboundMessageSearchString));
-            break;
+            t[turnIndex].outboundMsgID = msgID;
           }
-          t[turnIndex] = turn;
         }
-      }
 
-      foreach (var msgID in outboundTurns)
+        // generate a list of turns sorted correctly.
+        turns = new List<Turn>();
+        turns.AddRange(t.Values);
+        turns.Sort(new Turn.DateComparer());
+      }
+      catch (Exception)
       {
-        // now work out which turn this applies to
-        string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        int turnIndex = getTurnNumberFromSubject(subject);
-
-        if (t.ContainsKey(turnIndex))
-        {
-          t[turnIndex].outboundMsgID = msgID;
-        }
+        // Likely No internet connection;
       }
-
-      // generate a list of turns sorted correctly.
-      turns = new List<Turn>();
-      turns.AddRange(t.Values);
-      turns.Sort(new Turn.DateComparer());
-
     }
 
     public int CurrentTurnNumber{ get; private set; }
@@ -191,30 +197,37 @@ namespace DomTurnMgr
 
     private void updateHostingTime()
     {
-      string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
-
-      HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-      HttpWebResponse response = (HttpWebResponse)request.GetResponse();
       string data = "";
-
-      if (response.StatusCode == HttpStatusCode.OK)
+      try
       {
-        Stream receiveStream = response.GetResponseStream();
-        StreamReader readStream = null;
+        string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
 
-        if (response.CharacterSet == null)
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+        if (response.StatusCode == HttpStatusCode.OK)
         {
-          readStream = new StreamReader(receiveStream);
-        }
-        else
-        {
-          readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-        }
+          Stream receiveStream = response.GetResponseStream();
+          StreamReader readStream = null;
 
-        data = readStream.ReadToEnd();
+          if (response.CharacterSet == null)
+          {
+            readStream = new StreamReader(receiveStream);
+          }
+          else
+          {
+            readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+          }
 
-        response.Close();
-        readStream.Close();
+          data = readStream.ReadToEnd();
+
+          response.Close();
+          readStream.Close();
+        }
+      }
+      catch(Exception)
+      {
+        // Likely no internet connection
       }
 
       // Find the remaining time in the string
