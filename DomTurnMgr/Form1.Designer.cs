@@ -44,6 +44,7 @@
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.updateTimer = new System.Windows.Forms.Timer(this.components);
@@ -53,7 +54,6 @@
       this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
       this.showToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.contextMenuStrip1.SuspendLayout();
@@ -189,6 +189,12 @@
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
       // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Duration = 3F;
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
+      // 
       // toolStripStatusLabel2
       // 
       this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
@@ -208,6 +214,7 @@
       // 
       // label1
       // 
+      this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.label1.Location = new System.Drawing.Point(627, 27);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(75, 18);
@@ -217,6 +224,7 @@
       // 
       // lblTurnNumber
       // 
+      this.lblTurnNumber.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.lblTurnNumber.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
       this.lblTurnNumber.Location = new System.Drawing.Point(627, 45);
       this.lblTurnNumber.Name = "lblTurnNumber";
@@ -255,12 +263,6 @@
       this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
       this.exitToolStripMenuItem.Text = "Exit";
       this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-      // 
-      // fadingStatusText1
-      // 
-      this.fadingStatusText1.Duration = 3F;
-      this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 0);
       // 
       // Form1
       // 
