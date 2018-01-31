@@ -59,14 +59,7 @@ namespace DomTurnMgr
       }
     }
 
-    /*
-    static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-      // TODO: improve logging and reporting
-      MessageBox.Show(e.ExceptionObject.ToString());
-      Environment.Exit(-1);
-    }
-    */
+    private static SettingsManager settingsManager = new SettingsManager();
 
     // This mutex will be used to see if this app is already running.
     private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
@@ -115,95 +108,13 @@ namespace DomTurnMgr
       updateTimer.Start();
     }
 
-    // NOTE: Caller must close the key
-    private static RegistryKey GetClientSecretRegKey()
-    {
-      using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
-      {
-        if (key != null)
-        {
-          return key.CreateSubKey("Dominions Turn Manager");
-        }
-      }
-      return null;
-    }
-
     private static void createGmailService()
     {
-      UserCredential credential;
-      string secretName = @"client_secret.json";
-      if (!File.Exists(secretName))
-      {
-        // prompt the user for it and add it
-        OpenFileDialog f = new OpenFileDialog();
-
-        // 
-        // openFileDialog1
-        // 
-        f.DefaultExt = "json";
-        f.Filter = "JSON Files|*.json";
-        f.FileName = "client_secret.json";
-        f.Title = "Please navigate to 'client_secret.json'";
-        f.CheckFileExists = true;
-        f.Multiselect = false;
-        // Use the previously stored location, if any
-        using (RegistryKey key = GetClientSecretRegKey())
-        {
-          if (key != null)
-          {
-            f.FileName = key.GetValue("secret_location") as string;
-          }
-        }
-        
-        var result = DialogResult.OK;
-        while (result == DialogResult.OK)
-        {
-          result = f.ShowDialog();
-          if (result == DialogResult.OK)
-          {
-            if (Path.GetFileName(f.FileName) != secretName)
-            {
-              MessageBox.Show("Expected filename 'client_secret.json', got: " + Path.GetFileName(f.FileName), "Error");
-            }
-            else
-            {
-              if (!File.Exists(f.FileName))
-              {
-                MessageBox.Show(f.FileName + "doesn't exist", "Error");
-              }
-              else
-              {
-                // copy client secret to correct location.
-                File.Copy(f.FileName, secretName);
-
-                // Store the location for next time
-                using (RegistryKey key = GetClientSecretRegKey())
-                {
-                  if (key != null)
-                  {
-                    key.SetValue("secret_location", f.FileName);
-                  }
-                }
-                break;
-              }
-            }
-          }
-        }
-
-        if (result != DialogResult.OK)
-        {
-          MessageBox.Show("Unable to find client_secret.json", "Error");
-          // Early out
-          return;
-        }
-
-      }
-
+      UserCredential credential; 
       try
       {
-        System.Diagnostics.Debug.Assert(File.Exists(secretName));
         using (var stream =
-            new FileStream(secretName, FileMode.Open, FileAccess.Read))
+            new MemoryStream(Encoding.UTF8.GetBytes(settingsManager.ClientSecret)))
         {
           string credPath = System.Environment.GetFolderPath(
               System.Environment.SpecialFolder.Personal);

@@ -94,5 +94,89 @@ namespace DomTurnMgr
         saveGameDirectory = value;
       }
     }
+
+    private string clientSecret;
+    public string ClientSecret
+    {
+      get
+      {
+        string result;
+        const string CLIENT_SECRET_KEYNAME = "ClientSecret";
+        RegistryKey regKey;
+        // See if we have the key in the registry
+        using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
+        {
+          regKey = key.CreateSubKey("Dominions Turn Manager");
+        }
+
+        result = regKey.GetValue(CLIENT_SECRET_KEYNAME) as string;
+
+        if (result == null)
+        {
+          string secretName = @"client_secret.json";
+          // prompt the user for it and add it
+          OpenFileDialog f = new OpenFileDialog();
+          f.DefaultExt = "json";
+          f.Filter = "JSON Files|*.json";
+          f.FileName = "client_secret.json";
+          f.Title = "Please navigate to 'client_secret.json'";
+          f.CheckFileExists = true;
+          f.Multiselect = false;
+
+          // Use the previously stored location, if any
+          /*
+          using (RegistryKey key = GetClientSecretRegKey())
+          {
+            if (key != null)
+            {
+              f.FileName = key.GetValue("secret_location") as string;
+            }
+          }
+          */
+
+          var dlgResult = DialogResult.OK;
+          while (dlgResult == DialogResult.OK)
+          {
+            dlgResult = f.ShowDialog();
+            if (dlgResult == DialogResult.OK)
+            {
+              if (Path.GetFileName(f.FileName) != secretName)
+              {
+                MessageBox.Show("Expected filename 'client_secret.json', got: " + Path.GetFileName(f.FileName), "Error");
+              }
+              else
+              {
+                if (!File.Exists(f.FileName))
+                {
+                  MessageBox.Show(f.FileName + "doesn't exist", "Error");
+                }
+                else
+                {
+                  result = File.ReadAllText(f.FileName);
+
+                  // write the string to the reg key
+                  regKey.SetValue(CLIENT_SECRET_KEYNAME, result);
+
+                  break;
+                }
+              }
+            }
+          }
+
+          if (dlgResult != DialogResult.OK)
+          {
+            MessageBox.Show("Unable to find client_secret.json", "Error");
+          }
+
+        }
+        regKey.Dispose();
+        return result;
+      }
+
+      set
+      {
+        clientSecret = value;
+      }
+    }
   }
 }
