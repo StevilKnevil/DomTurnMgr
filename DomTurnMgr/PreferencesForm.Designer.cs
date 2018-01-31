@@ -36,8 +36,6 @@
       this.tbDominionsLocation = new System.Windows.Forms.TextBox();
       this.label3 = new System.Windows.Forms.Label();
       this.btnOK = new System.Windows.Forms.Button();
-      this.button2 = new System.Windows.Forms.Button();
-      this.button3 = new System.Windows.Forms.Button();
       this.tbSavegamesLoction = new System.Windows.Forms.TextBox();
       this.label4 = new System.Windows.Forms.Label();
       this.SuspendLayout();
@@ -87,9 +85,10 @@
       // 
       this.tbDominionsLocation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.tbDominionsLocation.Enabled = false;
       this.tbDominionsLocation.Location = new System.Drawing.Point(126, 65);
       this.tbDominionsLocation.Name = "tbDominionsLocation";
-      this.tbDominionsLocation.Size = new System.Drawing.Size(262, 20);
+      this.tbDominionsLocation.Size = new System.Drawing.Size(282, 20);
       this.tbDominionsLocation.TabIndex = 5;
       // 
       // label3
@@ -112,37 +111,14 @@
       this.btnOK.UseVisualStyleBackColor = true;
       this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
       // 
-      // button2
-      // 
-      this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button2.BackColor = System.Drawing.SystemColors.Control;
-      this.button2.Location = new System.Drawing.Point(384, 65);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(23, 20);
-      this.button2.TabIndex = 7;
-      this.button2.Text = "...";
-      this.button2.UseVisualStyleBackColor = false;
-      this.button2.Click += new System.EventHandler(this.button2_Click);
-      // 
-      // button3
-      // 
-      this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button3.BackColor = System.Drawing.SystemColors.Control;
-      this.button3.Location = new System.Drawing.Point(384, 91);
-      this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(23, 20);
-      this.button3.TabIndex = 10;
-      this.button3.Text = "...";
-      this.button3.UseVisualStyleBackColor = false;
-      this.button3.Click += new System.EventHandler(this.button3_Click);
-      // 
       // tbSavegamesLoction
       // 
       this.tbSavegamesLoction.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+      this.tbSavegamesLoction.Enabled = false;
       this.tbSavegamesLoction.Location = new System.Drawing.Point(126, 91);
       this.tbSavegamesLoction.Name = "tbSavegamesLoction";
-      this.tbSavegamesLoction.Size = new System.Drawing.Size(262, 20);
+      this.tbSavegamesLoction.Size = new System.Drawing.Size(282, 20);
       this.tbSavegamesLoction.TabIndex = 9;
       // 
       // label4
@@ -160,10 +136,8 @@
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(420, 156);
-      this.Controls.Add(this.button3);
       this.Controls.Add(this.tbSavegamesLoction);
       this.Controls.Add(this.label4);
-      this.Controls.Add(this.button2);
       this.Controls.Add(this.btnOK);
       this.Controls.Add(this.tbDominionsLocation);
       this.Controls.Add(this.label3);
@@ -189,8 +163,6 @@
     private System.Windows.Forms.TextBox tbDominionsLocation;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Button btnOK;
-    private System.Windows.Forms.Button button2;
-    private System.Windows.Forms.Button button3;
     private System.Windows.Forms.TextBox tbSavegamesLoction;
     private System.Windows.Forms.Label label4;
   }

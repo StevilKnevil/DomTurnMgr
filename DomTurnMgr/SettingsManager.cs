@@ -11,6 +11,7 @@ namespace DomTurnMgr
 {
   class SettingsManager
   {
+    const string GAME_EXE_PATH_KEYNAME = "GameExePath";
     private string gameExePath;
     public string GameExePath
     {
@@ -18,35 +19,46 @@ namespace DomTurnMgr
       {
         if (!System.IO.File.Exists(gameExePath))
         {
-          OpenFileDialog dlg = new OpenFileDialog();
-
-          // Find the install dir for Dom5 from the registry.
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
           {
-            // Opening the registry key
-            RegistryKey rk = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
-            // Open a subKey as read-only
-            RegistryKey sk1 = rk.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 722060");
-            // If the RegistrySubKey doesn't exist -> (null)
-            if (sk1 != null)
-            {
-              try
-              {
-                // If the RegistryKey exists I get its value
-                // or null is returned.
-                dlg.InitialDirectory = (string)sk1.GetValue(@"InstallLocation");
-              }
-              catch (Exception e)
-              {
-                // AAAAAAAAAAARGH, an error!
-                MessageBox.Show(e.ToString(), "Reading registry " + @"InstallLocation");
-              }
-            }
+            gameExePath = regKey.GetValue(GAME_EXE_PATH_KEYNAME) as string;
           }
 
-          var result = dlg.ShowDialog();
-          if (result == DialogResult.OK)
+          if (!System.IO.File.Exists(gameExePath))
           {
-            GameExePath = dlg.FileName;
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = "exe";
+            dlg.Filter = "Executable Files|*.exe";
+
+            // Find the install dir for Dom5 from the registry.
+            {
+              // Opening the registry key
+              RegistryKey rk = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64);
+              // Open a subKey as read-only
+              RegistryKey sk1 = rk.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 722060");
+              // If the RegistrySubKey doesn't exist -> (null)
+              if (sk1 != null)
+              {
+                try
+                {
+                  // If the RegistryKey exists I get its value
+                  // or null is returned.
+                  dlg.InitialDirectory = (string)sk1.GetValue(@"InstallLocation");
+                }
+                catch (Exception e)
+                {
+                  // AAAAAAAAAAARGH, an error!
+                  MessageBox.Show(e.ToString(), "Reading registry " + @"InstallLocation");
+                }
+              }
+            }
+
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+              GameExePath = dlg.FileName;
+            }
           }
         }
         return gameExePath;
@@ -54,35 +66,51 @@ namespace DomTurnMgr
 
       set
       {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(GAME_EXE_PATH_KEYNAME, value);
+        }
+
         gameExePath = value;
       }
     }
 
+    const string SAVE_GAME_DIR_KEYNAME = "SaveGameDIR";
     private string saveGameDirectory;
     public string SaveGameDirectory
     {
       get
       {
-        if (!System.IO.Directory.Exists(saveGameDirectory))
+        if (!System.IO.File.Exists(saveGameDirectory))
         {
-          Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dialog = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
-          dialog.IsFolderPicker = true;
-          // TODO set initial dir based on dom4/dom5
-          dialog.InitialDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            @"\Dominions5\savedgames");
-          
-          var result = dialog.ShowDialog();
-          if (result == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
           {
-            string dirname = System.IO.Path.GetFileName(dialog.FileName);
-            if (System.IO.Path.GetFileName(dialog.FileName) != "savedgames")
+            saveGameDirectory = regKey.GetValue(SAVE_GAME_DIR_KEYNAME) as string;
+          }
+
+          if (!System.IO.File.Exists(saveGameDirectory))
+          {
+            Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
+            dlg.IsFolderPicker = true;
+            // TODO set initial dir based on dom4/dom5
+            dlg.InitialDirectory = Path.Combine(
+              Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+              @"\Dominions5\savedgames");
+
+            var result = dlg.ShowDialog();
+            if (result == Microsoft.WindowsAPICodePack.Dialogs.CommonFileDialogResult.Ok)
             {
-              MessageBox.Show("Expected the last directory to be 'savedgames', got: " + dirname);
-            }
-            else
-            {
-              SaveGameDirectory = dialog.FileName;
+              string dirname = System.IO.Path.GetFileName(dlg.FileName);
+              if (System.IO.Path.GetFileName(dlg.FileName) != "savedgames")
+              {
+                MessageBox.Show("Expected the last directory to be 'savedgames', got: " + dirname);
+              }
+              else
+              {
+                SaveGameDirectory = dlg.FileName;
+              }
             }
           }
         }
@@ -91,92 +119,100 @@ namespace DomTurnMgr
 
       private set
       {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(SAVE_GAME_DIR_KEYNAME, value);
+        }
+
         saveGameDirectory = value;
       }
     }
 
+    const string CLIENT_SECRET_KEYNAME = "ClientSecret";
     private string clientSecret;
     public string ClientSecret
     {
       get
       {
-        string result;
-        const string CLIENT_SECRET_KEYNAME = "ClientSecret";
-        RegistryKey regKey;
-        // See if we have the key in the registry
-        using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
+        if (clientSecret == null)
         {
-          regKey = key.CreateSubKey("Dominions Turn Manager");
-        }
-
-        result = regKey.GetValue(CLIENT_SECRET_KEYNAME) as string;
-
-        if (result == null)
-        {
-          string secretName = @"client_secret.json";
-          // prompt the user for it and add it
-          OpenFileDialog f = new OpenFileDialog();
-          f.DefaultExt = "json";
-          f.Filter = "JSON Files|*.json";
-          f.FileName = "client_secret.json";
-          f.Title = "Please navigate to 'client_secret.json'";
-          f.CheckFileExists = true;
-          f.Multiselect = false;
-
-          // Use the previously stored location, if any
-          /*
-          using (RegistryKey key = GetClientSecretRegKey())
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
           {
-            if (key != null)
-            {
-              f.FileName = key.GetValue("secret_location") as string;
-            }
+            clientSecret = regKey.GetValue(CLIENT_SECRET_KEYNAME) as string;
           }
-          */
 
-          var dlgResult = DialogResult.OK;
-          while (dlgResult == DialogResult.OK)
+          if (clientSecret == null)
           {
-            dlgResult = f.ShowDialog();
-            if (dlgResult == DialogResult.OK)
+            // Prompt to browse to file
+            string secretName = @"client_secret.json";
+            // prompt the user for it and add it
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.DefaultExt = "json";
+            dlg.Filter = "JSON Files|*.json";
+            dlg.FileName = "client_secret.json";
+            dlg.Title = "Please navigate to 'client_secret.json'";
+            dlg.CheckFileExists = true;
+            dlg.Multiselect = false;
+
+            var dlgResult = DialogResult.OK;
+            while (dlgResult == DialogResult.OK)
             {
-              if (Path.GetFileName(f.FileName) != secretName)
+              dlgResult = dlg.ShowDialog();
+              if (dlgResult == DialogResult.OK)
               {
-                MessageBox.Show("Expected filename 'client_secret.json', got: " + Path.GetFileName(f.FileName), "Error");
-              }
-              else
-              {
-                if (!File.Exists(f.FileName))
+                if (Path.GetFileName(dlg.FileName) != secretName)
                 {
-                  MessageBox.Show(f.FileName + "doesn't exist", "Error");
+                  MessageBox.Show("Expected filename 'client_secret.json', got: " + Path.GetFileName(dlg.FileName), "Error");
                 }
                 else
                 {
-                  result = File.ReadAllText(f.FileName);
+                  if (!File.Exists(dlg.FileName))
+                  {
+                    MessageBox.Show(dlg.FileName + "doesn't exist", "Error");
+                  }
+                  else
+                  {
+                    // Set client secret and write the value to the registry.
+                    ClientSecret = File.ReadAllText(dlg.FileName);
 
-                  // write the string to the reg key
-                  regKey.SetValue(CLIENT_SECRET_KEYNAME, result);
-
-                  break;
+                    break;
+                  }
                 }
               }
             }
-          }
 
-          if (dlgResult != DialogResult.OK)
-          {
-            MessageBox.Show("Unable to find client_secret.json", "Error");
+            if (dlgResult != DialogResult.OK)
+            {
+              MessageBox.Show("Unable to find client_secret.json", "Error");
+            }
           }
-
         }
-        regKey.Dispose();
-        return result;
+        return clientSecret;
       }
 
       set
       {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(CLIENT_SECRET_KEYNAME, value);
+        }
+
         clientSecret = value;
       }
+    }
+
+    private RegistryKey getRegKey()
+    {
+      RegistryKey regKey;
+      // See if we have the key in the registry
+      using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Software", true))
+      {
+        regKey = key.CreateSubKey("Dominions Turn Manager");
+      }
+      return regKey;
     }
   }
 }

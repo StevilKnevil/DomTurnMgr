@@ -59,7 +59,7 @@ namespace DomTurnMgr
       }
     }
 
-    private static SettingsManager settingsManager = new SettingsManager();
+    public static SettingsManager SettingsManager = new SettingsManager();
 
     // This mutex will be used to see if this app is already running.
     private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
@@ -81,7 +81,7 @@ namespace DomTurnMgr
         updateTimer.Start();
 
         // create a timer to check for new content.
-
+        isAppUpdateAvailable();
         theForm = new Form1();
         Application.Run(theForm);
         mutex.ReleaseMutex();
@@ -114,7 +114,7 @@ namespace DomTurnMgr
       try
       {
         using (var stream =
-            new MemoryStream(Encoding.UTF8.GetBytes(settingsManager.ClientSecret)))
+            new MemoryStream(Encoding.UTF8.GetBytes(SettingsManager.ClientSecret)))
         {
           string credPath = System.Environment.GetFolderPath(
               System.Environment.SpecialFolder.Personal);
@@ -147,33 +147,37 @@ namespace DomTurnMgr
     }
 
     #region Auto Update
-    private static UpdateCheckInfo getAppInfo(ApplicationDeployment ad)
+    private static UpdateCheckInfo getAppInfo()
     {
       UpdateCheckInfo info = null;
-      if (ApplicationDeployment.IsNetworkDeployed)
+      try
       {
-        try
+        if (ApplicationDeployment.IsNetworkDeployed)
         {
-          info = ad.CheckForDetailedUpdate();
-        }
-        catch (DeploymentDownloadException /*dde*/)
-        {
-          // Fail silently if no network, we can try again later
-          //MessageBox.Show("The new version of the application cannot be downloaded at this time. \n\nPlease check your network connection, or try again later. Error: " + dde.Message);
-        }
-        catch (InvalidDeploymentException ide)
-        {
-          MessageBox.Show(
-            "Cannot check for a new version of the application. The ClickOnce deployment is corrupt. Please redeploy the application and try again. Error: " + ide.Message, 
-            Application.ProductName);
-        }
-        catch (InvalidOperationException ioe)
-        {
-          MessageBox.Show(
-            "This application cannot be updated. It is likely not a ClickOnce application. Error: " + ioe.Message, 
-            Application.ProductName);
+          try
+          {
+            info = ApplicationDeployment.CurrentDeployment.CheckForDetailedUpdate();
+          }
+          catch (DeploymentDownloadException /*dde*/)
+          {
+            // Fail silently if no network, we can try again later
+            //MessageBox.Show("The new version of the application cannot be downloaded at this time. \n\nPlease check your network connection, or try again later. Error: " + dde.Message);
+          }
+          catch (InvalidDeploymentException ide)
+          {
+            MessageBox.Show(
+              "Cannot check for a new version of the application. The ClickOnce deployment is corrupt. Please redeploy the application and try again. Error: " + ide.Message,
+              Application.ProductName);
+          }
+          catch (InvalidOperationException ioe)
+          {
+            MessageBox.Show(
+              "This application cannot be updated. It is likely not a ClickOnce application. Error: " + ioe.Message,
+              Application.ProductName);
+          }
         }
       }
+      catch { }
       return info;
     }
 
@@ -181,7 +185,7 @@ namespace DomTurnMgr
     internal static bool isAppUpdateAvailable()
     {
       bool result = false;
-      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+      UpdateCheckInfo info = getAppInfo();
       if (info != null)
       {
         result = info.UpdateAvailable;
@@ -191,7 +195,7 @@ namespace DomTurnMgr
 
     internal static void silentInstallAppUpdate()
     {
-      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+      UpdateCheckInfo info = getAppInfo();
 
       if (info != null)
       {
@@ -213,7 +217,7 @@ namespace DomTurnMgr
 
     private static void installAppUpdate()
     {
-      UpdateCheckInfo info = getAppInfo(ApplicationDeployment.CurrentDeployment);
+      UpdateCheckInfo info = getAppInfo();
 
       if (info != null)
       {

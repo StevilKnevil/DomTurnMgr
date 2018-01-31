@@ -59,11 +59,6 @@ namespace DomTurnMgr
           Properties.Settings.Default.ServerAddress = "turns@llamaserver.net";
         }
 
-        if (Properties.Settings.Default.DominionsExecutable == "")
-        {
-          showPrefs = true;
-        }
-
         if (showPrefs)
         {
           PreferencesForm pf = new PreferencesForm();
@@ -165,15 +160,9 @@ namespace DomTurnMgr
 
     private void btnStartDominions_Click(object sender, EventArgs e)
     {
-      if (!File.Exists(Properties.Settings.Default.DominionsExecutable))
-      {
-        PreferencesForm pf = new PreferencesForm();
-        pf.ShowDialog();
-      }
-
       Process process = new Process();
       // Configure the process using the StartInfo properties.
-      process.StartInfo.FileName = Properties.Settings.Default.DominionsExecutable;
+      process.StartInfo.FileName = Program.SettingsManager.GameExePath;
       process.StartInfo.Arguments = currentGame.Name;
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
       process.Start();
@@ -186,14 +175,14 @@ namespace DomTurnMgr
         return;
       string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
 
-      if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
+      if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) ||
         currentGame.Name == "")
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
 
-      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + currentGame.Name;
+      string saveGameDir = Program.SettingsManager.SaveGameDirectory + @"\" + currentGame.Name;
 
       if (!Directory.Exists(saveGameDir))
       {
@@ -255,14 +244,14 @@ namespace DomTurnMgr
       if (listView1.SelectedItems.Count != 1)
         return;
 
-      if (!Directory.Exists(Properties.Settings.Default.SavegamesLocation) ||
+      if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) ||
         currentGame.Name == "")
       {
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
 
-      string saveGameDir = Properties.Settings.Default.SavegamesLocation + @"\" + currentGame.Name;
+      string saveGameDir = Program.SettingsManager.SaveGameDirectory + @"\" + currentGame.Name;
 
       Debug.Assert(Directory.Exists(saveGameDir));
 
