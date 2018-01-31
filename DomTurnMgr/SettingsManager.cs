@@ -76,7 +76,7 @@ namespace DomTurnMgr
       }
     }
 
-    const string SAVE_GAME_DIR_KEYNAME = "SaveGameDIR";
+    const string SAVE_GAME_DIR_KEYNAME = "SaveGameDir";
     private string saveGameDirectory;
     public string SaveGameDirectory
     {
