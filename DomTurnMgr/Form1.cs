@@ -80,10 +80,23 @@ namespace DomTurnMgr
 
     private void SetGame(Game game)
     {
-      currentGame = game;
-      RefreshUI();
+      if (currentGame != game)
+      {
+        if (currentGame != null)
+        {
+          currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
+        }
+        currentGame = game;
+        currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
+        RefreshUI();
+      }
     }
 
+    public void OnCurrentTurnNumberChanged(object sender, EventArgs e)
+    {
+      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
+    }
+    
     private void UpdateList()
     {
       string errMsg;
@@ -140,11 +153,23 @@ namespace DomTurnMgr
         this.notifyIcon1.Icon = Properties.Resources.icon_green;
         if (result-DateTime.Now < new TimeSpan(12,0,0))
         {
+          // check to see if we have just moved into the new regime
+          if (this.notifyIcon1.Icon != Properties.Resources.icon_yellow)
+          {
+            notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "Game hosting in less than 12 hours", ToolTipIcon.Info);
+          }
+
           this.Icon = Properties.Resources.icon_yellow;
           this.notifyIcon1.Icon = Properties.Resources.icon_yellow;
         }
         if (result - DateTime.Now < new TimeSpan(6, 0, 0))
         {
+          // check to see if we have just moved into the new regime
+          if (this.notifyIcon1.Icon != Properties.Resources.icon_red)
+          {
+            notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "Game hosting in less than 6 hours", ToolTipIcon.Info);
+          }
+
           this.Icon = Properties.Resources.icon_red;
           this.notifyIcon1.Icon = Properties.Resources.icon_red;
         }

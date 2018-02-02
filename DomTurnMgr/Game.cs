@@ -183,8 +183,36 @@ namespace DomTurnMgr
       }
     }
 
-    public int CurrentTurnNumber{ get; private set; }
+    #region CurrentTurnNumber
+    private int currentTurnNumber = 0;
+    public int CurrentTurnNumber
+    {
+      get
+      {
+        return currentTurnNumber;
+      }
+      private set
+      {
+        if (value != currentTurnNumber)
+        {
+          currentTurnNumber = value;
+          OnCurrentTurnNumberChanged(EventArgs.Empty);
+        }
+      }
+    }
 
+    public event EventHandler CurrentTurnNumberChanged;
+    protected virtual void OnCurrentTurnNumberChanged(EventArgs e)
+    {
+      EventHandler handler = CurrentTurnNumberChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+    #endregion CurrentTurnNumber
+
+    #region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime {
@@ -193,7 +221,12 @@ namespace DomTurnMgr
         Debug.Assert(IsValidHostingTime);
         return hostingTime;
       }
+      private set
+      {
+        hostingTime = value;
+      }
     }
+        #endregion Hosting Time
 
     private void updateHostingTime()
     {
@@ -245,12 +278,14 @@ namespace DomTurnMgr
               // trim the trainling 'st' 'nd' 'rd' 'th' from the string
               s = s.Remove(s.Length - 2);
               IsValidHostingTime = false;
+              DateTime result;
               if (DateTime.TryParseExact(s,
                 "HH:mm GMT on dddd MMMM d",
                 new System.Globalization.CultureInfo("en-US"),
                 System.Globalization.DateTimeStyles.None,
-                out hostingTime))
+                out result))
               {
+                HostingTime = result;
                 IsValidHostingTime = true;
               }
             }
