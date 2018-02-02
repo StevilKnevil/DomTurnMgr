@@ -41,10 +41,15 @@ namespace DomTurnMgr
     }
 
     Game currentGame;
+    System.Timers.Timer backGroundUpdateTimer;
 
     public Form1()
     {
       InitializeComponent();
+
+      backGroundUpdateTimer = new System.Timers.Timer(1 * 60 * 60 * 1000);
+      backGroundUpdateTimer.Elapsed += OnBackgroundTimerElapsed;
+
       // TODO: find a way of doing this on property changed, but batching up the changes into a single change block
       Properties.Settings.Default.SettingsSaving += onPropertyChanged;
 
@@ -71,6 +76,20 @@ namespace DomTurnMgr
         // Game has not yet been setup so do so now.
         SetGame(new Game(Properties.Settings.Default.GameName));
       }
+
+      backGroundUpdateTimer.Start();
+    }
+
+    private void OnBackgroundTimerElapsed(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(OnBackgroundTimerElapsed), sender, e);
+        return;
+      }
+      backGroundUpdateTimer.Stop();
+      UpdateTimeRemaining();
+      backGroundUpdateTimer.Start();
     }
 
     private void onPropertyChanged(object sender, EventArgs e)
@@ -82,6 +101,8 @@ namespace DomTurnMgr
     {
       if (currentGame != game)
       {
+        backGroundUpdateTimer.Stop();
+        uiUpdateTimer.Stop();
         if (currentGame != null)
         {
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
@@ -89,6 +110,8 @@ namespace DomTurnMgr
         currentGame = game;
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         RefreshUI();
+        backGroundUpdateTimer.Start();
+        uiUpdateTimer.Start();
       }
     }
 
@@ -328,14 +351,14 @@ namespace DomTurnMgr
 
     private void RefreshUI()
     {
-      updateTimer.Stop();
+      uiUpdateTimer.Stop();
       Cursor.Current = Cursors.WaitCursor;
       currentGame.Update();
       Cursor.Current = Cursors.Default;
       UpdateList();
       UpdateTimeRemaining();
       UpdateCurrentTurnLabel();
-      updateTimer.Start();
+      uiUpdateTimer.Start();
     }
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
