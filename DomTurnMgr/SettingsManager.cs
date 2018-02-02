@@ -82,7 +82,7 @@ namespace DomTurnMgr
     {
       get
       {
-        if (!System.IO.File.Exists(saveGameDirectory))
+        if (!System.IO.Directory.Exists(saveGameDirectory))
         {
           // try reading from registry
           using (RegistryKey regKey = getRegKey())
@@ -90,7 +90,7 @@ namespace DomTurnMgr
             saveGameDirectory = regKey.GetValue(SAVE_GAME_DIR_KEYNAME) as string;
           }
 
-          if (!System.IO.File.Exists(saveGameDirectory))
+          if (!System.IO.Directory.Exists(saveGameDirectory))
           {
             Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog dlg = new Microsoft.WindowsAPICodePack.Dialogs.CommonOpenFileDialog();
             dlg.IsFolderPicker = true;
