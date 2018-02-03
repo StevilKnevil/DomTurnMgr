@@ -40,7 +40,7 @@ namespace DomTurnMgr
       base.WndProc(ref m);
     }
 
-    public Game currentGame;
+    Game currentGame;
 
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
