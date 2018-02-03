@@ -405,6 +405,11 @@ namespace DomTurnMgr
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     } 
 
+    private void refresh_Click(object sender, EventArgs e)
+    {
+      currentGame.Update();
+    }
+
     private void showPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
