@@ -242,12 +242,13 @@ namespace DomTurnMgr
 
     private void UpdateCurrentTurnLabel()
     {
-      if (lblTurnNumber.Text != "")
+      string turnNum = currentGame.CurrentTurnNumber.ToString();
+      if (lblTurnNumber.Text != "" && !lblTurnNumber.Text.Equals(turnNum))
       {
         // this is not the first update
         notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
       }
-      lblTurnNumber.Text = currentGame.CurrentTurnNumber.ToString();
+      lblTurnNumber.Text = turnNum;
     }
 
     private void btnStartDominions_Click(object sender, EventArgs e)
