@@ -228,6 +228,16 @@ namespace DomTurnMgr
         hostingTime = value;
       }
     }
+
+    public event EventHandler HostingTimeChanged;
+    protected virtual void OnHostingTimeChanged(EventArgs e)
+    {
+      EventHandler handler = HostingTimeChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
     #endregion Hosting Time
 
     private void updateHostingTime()

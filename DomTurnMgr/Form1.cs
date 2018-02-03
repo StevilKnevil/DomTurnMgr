@@ -29,6 +29,25 @@ namespace DomTurnMgr
 {
   public partial class Form1 : Form
   {
+    class HostingWarningTimer : System.Timers.Timer
+    {
+      public string Text;
+      private TimeSpan warningPeriod;
+
+      public HostingWarningTimer(string text, TimeSpan _warningPeriod)
+      {
+        Text = text;
+        warningPeriod = _warningPeriod;
+      }
+
+      public void Reset(DateTime hostingTime)
+      {
+        this.Interval = hostingTime.Subtract(DateTime.Now).Subtract(warningPeriod).TotalMilliseconds;
+        this.Start();
+      }
+    };
+    List<HostingWarningTimer> hostingWarningTimers;
+
 
     // Helper to make sure that we bring this to front if a different instance starts
     protected override void WndProc(ref System.Windows.Forms.Message m)
@@ -57,6 +76,15 @@ namespace DomTurnMgr
       // TODO: find a way of doing this on property changed, but batching up the changes into a single change block
       Properties.Settings.Default.SettingsSaving += onPropertyChanged;
 
+      hostingWarningTimers = new List<HostingWarningTimer>();
+      hostingWarningTimers.Add(new HostingWarningTimer("Game Hosting in less than 12 hours!", new TimeSpan(12,0,0)));
+      hostingWarningTimers.Add(new HostingWarningTimer("Game Hosting in less than 6 hours!", new TimeSpan(6, 0, 0)));
+
+      foreach(var v in hostingWarningTimers)
+      {
+        v.Elapsed += hostingWarningTimer_Elapsed;
+      }
+
       // set up initial preferences
       {
         bool showPrefs = false;
@@ -82,6 +110,12 @@ namespace DomTurnMgr
       }
     }
 
+    private void hostingWarningTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      HostingWarningTimer timer = sender as HostingWarningTimer;
+      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", timer.Text, ToolTipIcon.Warning);
+    }
+
     private void SetGame(Game game)
     {
       if (currentGame != game)
@@ -90,10 +124,12 @@ namespace DomTurnMgr
         if (currentGame != null)
         {
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
+          currentGame.HostingTimeChanged -= OnHostingTimeChanged;
         }
         currentGame = game;
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
+        currentGame.HostingTimeChanged += OnHostingTimeChanged;
         RefreshUI();
         uiUpdateTimer.Start();
       }
@@ -115,7 +151,19 @@ namespace DomTurnMgr
       // Update the UI
       UpdateCurrentTurnLabel();
     }
-    
+
+    protected void OnHostingTimeChanged(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(OnHostingTimeChanged), sender, e);
+        return;
+      }
+
+      // Update the UI
+      UpdateHostingTime();
+    }
+
     private void UpdateList()
     {
       string errMsg;
@@ -160,7 +208,7 @@ namespace DomTurnMgr
         listView1.Items[0].Selected = true;
     }
 
-    private void UpdateTimeRemaining()
+    private void UpdateHostingTime()
     {
       timeRemainingLbl.Text = "Error retrieving hosting time";
       if (currentGame.IsValidHostingTime)
@@ -170,29 +218,25 @@ namespace DomTurnMgr
         // TODO: Move to update icon function
         this.Icon = Properties.Resources.icon_green;
         this.notifyIcon1.Icon = Properties.Resources.icon_green;
+
+        // Update the icons with correct colour coding
         if (result-DateTime.Now < new TimeSpan(12,0,0))
         {
-          // check to see if we have just moved into the new regime
-          if (this.notifyIcon1.Icon != Properties.Resources.icon_yellow)
-          {
-            notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "Game hosting in less than 12 hours", ToolTipIcon.Info);
-          }
-
           this.Icon = Properties.Resources.icon_yellow;
           this.notifyIcon1.Icon = Properties.Resources.icon_yellow;
         }
         if (result - DateTime.Now < new TimeSpan(6, 0, 0))
         {
-          // check to see if we have just moved into the new regime
-          if (this.notifyIcon1.Icon != Properties.Resources.icon_red)
-          {
-            notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "Game hosting in less than 6 hours", ToolTipIcon.Info);
-          }
-
           this.Icon = Properties.Resources.icon_red;
           this.notifyIcon1.Icon = Properties.Resources.icon_red;
         }
         // TODO: If turn submitted (check with server text) then icon can be grey
+
+        // Update the timers for the warnings
+        foreach(var v in hostingWarningTimers)
+        {
+          v.Reset(result);
+        }
       }
     }
 
@@ -356,7 +400,7 @@ namespace DomTurnMgr
       currentGame.Update();
       Cursor.Current = Cursors.Default;
       UpdateList();
-      UpdateTimeRemaining();
+      UpdateHostingTime();
       UpdateCurrentTurnLabel();
       uiUpdateTimer.Start();
     }
