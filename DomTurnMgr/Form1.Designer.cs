@@ -230,7 +230,7 @@
       this.lblTurnNumber.Name = "lblTurnNumber";
       this.lblTurnNumber.Size = new System.Drawing.Size(75, 27);
       this.lblTurnNumber.TabIndex = 7;
-      this.lblTurnNumber.Text = "64";
+      this.lblTurnNumber.Text = "";
       this.lblTurnNumber.TextAlign = System.Drawing.ContentAlignment.TopCenter;
       // 
       // notifyIcon1
