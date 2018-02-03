@@ -104,9 +104,77 @@ namespace DomTurnMgr
 
     public string Name { get; private set; }
 
+    #region CurrentTurnNumber
+    private int currentTurnNumber = 0;
+    public int CurrentTurnNumber
+    {
+      get
+      {
+        return currentTurnNumber;
+      }
+      private set
+      {
+        if (value != currentTurnNumber)
+        {
+          currentTurnNumber = value;
+          OnCurrentTurnNumberChanged(EventArgs.Empty);
+        }
+      }
+    }
+
+    public event EventHandler CurrentTurnNumberChanged;
+    protected virtual void OnCurrentTurnNumberChanged(EventArgs e)
+    {
+      EventHandler handler = CurrentTurnNumberChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+    #endregion CurrentTurnNumber
+
+    #region Hosting Time
+    public bool IsValidHostingTime { get; private set; }
+    private DateTime hostingTime;
+    public DateTime HostingTime
+    {
+      get
+      {
+        Debug.Assert(IsValidHostingTime);
+        return hostingTime;
+      }
+      private set
+      {
+        hostingTime = value;
+        OnHostingTimeChanged(EventArgs.Empty);
+      }
+    }
+
+    public event EventHandler HostingTimeChanged;
+    protected virtual void OnHostingTimeChanged(EventArgs e)
+    {
+      EventHandler handler = HostingTimeChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+    #endregion Hosting Time
+
+    #region Turns List
     private List<Turn> turns = new List<Turn>();
     public IReadOnlyCollection<Turn> Turns => turns as IReadOnlyCollection<Turn>;
-    //public event TurnListChanged;
+
+    public event EventHandler TurnsChanged;
+    protected virtual void OnTurnsChanged(EventArgs e)
+    {
+      EventHandler handler = TurnsChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+    #endregion Turns List
 
     private void updateTurns()
     {
@@ -177,68 +245,13 @@ namespace DomTurnMgr
         turns = new List<Turn>();
         turns.AddRange(t.Values);
         turns.Sort(new Turn.DateComparer());
+        OnTurnsChanged(EventArgs.Empty);
       }
       catch (Exception)
       {
         // Likely No internet connection;
       }
     }
-
-    #region CurrentTurnNumber
-    private int currentTurnNumber = 0;
-    public int CurrentTurnNumber
-    {
-      get
-      {
-        return currentTurnNumber;
-      }
-      private set
-      {
-        if (value != currentTurnNumber)
-        {
-          currentTurnNumber = value;
-          OnCurrentTurnNumberChanged(EventArgs.Empty);
-        }
-      }
-    }
-
-    public event EventHandler CurrentTurnNumberChanged;
-    protected virtual void OnCurrentTurnNumberChanged(EventArgs e)
-    {
-      EventHandler handler = CurrentTurnNumberChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
-    }
-    #endregion CurrentTurnNumber
-
-    #region Hosting Time
-    public bool IsValidHostingTime { get; private set; }
-    private DateTime hostingTime;
-    public DateTime HostingTime
-    {
-      get
-      {
-        Debug.Assert(IsValidHostingTime);
-        return hostingTime;
-      }
-      private set
-      {
-        hostingTime = value;
-      }
-    }
-
-    public event EventHandler HostingTimeChanged;
-    protected virtual void OnHostingTimeChanged(EventArgs e)
-    {
-      EventHandler handler = HostingTimeChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
-    }
-    #endregion Hosting Time
 
     private void updateHostingTime()
     {
