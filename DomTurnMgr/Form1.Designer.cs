@@ -47,7 +47,6 @@
       this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
-      this.uiUpdateTimer = new System.Windows.Forms.Timer(this.components);
       this.label1 = new System.Windows.Forms.Label();
       this.lblTurnNumber = new System.Windows.Forms.Label();
       this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
@@ -207,11 +206,6 @@
       this.timeRemainingLbl.Size = new System.Drawing.Size(83, 17);
       this.timeRemainingLbl.Text = "Next Turn Due";
       // 
-      // uiUpdateTimer
-      // 
-      this.uiUpdateTimer.Interval = 60000;
-      this.uiUpdateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);
-      // 
       // label1
       // 
       this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -309,7 +303,6 @@
     private System.Windows.Forms.ToolStripMenuItem dom5InspectorToolStripMenuItem;
     private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
     private System.Windows.Forms.ToolStripStatusLabel timeRemainingLbl;
-    private System.Windows.Forms.Timer uiUpdateTimer;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label lblTurnNumber;

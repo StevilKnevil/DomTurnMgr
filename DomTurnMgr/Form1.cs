@@ -29,6 +29,7 @@ namespace DomTurnMgr
 {
   public partial class Form1 : Form
   {
+    #region Helpers
     class HostingWarningTimer : System.Timers.Timer
     {
       public string Text;
@@ -46,8 +47,6 @@ namespace DomTurnMgr
         this.Start();
       }
     };
-    List<HostingWarningTimer> hostingWarningTimers;
-
 
     // Helper to make sure that we bring this to front if a different instance starts
     protected override void WndProc(ref System.Windows.Forms.Message m)
@@ -59,7 +58,12 @@ namespace DomTurnMgr
       base.WndProc(ref m);
     }
 
+    #endregion Helpers
+
     Game currentGame;
+    List<HostingWarningTimer> hostingWarningTimers;
+    System.Timers.Timer backgroundTimer = new System.Timers.Timer(1 * 60 * 60 * 1000);
+    System.Timers.Timer foregroundTimer = new System.Timers.Timer(60 * 1000);
 
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
@@ -79,11 +83,13 @@ namespace DomTurnMgr
       hostingWarningTimers = new List<HostingWarningTimer>();
       hostingWarningTimers.Add(new HostingWarningTimer("Game Hosting in less than 12 hours!", new TimeSpan(12,0,0)));
       hostingWarningTimers.Add(new HostingWarningTimer("Game Hosting in less than 6 hours!", new TimeSpan(6, 0, 0)));
-
       foreach(var v in hostingWarningTimers)
       {
         v.Elapsed += hostingWarningTimer_Elapsed;
       }
+
+      backgroundTimer.Elapsed += Timer_Elapsed;
+      foregroundTimer.Elapsed += Timer_Elapsed;
 
       // set up initial preferences
       {
@@ -120,7 +126,6 @@ namespace DomTurnMgr
     {
       if (currentGame != game)
       {
-        uiUpdateTimer.Stop();
         if (currentGame != null)
         {
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
@@ -132,8 +137,7 @@ namespace DomTurnMgr
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
 
         // TODO: Merge this with teh Form.Visible event handler below
-        RefreshUI();
-        uiUpdateTimer.Start();
+        this.Form1_VisibleChanged(null, null);
       }
     }
 
@@ -164,6 +168,22 @@ namespace DomTurnMgr
 
       // Update the UI
       UpdateHostingTime();
+    }
+
+    private void Timer_Elapsed(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(Timer_Elapsed), sender, e);
+        return;
+      }
+
+      System.Timers.Timer t = sender as System.Timers.Timer;
+      t.Stop();
+      currentGame.Update();
+      // TODO: Won't need this once we're listening to events for this
+      UpdateList();
+      t.Start();
     }
 
     private void UpdateList()
@@ -368,44 +388,28 @@ namespace DomTurnMgr
       string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
 
-      RefreshUI();
+      currentGame.Update();
 
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     } 
 
     private void refresh_Click(object sender, EventArgs e)
     {
-      RefreshUI();
+      currentGame.Update();
     }
 
     private void showPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
       pf.ShowDialog();
-      RefreshUI();
+      currentGame.Update();
     }
 
     private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Process.Start("https://larzm42.github.io/dom5inspector/");
     }
-
-    private void updateTimer_Tick(object sender, EventArgs e)
-    {
-      // use system.timers.timer to update the notification icon & for update check. The timer won't work unless the form is visible
-      RefreshUI();
-    }
-
-    private void RefreshUI()
-    {
-      uiUpdateTimer.Stop();
-      Cursor.Current = Cursors.WaitCursor;
-      currentGame.Update();
-      Cursor.Current = Cursors.Default;
-      UpdateList();
-      uiUpdateTimer.Start();
-    }
-
+    
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
     {
       Version myVersion = new Version();
@@ -460,16 +464,20 @@ namespace DomTurnMgr
     {
       if (this.Visible)
       {
+        foregroundTimer.Stop();
+        backgroundTimer.Stop();
         // Update the UI elements and force a refresh of game state
         currentGame.Update();
         UpdateCurrentTurnLabel();
         UpdateHostingTime();
         UpdateList();
-        uiUpdateTimer.Start();
+        foregroundTimer.Start();
       }
       else
       {
-        uiUpdateTimer.Stop();
+        foregroundTimer.Stop();
+        backgroundTimer.Stop();
+        backgroundTimer.Start();
       }
     }
   }
