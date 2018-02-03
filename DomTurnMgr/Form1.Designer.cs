@@ -207,7 +207,7 @@
       this.timeRemainingLbl.Size = new System.Drawing.Size(83, 17);
       this.timeRemainingLbl.Text = "Next Turn Due";
       // 
-      // updateTimer
+      // uiUpdateTimer
       // 
       this.uiUpdateTimer.Interval = 60000;
       this.uiUpdateTimer.Tick += new System.EventHandler(this.updateTimer_Tick);

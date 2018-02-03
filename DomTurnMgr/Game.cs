@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -215,7 +216,8 @@ namespace DomTurnMgr
     #region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
-    public DateTime HostingTime {
+    public DateTime HostingTime
+    {
       get
       {
         Debug.Assert(IsValidHostingTime);
@@ -226,7 +228,7 @@ namespace DomTurnMgr
         hostingTime = value;
       }
     }
-        #endregion Hosting Time
+    #endregion Hosting Time
 
     private void updateHostingTime()
     {
@@ -258,7 +260,7 @@ namespace DomTurnMgr
           readStream.Close();
         }
       }
-      catch(Exception)
+      catch (Exception)
       {
         // Likely no internet connection
       }

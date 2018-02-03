@@ -40,15 +40,19 @@ namespace DomTurnMgr
       base.WndProc(ref m);
     }
 
-    Game currentGame;
-    System.Timers.Timer backGroundUpdateTimer;
+    public Game currentGame;
 
+    /*
+     * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
+     * Form listens to events when game properties change and responds appropriately
+     * OnTimeRemain chnages: update label, set a timer for when 12 h or 6 hours is going to pass so that we can pop baloon text and change icon
+     * OnTurnNumberChanges: Update label
+     * OnTurnListChanged: update list
+     * All UI updates are responses to changes in the Game
+     */
     public Form1()
     {
       InitializeComponent();
-
-      backGroundUpdateTimer = new System.Timers.Timer(1 * 60 * 60 * 1000);
-      backGroundUpdateTimer.Elapsed += OnBackgroundTimerElapsed;
 
       // TODO: find a way of doing this on property changed, but batching up the changes into a single change block
       Properties.Settings.Default.SettingsSaving += onPropertyChanged;
@@ -76,48 +80,40 @@ namespace DomTurnMgr
         // Game has not yet been setup so do so now.
         SetGame(new Game(Properties.Settings.Default.GameName));
       }
-
-      backGroundUpdateTimer.Start();
-    }
-
-    private void OnBackgroundTimerElapsed(object sender, EventArgs e)
-    {
-      if (this.InvokeRequired)
-      {
-        Invoke(new Action<object, EventArgs>(OnBackgroundTimerElapsed), sender, e);
-        return;
-      }
-      backGroundUpdateTimer.Stop();
-      UpdateTimeRemaining();
-      backGroundUpdateTimer.Start();
-    }
-
-    private void onPropertyChanged(object sender, EventArgs e)
-    {
-      SetGame(new Game(Properties.Settings.Default.GameName));
     }
 
     private void SetGame(Game game)
     {
       if (currentGame != game)
       {
-        backGroundUpdateTimer.Stop();
         uiUpdateTimer.Stop();
         if (currentGame != null)
         {
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
         }
         currentGame = game;
+
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         RefreshUI();
-        backGroundUpdateTimer.Start();
         uiUpdateTimer.Start();
       }
     }
 
-    public void OnCurrentTurnNumberChanged(object sender, EventArgs e)
+    protected void onPropertyChanged(object sender, EventArgs e)
     {
-      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
+      SetGame(new Game(Properties.Settings.Default.GameName));
+    }
+
+    protected void OnCurrentTurnNumberChanged(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(OnCurrentTurnNumberChanged), sender, e);
+        return;
+      }
+
+      // Update the UI
+      UpdateCurrentTurnLabel();
     }
     
     private void UpdateList()
@@ -202,8 +198,8 @@ namespace DomTurnMgr
 
     private void UpdateCurrentTurnLabel()
     {
-      //notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
       lblTurnNumber.Text = currentGame.CurrentTurnNumber.ToString();
+      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
     }
 
     private void btnStartDominions_Click(object sender, EventArgs e)
