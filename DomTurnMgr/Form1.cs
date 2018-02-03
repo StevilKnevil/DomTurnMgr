@@ -130,6 +130,8 @@ namespace DomTurnMgr
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
+
+        // TODO: Merge this with teh Form.Visible event handler below
         RefreshUI();
         uiUpdateTimer.Start();
       }
@@ -230,7 +232,7 @@ namespace DomTurnMgr
           this.Icon = Properties.Resources.icon_red;
           this.notifyIcon1.Icon = Properties.Resources.icon_red;
         }
-        // TODO: If turn submitted (check with server text) then icon can be grey
+        // TODO: If current turn has been submitted (check with server text) then icon can be grey
 
         // Update the timers for the warnings
         foreach(var v in hostingWarningTimers)
@@ -401,8 +403,6 @@ namespace DomTurnMgr
       currentGame.Update();
       Cursor.Current = Cursors.Default;
       UpdateList();
-      UpdateHostingTime();
-      UpdateCurrentTurnLabel();
       uiUpdateTimer.Start();
     }
 
@@ -453,6 +453,23 @@ namespace DomTurnMgr
       if (this.Visible == false && Program.isAppUpdateAvailable())
       {
         Program.silentInstallAppUpdate();
+      }
+    }
+
+    private void lblTurnNumber_VisibleChanged(object sender, EventArgs e)
+    {
+      if (this.Visible)
+      {
+        // Update the UI elements and force a refresh of game state
+        currentGame.Update();
+        UpdateCurrentTurnLabel();
+        UpdateHostingTime();
+        UpdateList();
+        uiUpdateTimer.Start();
+      }
+      else
+      {
+        uiUpdateTimer.Stop();
       }
     }
   }
