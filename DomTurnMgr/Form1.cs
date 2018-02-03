@@ -130,11 +130,13 @@ namespace DomTurnMgr
         {
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
           currentGame.HostingTimeChanged -= OnHostingTimeChanged;
+          currentGame.TurnsChanged -= OnTurnsChanged;
         }
         currentGame = game;
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
+        currentGame.TurnsChanged += OnTurnsChanged;
 
         // TODO: Merge this with teh Form.Visible event handler below
         this.Form1_VisibleChanged(null, null);
@@ -170,6 +172,18 @@ namespace DomTurnMgr
       UpdateHostingTime();
     }
 
+    protected void OnTurnsChanged(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(OnTurnsChanged), sender, e);
+        return;
+      }
+
+      // Update the UI
+      UpdateTurnsList();
+    }
+
     private void Timer_Elapsed(object sender, EventArgs e)
     {
       if (this.InvokeRequired)
@@ -181,12 +195,10 @@ namespace DomTurnMgr
       System.Timers.Timer t = sender as System.Timers.Timer;
       t.Stop();
       currentGame.Update();
-      // TODO: Won't need this once we're listening to events for this
-      UpdateList();
       t.Start();
     }
 
-    private void UpdateList()
+    private void UpdateTurnsList()
     {
       string errMsg;
       if (!currentGame.IsValid(out errMsg))
@@ -393,11 +405,6 @@ namespace DomTurnMgr
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     } 
 
-    private void refresh_Click(object sender, EventArgs e)
-    {
-      currentGame.Update();
-    }
-
     private void showPrefs_Click(object sender, EventArgs e)
     {
       PreferencesForm pf = new PreferencesForm();
@@ -470,7 +477,7 @@ namespace DomTurnMgr
         currentGame.Update();
         UpdateCurrentTurnLabel();
         UpdateHostingTime();
-        UpdateList();
+        UpdateTurnsList();
         foregroundTimer.Start();
       }
       else
