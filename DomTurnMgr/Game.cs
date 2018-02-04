@@ -102,32 +102,8 @@ namespace DomTurnMgr
       {
         ss.progressBar1.SetValueDirect(0);
 
-        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-        string inboundMessageSearchString = "";
-        string outboundMessageSearchString = "";
-        {
-          string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
-          outboundMessageSearchString = string.Format(
-            searchStringFmt,
-            Properties.Settings.Default.ServerAddress,
-            playerAddress,
-            Properties.Settings.Default.GameName);
-        }
-
-        {
-          string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-          inboundMessageSearchString = string.Format(
-            searchStringFmt,
-            Properties.Settings.Default.ServerAddress,
-            playerAddress,
-            Properties.Settings.Default.GameName);
-        }
-
-        ss.progressBar1.SetValueDirect(10);
-
-        // TODO: Async
-        var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
-        var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
+        IList<string> outboundTurns = GetOutboundTurns();
+        IList<string> inboundTurns = GetInboundTurns();
 
         ss.progressBar1.SetValueDirect(20);
 
@@ -148,7 +124,7 @@ namespace DomTurnMgr
         foreach (var msgID in outboundTurns)
         {
           ss.progressBar1.SetValueDirect((int)(60 + 40 * ((float)currentItem++ / (float)outboundTurns.Count)));
-          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+          GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
         }
         ss.progressBar1.SetValueDirect(100);
       }
@@ -156,6 +132,27 @@ namespace DomTurnMgr
       // hide the dialog
       ss.Hide();
     }
+
+    private static IList<string> GetInboundTurns()
+    {
+      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+      return GetTurns(Properties.Settings.Default.ServerAddress, playerAddress);
+    }
+
+    private static IList<string> GetOutboundTurns()
+    {
+      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+      return GetTurns(playerAddress, Properties.Settings.Default.ServerAddress);
+    }
+
+    private static IList<string> GetTurns(string from, string to)
+    {
+      string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
+      string searchString = string.Format(searchStringFmt, from, to, Properties.Settings.Default.GameName);
+      return GMailHelpers.GetTurns(Program.GmailService, searchString);
+    }
+
+
 
     public async void Update()
     {
@@ -259,30 +256,8 @@ namespace DomTurnMgr
     {
       try
       {
-        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-        string inboundMessageSearchString = "";
-        string outboundMessageSearchString = "";
-        {
-          string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
-          outboundMessageSearchString = string.Format(
-            searchStringFmt,
-            Properties.Settings.Default.ServerAddress,
-            playerAddress,
-            Properties.Settings.Default.GameName);
-        }
-
-        {
-          string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-          inboundMessageSearchString = string.Format(
-            searchStringFmt,
-            Properties.Settings.Default.ServerAddress,
-            playerAddress,
-            Properties.Settings.Default.GameName);
-        }
-
-        // TODO: Async
-        var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
-        var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
+        IList<string> outboundTurns = GetOutboundTurns();
+        IList<string> inboundTurns = GetInboundTurns();
 
         Dictionary<int, Turn> t = new Dictionary<int, Turn>();
 
@@ -300,8 +275,7 @@ namespace DomTurnMgr
             {
               // TODO: throw an exception
               System.Windows.Forms.MessageBox.Show(
-                string.Format("Duplicate turn number found with following search string:\n\n{0}\n\nFound turns for different games.\nUpdate game name in preferences.",
-                inboundMessageSearchString));
+                string.Format("Duplicate turn number found:\n\nFound turns for different games.\nUpdate game name in preferences."));
               break;
             }
             t[turnIndex] = turn;
