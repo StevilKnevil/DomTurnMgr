@@ -145,6 +145,7 @@ namespace DomTurnMgr
       }
       private set
       {
+        IsValidHostingTime = true;
         hostingTime = value;
         OnHostingTimeChanged(EventArgs.Empty);
       }
