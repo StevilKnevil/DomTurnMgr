@@ -151,9 +151,7 @@ namespace DomTurnMgr
       string searchString = string.Format(searchStringFmt, from, to, Properties.Settings.Default.GameName);
       return GMailHelpers.GetTurns(Program.GmailService, searchString);
     }
-
-
-
+    
     public async void Update()
     {
       await Task.Run(() => { updateHostingTime(); });
