@@ -79,10 +79,10 @@ namespace DomTurnMgr
       Update();
     }
 
-    public void Update()
+    public async void Update()
     {
-      updateTurns();
-      updateHostingTime();
+      await Task.Run(() => { updateHostingTime(); });
+      await Task.Run(() => { updateTurns(); });
     }
 
     public bool IsValid(out string errMsg)

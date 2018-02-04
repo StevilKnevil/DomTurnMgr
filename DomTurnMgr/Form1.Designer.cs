@@ -31,6 +31,7 @@
       this.components = new System.ComponentModel.Container();
       System.Windows.Forms.ListViewGroup listViewGroup1 = new System.Windows.Forms.ListViewGroup("Pending Turns", System.Windows.Forms.HorizontalAlignment.Left);
       System.Windows.Forms.ListViewGroup listViewGroup2 = new System.Windows.Forms.ListViewGroup("Completed Turns", System.Windows.Forms.HorizontalAlignment.Left);
+      System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("WORKING....");
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -159,6 +160,8 @@
             listViewGroup1,
             listViewGroup2});
       this.listView1.HideSelection = false;
+      this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem1});
       this.listView1.Location = new System.Drawing.Point(12, 27);
       this.listView1.MultiSelect = false;
       this.listView1.Name = "listView1";
@@ -170,7 +173,7 @@
       // columnHeader1
       // 
       this.columnHeader1.Text = "Turn";
-      this.columnHeader1.Width = 34;
+      this.columnHeader1.Width = 94;
       // 
       // columnHeader2
       // 

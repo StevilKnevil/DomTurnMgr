@@ -478,11 +478,8 @@ namespace DomTurnMgr
       {
         foregroundTimer.Stop();
         backgroundTimer.Stop();
-        // Update the UI elements and force a refresh of game state
+        // Force a refresh of game state - will drive an update of the UI
         currentGame.Update();
-        UpdateCurrentTurnLabel();
-        UpdateHostingTime();
-        UpdateTurnsList();
         foregroundTimer.Start();
       }
       else
