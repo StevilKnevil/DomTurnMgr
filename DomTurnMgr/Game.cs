@@ -24,6 +24,17 @@ namespace DomTurnMgr
     {
       internal string outboundMsgID;
       internal string inboundMsgID;
+      enum Status
+      {
+        Processing,
+        Pending,
+        InProgress,
+        Submitted,
+      };
+      Status Status1;
+      int TurnNumber;
+      string fileTRNPath;
+      string file2HPath;
 
       internal class DateComparer : IComparer<Turn>
       {
@@ -76,7 +87,73 @@ namespace DomTurnMgr
     public Game(string name)
     {
       Name = name;
+      preCacheMessageHeaders();
       Update();
+    }
+
+    private static void preCacheMessageHeaders()
+    {
+      // Pop up a dialog
+      SplashScreen ss = new SplashScreen();
+      ss.Show();
+
+      // Populate message header cache
+      {
+        ss.progressBar1.SetValueDirect(0);
+
+        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+        string inboundMessageSearchString = "";
+        string outboundMessageSearchString = "";
+        {
+          string searchStringFmt = "to:{0} from:{1} has:attachment subject:{2}";
+          outboundMessageSearchString = string.Format(
+            searchStringFmt,
+            Properties.Settings.Default.ServerAddress,
+            playerAddress,
+            Properties.Settings.Default.GameName);
+        }
+
+        {
+          string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
+          inboundMessageSearchString = string.Format(
+            searchStringFmt,
+            Properties.Settings.Default.ServerAddress,
+            playerAddress,
+            Properties.Settings.Default.GameName);
+        }
+
+        ss.progressBar1.SetValueDirect(10);
+
+        // TODO: Async
+        var outboundTurns = GMailHelpers.GetTurns(Program.GmailService, outboundMessageSearchString);
+        var inboundTurns = GMailHelpers.GetTurns(Program.GmailService, inboundMessageSearchString);
+
+        ss.progressBar1.SetValueDirect(20);
+
+        Dictionary<int, Turn> t = new Dictionary<int, Turn>();
+
+        // calc the delta for each inbound & outbound message
+        int outDelta = 40 / outboundTurns.Count;
+        int inDelta = 40 / inboundTurns.Count;
+
+        int currentItem = 0;
+        foreach (var msgID in inboundTurns)
+        {
+          ss.progressBar1.SetValueDirect((int)(20 + 40 * ((float)currentItem++ / (float)inboundTurns.Count)));
+          GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+        }
+
+        currentItem = 0;
+        foreach (var msgID in outboundTurns)
+        {
+          ss.progressBar1.SetValueDirect((int)(60 + 40 * ((float)currentItem++ / (float)outboundTurns.Count)));
+          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+        }
+        ss.progressBar1.SetValueDirect(100);
+      }
+
+      // hide the dialog
+      ss.Hide();
     }
 
     public async void Update()
