@@ -43,8 +43,16 @@ namespace DomTurnMgr
 
       public void Reset(DateTime hostingTime)
       {
-        this.Interval = hostingTime.Subtract(DateTime.Now).Subtract(warningPeriod).TotalMilliseconds;
-        this.Start();
+        double interval = hostingTime.Subtract(DateTime.Now).Subtract(warningPeriod).TotalMilliseconds;
+        if (interval > 0)
+        {
+          this.Interval = interval;
+          this.Start();
+        }
+        else
+        {
+          this.Stop();
+        }
       }
     };
 
