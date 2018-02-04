@@ -91,10 +91,11 @@ namespace DomTurnMgr
       Update();
     }
 
-    private static void preCacheMessageHeaders()
+    private void preCacheMessageHeaders()
     {
       // Pop up a dialog
       SplashScreen ss = new SplashScreen();
+      ss.lblGameName.Text = this.Name;
       ss.Show();
 
       // Populate message header cache
