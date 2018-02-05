@@ -97,6 +97,7 @@ namespace DomTurnMgr
       SplashScreen ss = new SplashScreen();
       ss.lblGameName.Text = this.Name;
       ss.Show();
+      ss.Refresh();
 
       // Populate message header cache
       {
