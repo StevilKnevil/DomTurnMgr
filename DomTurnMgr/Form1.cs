@@ -117,9 +117,25 @@ namespace DomTurnMgr
         }
       }
 
-      if (currentGame == null)
+      if (Properties.Settings.Default.GameName == "")
       {
-        // Game has not yet been setup so do so now.
+        // prompt for which game
+        AddGameDialog sgd = new AddGameDialog();
+        if (sgd.ShowDialog() == DialogResult.OK)
+        {
+          // Store the game name in preferences for next time.
+          Properties.Settings.Default.GameName = sgd.GameName;
+          Properties.Settings.Default.Save();
+          this.SetGame(new Game(sgd.GameName));
+        }
+        else
+        {
+          // Quit
+          this.Load += (s, e) => { this.doClose = true; Close(); };
+        }
+      }
+      else
+      {
         SetGame(new Game(Properties.Settings.Default.GameName));
       }
     }
@@ -140,6 +156,9 @@ namespace DomTurnMgr
           currentGame.HostingTimeChanged -= OnHostingTimeChanged;
           currentGame.TurnsChanged -= OnTurnsChanged;
         }
+        // Wipe down UI - which can be used to trigger notifications
+        lblTurnNumber.Text = "";
+
         currentGame = game;
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
@@ -147,13 +166,13 @@ namespace DomTurnMgr
         currentGame.TurnsChanged += OnTurnsChanged;
 
         // TODO: Merge this with teh Form.Visible event handler below
-        this.Form1_VisibleChanged(null, null);
+        this.RefreshUI();
       }
     }
 
     protected void onPropertyChanged(object sender, EventArgs e)
     {
-      SetGame(new Game(Properties.Settings.Default.GameName));
+      this.RefreshUI();
     }
 
     protected void OnCurrentTurnNumberChanged(object sender, EventArgs e)
@@ -471,6 +490,26 @@ namespace DomTurnMgr
       this.Close();
     }
 
+    private void RefreshUI()
+    {
+      foregroundTimer.Stop();
+      backgroundTimer.Stop();
+
+      if (currentGame != null)
+      {
+        if (this.Visible)
+        {
+          // Force a refresh of game state - will drive an update of the UI
+          currentGame.Update();
+          foregroundTimer.Start();
+        }
+        else
+        {
+          backgroundTimer.Start();
+        }
+      }
+    }
+
     private void Form1_VisibleChanged(object sender, EventArgs e)
     {
       // Form has been hidden so perform an app update.
@@ -478,23 +517,19 @@ namespace DomTurnMgr
       {
         Program.silentInstallAppUpdate();
       }
+
+      RefreshUI();
     }
 
-    private void lblTurnNumber_VisibleChanged(object sender, EventArgs e)
+    private void newGame_Click(object sender, EventArgs e)
     {
-      if (this.Visible)
+      AddGameDialog sgd = new AddGameDialog();
+      if (sgd.ShowDialog() == DialogResult.OK)
       {
-        foregroundTimer.Stop();
-        backgroundTimer.Stop();
-        // Force a refresh of game state - will drive an update of the UI
-        currentGame.Update();
-        foregroundTimer.Start();
-      }
-      else
-      {
-        foregroundTimer.Stop();
-        backgroundTimer.Stop();
-        backgroundTimer.Start();
+        // Store the game name in preferences for next time.
+        Properties.Settings.Default.GameName = sgd.GameName;
+        Properties.Settings.Default.Save();
+        this.SetGame(new Game(sgd.GameName));
       }
     }
   }

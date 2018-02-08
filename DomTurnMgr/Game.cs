@@ -111,8 +111,8 @@ namespace DomTurnMgr
         Dictionary<int, Turn> t = new Dictionary<int, Turn>();
 
         // calc the delta for each inbound & outbound message
-        int outDelta = 40 / outboundTurns.Count;
-        int inDelta = 40 / inboundTurns.Count;
+        int outDelta = 40 / (outboundTurns.Count+1);
+        int inDelta = 40 / (inboundTurns.Count+1);
 
         int currentItem = 0;
         foreach (var msgID in inboundTurns)
@@ -134,22 +134,22 @@ namespace DomTurnMgr
       ss.Hide();
     }
 
-    private static IList<string> GetInboundTurns()
+    private IList<string> GetInboundTurns()
     {
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
       return GetTurns(Properties.Settings.Default.ServerAddress, playerAddress);
     }
 
-    private static IList<string> GetOutboundTurns()
+    private IList<string> GetOutboundTurns()
     {
       string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
       return GetTurns(playerAddress, Properties.Settings.Default.ServerAddress);
     }
 
-    private static IList<string> GetTurns(string from, string to)
+    private IList<string> GetTurns(string from, string to)
     {
       string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-      string searchString = string.Format(searchStringFmt, from, to, Properties.Settings.Default.GameName);
+      string searchString = string.Format(searchStringFmt, from, to, this.Name);
       return GMailHelpers.GetTurns(Program.GmailService, searchString);
     }
     
@@ -310,7 +310,7 @@ namespace DomTurnMgr
       string data = "";
       try
       {
-        string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + Properties.Settings.Default.GameName;
+        string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + this.Name;
 
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
         HttpWebResponse response = (HttpWebResponse)request.GetResponse();
@@ -342,6 +342,9 @@ namespace DomTurnMgr
 
       // Find the remaining time in the string
       {
+        DateTime result = new DateTime();
+        bool success = false;
+
         string pattern = @"Next turn due: (.*)\n";
         Regex re = new Regex(pattern);
         MatchCollection matches = re.Matches(data);
@@ -354,24 +357,22 @@ namespace DomTurnMgr
               string s = matches[0].Groups[1].Value;
               // trim the trainling 'st' 'nd' 'rd' 'th' from the string
               s = s.Remove(s.Length - 2);
-              IsValidHostingTime = false;
-              DateTime result;
-              if (DateTime.TryParseExact(s,
+              success = DateTime.TryParseExact(s,
                 "HH:mm GMT on dddd MMMM d",
                 new System.Globalization.CultureInfo("en-US"),
                 System.Globalization.DateTimeStyles.None,
-                out result))
-              {
-                HostingTime = result;
-                IsValidHostingTime = true;
-              }
+                out result);
             }
           }
         }
+        // TODO: Have a private function for set/clear hosting time that then fires the property changed event
+        IsValidHostingTime = success;
+        HostingTime = result;
       }
 
       // Find the current turn number
       {
+        int result = -1;
         string pattern = @"Turn number (\d*)";
         Regex re = new Regex(pattern);
         MatchCollection matches = re.Matches(data);
@@ -382,10 +383,11 @@ namespace DomTurnMgr
             if (matches[0].Groups.Count == 2)
             {
               string s = matches[0].Groups[1].Value;
-              CurrentTurnNumber = int.Parse(s);
+              result = int.Parse(s);
             }
           }
         }
+        CurrentTurnNumber = result;
       }
 
     }

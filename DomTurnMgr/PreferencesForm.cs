@@ -20,7 +20,6 @@ namespace DomTurnMgr
 
     private void PreferencesForm_Shown(object sender, EventArgs e)
     {
-      tbGameName.Text = Properties.Settings.Default.GameName;
       tbServerAddress.Text = Properties.Settings.Default.ServerAddress;
       tbDominionsLocation.Text = Program.SettingsManager.GameExePath;
       tbSavegamesLoction.Text = Program.SettingsManager.SaveGameDirectory;
@@ -32,7 +31,6 @@ namespace DomTurnMgr
 
     private void btnOK_Click(object sender, EventArgs e)
     {
-      Properties.Settings.Default.GameName = tbGameName.Text;
       Properties.Settings.Default.ServerAddress = tbServerAddress.Text;
       Properties.Settings.Default.Save();
       this.Hide();

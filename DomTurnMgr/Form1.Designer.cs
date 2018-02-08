@@ -34,6 +34,7 @@
       System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("WORKING....");
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+      this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
       this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,6 +63,7 @@
       // menuStrip1
       // 
       this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
             this.toolStripMenuItem1,
             this.editToolStripMenuItem,
             this.dom5InspectorToolStripMenuItem,
@@ -72,6 +74,15 @@
       this.menuStrip1.Size = new System.Drawing.Size(714, 24);
       this.menuStrip1.TabIndex = 3;
       this.menuStrip1.Text = "menuStrip1";
+      // 
+      // toolStripMenuItem2
+      // 
+      this.toolStripMenuItem2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+      this.toolStripMenuItem2.Image = global::DomTurnMgr.Properties.Resources.newFile;
+      this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+      this.toolStripMenuItem2.Size = new System.Drawing.Size(28, 20);
+      this.toolStripMenuItem2.Text = "Add Game";
+      this.toolStripMenuItem2.Click += new System.EventHandler(this.newGame_Click);
       // 
       // toolStripMenuItem1
       // 
@@ -228,7 +239,6 @@
       this.lblTurnNumber.Size = new System.Drawing.Size(75, 27);
       this.lblTurnNumber.TabIndex = 7;
       this.lblTurnNumber.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-      this.lblTurnNumber.VisibleChanged += new System.EventHandler(this.lblTurnNumber_VisibleChanged);
       // 
       // notifyIcon1
       // 
@@ -313,6 +323,7 @@
     private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
     private System.Windows.Forms.ToolStripMenuItem showToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+    private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
   }
 }
 
