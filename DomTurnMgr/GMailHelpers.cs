@@ -9,6 +9,7 @@ using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using System.IO;
+using System.Diagnostics;
 
 namespace DomTurnMgr
 {
@@ -17,7 +18,7 @@ namespace DomTurnMgr
     #region Message Header Cache
     private static Dictionary<string, Dictionary<string, string>> messageHeaderCache = new Dictionary<string, Dictionary<string, string>>();
 
-    public static void populateMessgeHeaderCache(GmailService service, string msgID)
+    private static void populateMessgeHeaderCache(GmailService service, string msgID)
     {
       MessagePart payload = service.Users.Messages.Get("me", msgID).Execute().Payload;
       if (payload == null || payload.Headers == null)
@@ -36,7 +37,141 @@ namespace DomTurnMgr
     }
     #endregion
 
-    public static string GetMessageHeader(GmailService service, string msgID, string headerName)
+    private class MessageCache
+    {
+      private string gameName;
+
+      internal MessageCache(string gameName)
+      {
+        this.gameName = gameName;
+        // perform the update
+        Update();
+      }
+
+      internal IEnumerable<int> getAvailableTurns()
+      {
+        return turnList.Keys;
+      }
+
+      internal string getInboundMsgID(int turnNumber)
+      {
+        return turnList[turnNumber].inboundMsgID;
+      }
+      internal string getOutboundMsgID(int turnNumber)
+      {
+        return turnList[turnNumber].outboundMsgID;
+      }
+
+      private struct TurnInfo
+      {
+        internal string outboundMsgID;
+        internal string inboundMsgID;
+      };
+      // set up an event for when this changes
+      private Dictionary<int, TurnInfo> turnList = new Dictionary<int, TurnInfo>();
+
+      private IList<string> GetInboundTurns()
+      {
+        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+        return GetTurns(Properties.Settings.Default.ServerAddress, playerAddress);
+      }
+
+      private IList<string> GetOutboundTurns()
+      {
+        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
+        return GetTurns(playerAddress, Properties.Settings.Default.ServerAddress);
+      }
+
+      private IList<string> GetTurns(string from, string to)
+      {
+        string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
+        string searchString = string.Format(searchStringFmt, from, to, this.gameName);
+        return GMailHelpers.GetTurns(Program.GmailService, searchString);
+      }
+
+      internal void Update()
+      {
+#if false
+        try
+#endif
+        {
+          this.turnList.Clear();
+          IList<string> outboundTurns = GetOutboundTurns();
+          IList<string> inboundTurns = GetInboundTurns();
+
+          // Fill in the sent message IDs
+          foreach (var msgID in inboundTurns)
+          {
+
+            string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+            int turnIndex = getTurnNumberFromSubject(subject);
+            if (turnIndex > 0)
+            {
+              TurnInfo ti;
+              if (turnList.ContainsKey(turnIndex))
+              {
+                ti = turnList[turnIndex];
+              }
+              else
+              {
+                ti = new TurnInfo();
+              }
+              ti.inboundMsgID = msgID;
+              turnList[turnIndex] = ti;
+            }
+          }
+
+          foreach (var msgID in outboundTurns)
+          {
+            // now work out which turn this applies to
+            string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
+            int turnIndex = getTurnNumberFromSubject(subject);
+
+            TurnInfo ti;
+            if (turnList.ContainsKey(turnIndex))
+            {
+              ti = turnList[turnIndex];
+            }
+            else
+            {
+              ti = new TurnInfo();
+            }
+            ti.outboundMsgID = msgID;
+            turnList[turnIndex] = ti;
+          }
+
+          // TODO: Event Handler
+          //OnTurnsChanged(EventArgs.Empty);
+        }
+#if false
+        catch (Exception e)
+        {
+          // Likely No internet connection;
+          System.Windows.Forms.MessageBox.Show(e.ToString());
+        }
+#endif
+    }
+
+      private int getTurnNumberFromSubject(string subject)
+      {
+        int turnNumber = 0;
+
+        string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+        if (!int.TryParse(turnIndexString, out turnNumber))
+        {
+          // perhaps this is the first turn
+          if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
+          {
+            turnNumber = 1;
+          }
+        }
+        return turnNumber;
+      }
+    }
+
+    private static Dictionary<string, MessageCache> messageCaches = new Dictionary<string, MessageCache>();
+
+    private static string GetMessageHeader(GmailService service, string msgID, string headerName)
     {
       if (!messageHeaderCache.ContainsKey(msgID))
       {
@@ -46,7 +181,7 @@ namespace DomTurnMgr
     }
     
     // TODO: construct the search string elsehere and pass it in. Rather than building it here
-    public static IList<string> GetTurns(GmailService service, string searchString)
+    private static IList<string> GetTurns(GmailService service, string searchString)
     {
       IList<string> retVal = new List<string>();
 
@@ -73,8 +208,7 @@ namespace DomTurnMgr
       return DateTime.Parse(GetMessageHeader(service, messageId, "Date"));
     }
 
-
-    public static void GetAttachments(GmailService service, String userId, String messageId, String outputDir)
+    private static void GetAttachments(GmailService service, String userId, String messageId, String outputDir)
     {
       try
       {
@@ -120,7 +254,8 @@ namespace DomTurnMgr
       }
     }
 
-    public static MimeKit.MimeMessage Reply(MimeKit.MimeMessage srcMsg, String attachmentFile, bool replyToAll)
+#region helper functions
+    private static MimeKit.MimeMessage Reply(MimeKit.MimeMessage srcMsg, String attachmentFile, bool replyToAll)
     {
       var replyMsg = new MimeKit.MimeMessage();
       if (srcMsg.ReplyTo.Count > 0)
@@ -191,12 +326,12 @@ namespace DomTurnMgr
       return replyMsg;
     }
 
-    static string Base64UrlEncode(byte[] arg)
+    private static string Base64UrlEncode(byte[] arg)
     {
       return Base64UrlEncode(Convert.ToBase64String(arg)); // Regular base64 encoder
     }
 
-    static string Base64UrlEncode(string arg)
+    private static string Base64UrlEncode(string arg)
     {
       string s = arg;
       s = s.Split('=')[0]; // Remove any trailing '='s
@@ -205,7 +340,7 @@ namespace DomTurnMgr
       return s;
     }
 
-    static byte[] Base64UrlDecode(string arg)
+    private static byte[] Base64UrlDecode(string arg)
     {
       string s = arg;
       s = s.Replace('-', '+'); // 62nd char of encoding
@@ -219,5 +354,34 @@ namespace DomTurnMgr
           throw new System.Exception("Illegal base64url string!");}
       return Convert.FromBase64String(s); // Standard base64 decoder
     }
+#endregion helper functions
+
+    public static void AddGame(string name)
+    {
+      // TODO make this async
+      messageCaches[name] = new MessageCache(name);
+    }
+
+    public static string GetTRNFile(string gameName, int turnNumber)
+    {
+      string messageID = messageCaches[gameName].getInboundMsgID(turnNumber);
+      string tempFolder = Path.GetTempPath() + @"DomTurnMgr\" + messageID;
+      Directory.CreateDirectory(tempFolder);
+      GMailHelpers.GetAttachments(Program.GmailService, "me", messageCaches[gameName].getInboundMsgID(turnNumber), tempFolder);
+      // look in the dir, and 
+      IEnumerable<string> trnFiles = Directory.EnumerateFiles(tempFolder, "*.trn");
+      Debug.Assert(trnFiles.Count() == 1);
+      if (trnFiles.Count() == 1)
+      {
+        return trnFiles.ElementAt(0);
+      }
+      return "";
+    }
+
+    public static IEnumerable<int> getAvailableTurns(string gameName)
+    {
+      return messageCaches[gameName].getAvailableTurns();
+    }
+
   }
 }

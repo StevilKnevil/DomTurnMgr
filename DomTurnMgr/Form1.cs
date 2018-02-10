@@ -245,15 +245,15 @@ namespace DomTurnMgr
         var group = listView1.Groups["pendingGroup"];
 
         // Render differently if finished turn
-        if (turn.outboundMsgID != null)
-        {
+        if (turn.hasBeenSentToEmailServer)
+        { 
           status = "Turn Complete";
           col = SystemColors.GrayText;
           group = listView1.Groups["completeGroup"];
         }
 
         var lvi = new ListViewItem(new[] {
-            GMailHelpers.GetMessageHeader(Program.GmailService, turn.inboundMsgID, "Subject"),
+            "Turn: " + turn.Number,
             status
           });
         lvi.ForeColor = col;
@@ -324,6 +324,7 @@ namespace DomTurnMgr
 
     private void btnGetTrn_Click(object sender, EventArgs e)
     {
+#if false
       // Make sure that we have selected a sensible turn
       if (listView1.SelectedItems.Count != 1)
         return;
@@ -390,10 +391,13 @@ namespace DomTurnMgr
         GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
         fadingStatusText1.Text = "Downloaded: " + listView1.SelectedItems[0].Text;
       }
+#endif
     }
 
     private void btnSend2h_Click(object sender, EventArgs e)
     {
+#if false
+
       // Make sure that we have selected a sensible turn
       if (listView1.SelectedItems.Count != 1)
         return;
@@ -430,7 +434,9 @@ namespace DomTurnMgr
       currentGame.Update();
 
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
-    } 
+#endif
+    }
+
 
     private void refresh_Click(object sender, EventArgs e)
     {

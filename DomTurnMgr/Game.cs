@@ -19,11 +19,10 @@ namespace DomTurnMgr
    */
   class Game
   {
+    
 
     public class Turn
     {
-      internal string outboundMsgID;
-      internal string inboundMsgID;
       enum Status
       {
         Processing,
@@ -31,11 +30,80 @@ namespace DomTurnMgr
         InProgress,
         Submitted,
       };
-      Status Status1;
-      int TurnNumber;
-      string fileTRNPath;
-      string file2HPath;
+      internal Game Owner;
+      internal int Number;
+      internal bool existsOnEmailServer;
+      internal bool downloadedFromEmailServer; // < Implies file name is valid
+      internal bool inputFileExists; // < .trn file exists on disk
+      internal bool outputFileExists; // < .2h file exists on disk
+      internal bool hasBeenSentToEmailServer; // < .2h file exists on disk
+      internal bool hasBeenRecievedByEmailServer; // < .2h file exists on disk
 
+      private string assetsFolder
+      {
+        get
+        {
+          return String.Format(@"{0}\DomTurnManager\{1}",
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Owner.Name);
+        }
+      }
+      private string inputFilename
+      {
+        get {
+          return String.Format(@"{0}\{1}.trn",
+            this.assetsFolder,
+            // TODO we need the race encoding so that we can builf up 'mid_arcosphalese_35.trn' for example
+            this.Number);
+        }
+      }
+      private string outputFilename
+      {
+        get
+        {
+          return String.Format(@"{0}\{1}.trn",
+            this.assetsFolder,
+            this.Number);
+        }
+      }
+
+      public Turn(Game owner, int number)
+      {
+        this.Owner = owner;
+        this.Number = number;
+      }
+
+      internal void Update()
+      {
+        this.existsOnEmailServer = GMailHelpers.getAvailableTurns(Owner.Name).Contains(this.Number);
+        this.inputFileExists = File.Exists(this.inputFilename);
+        this.outputFileExists = File.Exists(this.outputFilename);
+        if (!this.existsOnEmailServer)
+        {
+          // Deleted email?
+        }
+        if (this.existsOnEmailServer && !this.inputFileExists)
+        {
+          // download turn file from email
+          if (File.Exists(inputFilename))
+          {
+            // Already have this attachment, nothing to do
+            // TODO: Download anyway and binary compare?
+            return;
+          }
+
+          // Get the attchment from the selected message
+          string filename = GMailHelpers.GetTRNFile(this.Owner.Name, this.Number);
+          // copy the file to the correct output location
+          Directory.CreateDirectory(Path.GetDirectoryName(inputFilename));
+          File.Copy(filename, inputFilename);
+        }
+        if (this.hasBeenSentToEmailServer && !this.outputFileExists)
+        {
+          // re-download .2h file from email
+        }
+      }
+
+#if false
       internal class DateComparer : IComparer<Turn>
       {
         public int Compare(Turn x, Turn y)
@@ -64,34 +132,20 @@ namespace DomTurnMgr
           }
         }
       }
-
+#endif
     }
-
-    private int getTurnNumberFromSubject(string subject)
-    {
-      int turnNumber = 0;
-
-      string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
-      if (!int.TryParse(turnIndexString, out turnNumber))
-      {
-        // perhaps this is the first turn
-        if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
-        {
-          turnNumber = 1;
-        }
-      }
-      return turnNumber;
-    }
-
 
     public Game(string name)
     {
       Name = name;
-      preCacheMessageHeaders();
+      GMailHelpers.AddGame(name);
+      //syncTurnsFromEmail();
+
+      // Check to see if there are any new turns in email
       Update();
     }
 
-    private void preCacheMessageHeaders()
+    private void syncTurnsFromEmail()
     {
       // Pop up a dialog
       SplashScreen ss = new SplashScreen();
@@ -102,7 +156,7 @@ namespace DomTurnMgr
       // Populate message header cache
       {
         ss.progressBar1.SetValueDirect(0);
-
+#if false
         IList<string> outboundTurns = GetOutboundTurns();
         IList<string> inboundTurns = GetInboundTurns();
 
@@ -127,36 +181,27 @@ namespace DomTurnMgr
           ss.progressBar1.SetValueDirect((int)(60 + 40 * ((float)currentItem++ / (float)outboundTurns.Count)));
           GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
         }
+#endif
         ss.progressBar1.SetValueDirect(100);
       }
 
       // hide the dialog
       ss.Hide();
     }
-
-    private IList<string> GetInboundTurns()
-    {
-      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      return GetTurns(Properties.Settings.Default.ServerAddress, playerAddress);
-    }
-
-    private IList<string> GetOutboundTurns()
-    {
-      string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-      return GetTurns(playerAddress, Properties.Settings.Default.ServerAddress);
-    }
-
-    private IList<string> GetTurns(string from, string to)
-    {
-      string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-      string searchString = string.Format(searchStringFmt, from, to, this.Name);
-      return GMailHelpers.GetTurns(Program.GmailService, searchString);
-    }
-    
+        
     public async void Update()
     {
+      // Make sure we have constructed a turn for each email that exists
+      foreach (var t in GMailHelpers.getAvailableTurns(this.Name))
+      {
+        this.turns.Add(new Turn(this, t));
+      }
+      foreach (var t in Turns)
+      {
+        t.Update();
+      }
       await Task.Run(() => { updateHostingTime(); });
-      await Task.Run(() => { updateTurns(); });
+      //await Task.Run(() => { updateTurns(); });
     }
 
     public bool IsValid(out string errMsg)
@@ -178,7 +223,7 @@ namespace DomTurnMgr
 
     public string Name { get; private set; }
 
-    #region CurrentTurnNumber
+#region CurrentTurnNumber
     private int currentTurnNumber = 0;
     public int CurrentTurnNumber
     {
@@ -205,9 +250,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion CurrentTurnNumber
+#endregion CurrentTurnNumber
 
-    #region Hosting Time
+#region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime
@@ -234,9 +279,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion Hosting Time
+#endregion Hosting Time
 
-    #region Turns List
+#region Turns List
     private List<Turn> turns = new List<Turn>();
     public IReadOnlyCollection<Turn> Turns => turns as IReadOnlyCollection<Turn>;
 
@@ -249,62 +294,8 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion Turns List
-
-    private void updateTurns()
-    {
-      try
-      {
-        IList<string> outboundTurns = GetOutboundTurns();
-        IList<string> inboundTurns = GetInboundTurns();
-
-        Dictionary<int, Turn> t = new Dictionary<int, Turn>();
-
-        // Fill in the sent message IDs
-        foreach (var msgID in inboundTurns)
-        {
-          Turn turn = new Turn();
-          turn.inboundMsgID = msgID;
-
-          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-          int turnIndex = getTurnNumberFromSubject(subject);
-          if (turnIndex > 0)
-          {
-            if (t.ContainsKey(turnIndex))
-            {
-              // TODO: throw an exception
-              System.Windows.Forms.MessageBox.Show(
-                string.Format("Duplicate turn number found:\n\nFound turns for different games.\nUpdate game name in preferences."));
-              break;
-            }
-            t[turnIndex] = turn;
-          }
-        }
-
-        foreach (var msgID in outboundTurns)
-        {
-          // now work out which turn this applies to
-          string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-          int turnIndex = getTurnNumberFromSubject(subject);
-
-          if (t.ContainsKey(turnIndex))
-          {
-            t[turnIndex].outboundMsgID = msgID;
-          }
-        }
-
-        // generate a list of turns sorted correctly.
-        turns = new List<Turn>();
-        turns.AddRange(t.Values);
-        turns.Sort(new Turn.DateComparer());
-        OnTurnsChanged(EventArgs.Empty);
-      }
-      catch (Exception)
-      {
-        // Likely No internet connection;
-      }
-    }
-
+#endregion Turns List
+    
     private void updateHostingTime()
     {
       string data = "";
