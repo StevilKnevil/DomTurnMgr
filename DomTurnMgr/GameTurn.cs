@@ -78,12 +78,12 @@ namespace DomTurnMgr
 
         if (this.outboundMsgID == string.Empty)
           this.outboundMsgID = ti.outboundMsgID;
-        else if (this.outboundMsgID == ti.outboundMsgID)
+        else if (this.outboundMsgID != ti.outboundMsgID)
           throw new ArgumentException("Mismatched outboundMsgID");
 
         if (this.inboundMsgID == string.Empty)
           this.inboundMsgID = ti.inboundMsgID;
-        else if (this.inboundMsgID == ti.inboundMsgID)
+        else if (this.inboundMsgID != ti.inboundMsgID)
           throw new ArgumentException("Mismatched inboundMsgID");
 
         Update();
