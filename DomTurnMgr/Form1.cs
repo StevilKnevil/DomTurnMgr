@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -71,6 +72,8 @@ namespace DomTurnMgr
     Game currentGame;
     List<HostingWarningTimer> hostingWarningTimers;
 
+    static readonly string gameFilename = @"d:\temp\gameObj.bin";
+
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
      * Form listens to events when game properties change and responds appropriately
@@ -131,7 +134,18 @@ namespace DomTurnMgr
       }
       else
       {
-        SetGame(new Game(Properties.Settings.Default.GameName));
+        if (File.Exists(gameFilename))
+        {
+          FileStream s = new FileStream(gameFilename, FileMode.Open);
+          IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+          Game g = formatter.Deserialize(s) as Game;
+          s.Close();
+          SetGame(g);
+        }
+        else
+        {
+          SetGame(new Game(Properties.Settings.Default.GameName));
+        }
       }
     }
 
@@ -203,6 +217,12 @@ namespace DomTurnMgr
         Invoke(new Action<object, EventArgs>(OnTurnsChanged), sender, e);
         return;
       }
+
+      // Serialise out the game for next time. For now just serialise when turns change as everything else is quick to update
+      FileStream s = new FileStream(gameFilename, FileMode.Create);
+      IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+      formatter.Serialize(s, this);
+      s.Close();
 
       // Update the UI
       UpdateTurnsList();
@@ -553,8 +573,12 @@ namespace DomTurnMgr
       {
         if (this.Visible)
         {
+          UpdateTurnsList();
+          UpdateCurrentTurnLabel();
+          UpdateHostingTime();
+          UpdateRaceStatusList();
           // Force a refresh of game state - will drive an update of the UI
-          currentGame.Update();
+          //currentGame.Update();
         }
       }
     }
@@ -566,7 +590,7 @@ namespace DomTurnMgr
       {
         Program.silentInstallAppUpdate();
       }
-      else
+      else if (currentGame != null)
       {
         currentGame.UpdateInterval = this.Visible ? 60 * 1000 : 60 * 60 * 1000;
         RefreshUI();

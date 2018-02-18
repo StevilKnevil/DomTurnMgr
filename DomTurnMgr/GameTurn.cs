@@ -11,8 +11,9 @@ using System.Threading.Tasks;
 
 namespace DomTurnMgr
 {
-  partial class Game
+  public partial class Game
   {
+    [Serializable()]
     public class Turn : IComparable
     {
       enum Status
@@ -22,18 +23,20 @@ namespace DomTurnMgr
         InProgress,
         Submitted,
       };
+      [NonSerialized()]
       internal Game Owner;
       internal int Number;
       internal string outboundMsgID = "";
       internal string inboundMsgID = "";
 
-      internal bool existsOnEmailServer;
-      internal bool downloadedFromEmailServer; // < Implies file name is valid
-      internal bool inputFileExists; // < .trn file exists on disk
-      internal bool outputFileExists; // < .2h file exists on disk
+      //internal bool existsOnEmailServer;
+      //internal bool downloadedFromEmailServer; // < Implies file name is valid
+      //internal bool inputFileExists; // < .trn file exists on disk
+      //internal bool outputFileExists; // < .2h file exists on disk
       internal bool HasBeenSentToEmailServer => outboundMsgID != "";
-      internal bool hasBeenRecievedByEmailServer; // < .2h file exists on disk
+      //internal bool hasBeenRecievedByEmailServer; // < .2h file exists on disk
 
+#if false
       private string assetsFolder
       {
         get
@@ -60,8 +63,9 @@ namespace DomTurnMgr
             this.Number);
         }
       }
+#endif
 
-      public Turn(Game owner, EmailWatcher.TurnInfo ti)
+      internal Turn(Game owner, EmailWatcher.TurnInfo ti)
       {
         this.Owner = owner;
         this.Number = ti.Number;

@@ -8,7 +8,7 @@ using System.Timers;
 
 namespace DomTurnMgr
 {
-  class EmailWatcher
+  internal class EmailWatcher
   {
     internal class TurnInfo
     {

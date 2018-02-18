@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -15,7 +16,8 @@ namespace DomTurnMgr
   /*
    * Have the email and server watcher as nested classes within this (as partial class def?) Then the form can just watch the 'EmailInterface' and the 'ServerInterface' rather than bouncing through the Game class.
    */
-  partial class Game
+  [Serializable()]
+  partial class Game : ISerializable
   {
     EmailWatcher emailWatcher;
     ServerWatcher serverWatcher;
@@ -175,7 +177,28 @@ namespace DomTurnMgr
     {
       RaceStatusChanged?.Invoke(this, e);
     }
-    #endregion Race Status
+#endregion Race Status
 
+    #region ISerializable
+    public void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+      info.AddValue("Name", Name, typeof(string));
+      info.AddValue("CurrentTurnNumber", currentTurnNumber, typeof(int));
+      info.AddValue("HostingTime", hostingTime, typeof(DateTime));
+      info.AddValue("Turns", turns, typeof(Dictionary<int, Turn>));
+      info.AddValue("RaceStatus", raceStatus, typeof(Dictionary<string, bool>));
+    }
+
+    public Game(SerializationInfo info, StreamingContext context)
+    {
+      // TODO: could use basic serialisation, with a parameterless constructor, and set up the watchers when Name is set.
+      // Reset the property value using the GetValue method.
+      currentTurnNumber = (int)info.GetValue("CurrentTurnNumber", typeof(int));
+      hostingTime = (DateTime)info.GetValue("HostingTime", typeof(DateTime));
+      turns = (Dictionary<int, Turn>)info.GetValue("Turns", typeof(Dictionary<int, Turn>));
+      raceStatus = (Dictionary<string, bool>)info.GetValue("RaceStatus", typeof(Dictionary<string, bool>));
+      Name = (string)info.GetValue("Name", typeof(string));
+    }
+    #endregion ISerializable
   }
 }
