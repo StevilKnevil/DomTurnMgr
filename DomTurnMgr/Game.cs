@@ -13,23 +13,23 @@ namespace DomTurnMgr
 {
   // TODO:
   /*
-   * Manage the interaction with LLama server. Cannonical details of game turn number
-   * Manage turns from emails, event handler for when it changes - seperate thread to poll and parse.
-   * Move the turns class tp this clas
+   * Have the email and server watcher as nested classes within this (as partial class def?) Then the form can just watch the 'EmailInterface' and the 'ServerInterface' rather than bouncing through the Game class.
    */
   partial class Game
   {
     EmailWatcher emailWatcher;
+    ServerWatcher serverWatcher;
 
     public Game(string name)
     {
       Name = name;
       emailWatcher = new EmailWatcher(name);
       emailWatcher.TurnsChanged += EmailWatcher_TurnsChanged;
-      //syncTurnsFromEmail();
 
-      // Check to see if there are any new turns in email
-      Update();
+      serverWatcher = new ServerWatcher(name);
+      serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
+      serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
+      serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
     }
 
     private void EmailWatcher_TurnsChanged(object sender, CollectionChangeEventArgs e)
@@ -49,10 +49,27 @@ namespace DomTurnMgr
 
       OnTurnsChanged(EventArgs.Empty);
     }
-    
-    public async void Update()
+
+    private void ServerWatcher_CurrentTurnNumberChanged(object sender, IntEventArgs e)
     {
-      await Task.Run(() => { updateHostingTime(); });
+      this.CurrentTurnNumber = e.Value;
+    }
+
+    private void ServerWatcher_HostingTimeChanged(object sender, DateTimeEventArgs e)
+    {
+      this.HostingTime = e.Value;
+    }
+
+    private void ServerWatcher_RaceStatusChanged(object sender, CollectionChangeEventArgs e)
+    {
+      this.raceStatus = e.Element as Dictionary<string, bool>;
+      OnRaceStatusChanged(EventArgs.Empty);
+    }
+
+    public void Update()
+    {
+      emailWatcher.Update();
+      serverWatcher.Update();
     }
 
     public bool IsValid(out string errMsg)
@@ -74,7 +91,7 @@ namespace DomTurnMgr
 
     public string Name { get; private set; }
 
-#region CurrentTurnNumber
+    #region CurrentTurnNumber
     private int currentTurnNumber = 0;
     public int CurrentTurnNumber
     {
@@ -95,15 +112,11 @@ namespace DomTurnMgr
     public event EventHandler CurrentTurnNumberChanged;
     protected virtual void OnCurrentTurnNumberChanged(EventArgs e)
     {
-      EventHandler handler = CurrentTurnNumberChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      CurrentTurnNumberChanged?.Invoke(this, e);
     }
-#endregion CurrentTurnNumber
+    #endregion CurrentTurnNumber
 
-#region Hosting Time
+    #region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime
@@ -124,148 +137,31 @@ namespace DomTurnMgr
     public event EventHandler HostingTimeChanged;
     protected virtual void OnHostingTimeChanged(EventArgs e)
     {
-      EventHandler handler = HostingTimeChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      HostingTimeChanged?.Invoke(this, e);
     }
-#endregion Hosting Time
+    #endregion Hosting Time
 
-#region Turns List
+    #region Turns List
     private Dictionary<int, Turn> turns = new Dictionary<int, Turn>();
     public IReadOnlyDictionary<int, Turn> Turns => turns;
 
     public event EventHandler TurnsChanged;
     protected virtual void OnTurnsChanged(EventArgs e)
     {
-      EventHandler handler = TurnsChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      TurnsChanged?.Invoke(this, e);
     }
-#endregion Turns List
+    #endregion Turns List
     
-#region Race Status
+    #region Race Status
     private Dictionary<string, bool> raceStatus = new Dictionary<string, bool>();
     public IReadOnlyDictionary<string, bool> RaceStatus => raceStatus as IReadOnlyDictionary<string, bool>;
 
     public event EventHandler RaceStatusChanged;
     protected virtual void OnRaceStatusChanged(EventArgs e)
     {
-      EventHandler handler = RaceStatusChanged;
-      if (handler != null)
-      {
-        handler(this, e);
-      }
+      RaceStatusChanged?.Invoke(this, e);
     }
-#endregion Race Status
-    
-    private void updateHostingTime()
-    {
-      string data = "";
-      try
-      {
-        string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + this.Name;
+    #endregion Race Status
 
-        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-          Stream receiveStream = response.GetResponseStream();
-          StreamReader readStream = null;
-
-          if (response.CharacterSet == null)
-          {
-            readStream = new StreamReader(receiveStream);
-          }
-          else
-          {
-            readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-          }
-
-          data = readStream.ReadToEnd();
-
-          response.Close();
-          readStream.Close();
-        }
-      }
-      catch (Exception)
-      {
-        // Likely no internet connection
-      }
-
-      // Find the remaining time in the string
-      {
-        DateTime result = new DateTime();
-        bool success = false;
-
-        string pattern = @"Next turn due: (.*)\n";
-        Regex re = new Regex(pattern);
-        MatchCollection matches = re.Matches(data);
-        if (matches.Count == 1)
-        {
-          if (matches[0].Captures.Count == 1)
-          {
-            if (matches[0].Groups.Count == 2)
-            {
-              string s = matches[0].Groups[1].Value;
-              // trim the trainling 'st' 'nd' 'rd' 'th' from the string
-              s = s.Remove(s.Length - 2);
-              success = DateTime.TryParseExact(s,
-                "HH:mm GMT on dddd MMMM d",
-                new System.Globalization.CultureInfo("en-US"),
-                System.Globalization.DateTimeStyles.None,
-                out result);
-            }
-          }
-        }
-        // TODO: Have a private function for set/clear hosting time that then fires the property changed event
-        IsValidHostingTime = success;
-        HostingTime = result;
-      }
-
-      // Find the current turn number
-      {
-        int result = -1;
-        string pattern = @"Turn number (\d*)";
-        Regex re = new Regex(pattern);
-        MatchCollection matches = re.Matches(data);
-        if (matches.Count == 1)
-        {
-          if (matches[0].Captures.Count == 1)
-          {
-            if (matches[0].Groups.Count == 2)
-            {
-              string s = matches[0].Groups[1].Value;
-              result = int.Parse(s);
-            }
-          }
-        }
-        CurrentTurnNumber = result;
-      }
-
-      // Find the state of each races turn
-      {
-        raceStatus.Clear();
-        string pattern = @"<tr><td>(.*)<\/td><td>&nbsp;&nbsp;&nbsp;&nbsp;<\/td><td>(2h file received|Waiting for 2h file)<\/td><\/tr>\n";
-        Regex re = new Regex(pattern);
-        MatchCollection matches = re.Matches(data);
-        foreach (Match m in matches)
-        {
-          if (m.Captures.Count == 1 && m.Groups.Count == 3)
-          {
-            bool turnComplete = false;
-            if (m.Groups[2].Value == "2h file received")
-              turnComplete = true;
-            string raceName = m.Groups[1].Value.Trim(' ');
-            raceStatus[raceName] = turnComplete;
-          }
-        }
-        OnRaceStatusChanged(EventArgs.Empty);
-      }
-    }
   }
 }

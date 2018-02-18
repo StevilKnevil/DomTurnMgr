@@ -22,7 +22,7 @@ namespace DomTurnMgr
     };
 
     private string gameName;
-    private static System.Timers.Timer updateTimer;
+    private System.Timers.Timer updateTimer;
 
     internal EmailWatcher(string gameName)
     {
@@ -31,15 +31,16 @@ namespace DomTurnMgr
       // perform an initial update
       Update();
 
-      updateTimer = new System.Timers.Timer(60 * 1000);
+      updateTimer = new Timer(60 * 1000);
       updateTimer.Elapsed += updateTimer_Elapsed;
       updateTimer.Start();
     }
 
     private void updateTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
+      updateTimer.Stop();
       Update();
-      // retsrat the timer
+      // restart the timer
       updateTimer.Start();
     }
 
@@ -115,6 +116,7 @@ namespace DomTurnMgr
       }
     }
 
+    #region private helper functions
     private int getTurnNumberFromSubject(string subject)
     {
       int turnNumber = 0;
@@ -149,6 +151,6 @@ namespace DomTurnMgr
       string searchString = string.Format(searchStringFmt, from, to, this.gameName);
       return GMailHelpers.GetTurns(Program.GmailService, searchString);
     }
-
+    #endregion private helper functions
   }
 }
