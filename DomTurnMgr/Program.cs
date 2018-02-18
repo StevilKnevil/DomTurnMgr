@@ -185,6 +185,7 @@ namespace DomTurnMgr
           {
             ApplicationDeployment.CurrentDeployment.Update();
             // TODO Store current window state so that it can be returned correctly after restart.
+            theForm.ForceClose();
             Application.Restart();
           }
           catch (DeploymentDownloadException)

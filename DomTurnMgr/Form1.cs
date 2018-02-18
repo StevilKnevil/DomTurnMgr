@@ -126,7 +126,7 @@ namespace DomTurnMgr
         else
         {
           // Quit
-          this.Load += (s, e) => { this.doClose = true; Close(); };
+          this.Load += (s, e) => { ForceClose(); };
         }
       }
       else
@@ -525,6 +525,12 @@ namespace DomTurnMgr
     }
 
     private bool doClose = false;
+    public void ForceClose()
+    {
+      this.doClose = true;
+      Close();
+    }
+
     private void Form1_FormClosing(object sender, FormClosingEventArgs e)
     {
       // if we have been actually asked to exit then do so, otherwise just hide the form.
@@ -538,8 +544,7 @@ namespace DomTurnMgr
 
     private void exitToolStripMenuItem_Click(object sender, EventArgs e)
     {
-      doClose = true;
-      this.Close();
+      this.ForceClose();
     }
 
     private void RefreshUI()
