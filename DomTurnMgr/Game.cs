@@ -23,13 +23,6 @@ namespace DomTurnMgr
     public Game(string name)
     {
       Name = name;
-      emailWatcher = new EmailWatcher(name);
-      emailWatcher.TurnsChanged += EmailWatcher_TurnsChanged;
-
-      serverWatcher = new ServerWatcher(name);
-      serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
-      serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
-      serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
     }
 
     public double UpdateInterval
@@ -95,7 +88,22 @@ namespace DomTurnMgr
       return true;
     }
 
-    public string Name { get; private set; }
+    private string name;
+    public string Name
+    {
+      get { return name; }
+      private set
+      {
+        name = value;
+        emailWatcher = new EmailWatcher(name);
+        emailWatcher.TurnsChanged += EmailWatcher_TurnsChanged;
+
+        serverWatcher = new ServerWatcher(name);
+        serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
+        serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
+        serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
+      }
+    }
 
     #region CurrentTurnNumber
     private int currentTurnNumber = 0;
