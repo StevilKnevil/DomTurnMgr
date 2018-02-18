@@ -167,6 +167,9 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Game.cs" />
+    <Compile Include="GameTurn.cs" >
+      <DependentUpon>Game.cs</DependentUpon>
+    </Compile>
     <Compile Include="GMailHelpers.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PreferencesForm.cs">
