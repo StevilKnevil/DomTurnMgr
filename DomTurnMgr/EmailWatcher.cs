@@ -36,6 +36,12 @@ namespace DomTurnMgr
       updateTimer.Start();
     }
 
+    public double UpdateInterval
+    {
+      get { return updateTimer.Interval; }
+      set { updateTimer.Stop(); updateTimer.Interval = value; updateTimer.Start(); }
+    }
+
     private void updateTimer_Elapsed(object sender, ElapsedEventArgs e)
     {
       updateTimer.Stop();

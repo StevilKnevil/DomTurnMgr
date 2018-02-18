@@ -32,6 +32,12 @@ namespace DomTurnMgr
       serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
     }
 
+    public double UpdateInterval
+    {
+      get { return serverWatcher.UpdateInterval; }
+      set { emailWatcher.UpdateInterval = value; serverWatcher.UpdateInterval = value;  }
+    }
+
     private void EmailWatcher_TurnsChanged(object sender, CollectionChangeEventArgs e)
     {
       // Make sure we have constructed a turn for each email that exists

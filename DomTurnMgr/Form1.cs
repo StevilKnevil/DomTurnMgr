@@ -70,8 +70,6 @@ namespace DomTurnMgr
 
     Game currentGame;
     List<HostingWarningTimer> hostingWarningTimers;
-    System.Timers.Timer backgroundTimer = new System.Timers.Timer(1 * 60 * 60 * 1000);
-    System.Timers.Timer foregroundTimer = new System.Timers.Timer(60 * 1000);
 
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
@@ -95,9 +93,6 @@ namespace DomTurnMgr
       {
         v.Elapsed += hostingWarningTimer_Elapsed;
       }
-
-      backgroundTimer.Elapsed += Timer_Elapsed;
-      foregroundTimer.Elapsed += Timer_Elapsed;
 
       // set up initial preferences
       {
@@ -549,20 +544,12 @@ namespace DomTurnMgr
 
     private void RefreshUI()
     {
-      foregroundTimer.Stop();
-      backgroundTimer.Stop();
-
       if (currentGame != null)
       {
         if (this.Visible)
         {
           // Force a refresh of game state - will drive an update of the UI
           currentGame.Update();
-          foregroundTimer.Start();
-        }
-        else
-        {
-          backgroundTimer.Start();
         }
       }
     }
@@ -574,8 +561,11 @@ namespace DomTurnMgr
       {
         Program.silentInstallAppUpdate();
       }
-
-      RefreshUI();
+      else
+      {
+        currentGame.UpdateInterval = this.Visible ? 60 * 1000 : 60 * 60 * 1000;
+        RefreshUI();
+      }
     }
 
     private void newGame_Click(object sender, EventArgs e)
