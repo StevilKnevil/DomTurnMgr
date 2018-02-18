@@ -165,8 +165,8 @@ namespace DomTurnMgr
         Dictionary<int, Turn> t = new Dictionary<int, Turn>();
 
         // calc the delta for each inbound & outbound message
-        int outDelta = 40 / (outboundTurns.Count+1);
-        int inDelta = 40 / (inboundTurns.Count+1);
+        int outDelta = 40 / (outboundTurns.Count + 1);
+        int inDelta = 40 / (inboundTurns.Count + 1);
 
         int currentItem = 0;
         foreach (var msgID in inboundTurns)
@@ -188,7 +188,7 @@ namespace DomTurnMgr
       // hide the dialog
       ss.Hide();
     }
-        
+
     public async void Update()
     {
       // Make sure we have constructed a turn for each email that exists
@@ -296,6 +296,21 @@ namespace DomTurnMgr
     }
 #endregion Turns List
     
+    #region Race Status
+    private Dictionary<string, bool> raceStatus = new Dictionary<string, bool>();
+    public IReadOnlyDictionary<string, bool> RaceStatus => raceStatus as IReadOnlyDictionary<string, bool>;
+
+    public event EventHandler RaceStatusChanged;
+    protected virtual void OnRaceStatusChanged(EventArgs e)
+    {
+      EventHandler handler = RaceStatusChanged;
+      if (handler != null)
+      {
+        handler(this, e);
+      }
+    }
+    #endregion Race Status
+    
     private void updateHostingTime()
     {
       string data = "";
@@ -381,6 +396,25 @@ namespace DomTurnMgr
         CurrentTurnNumber = result;
       }
 
+      // Find the state of each races turn
+      {
+        raceStatus.Clear();
+        string pattern = @"<tr><td>(.*)<\/td><td>&nbsp;&nbsp;&nbsp;&nbsp;<\/td><td>(2h file received|Waiting for 2h file)<\/td><\/tr>\n";
+        Regex re = new Regex(pattern);
+        MatchCollection matches = re.Matches(data);
+        foreach (Match m in matches)
+        {
+          if (m.Captures.Count == 1 && m.Groups.Count == 3)
+          {
+            bool turnComplete = false;
+            if (m.Groups[2].Value == "2h file received")
+              turnComplete = true;
+            string raceName = m.Groups[1].Value.Trim(' ');
+            raceStatus[raceName] = turnComplete;
+          }
+        }
+        OnRaceStatusChanged(EventArgs.Empty);
+      }
     }
   }
 }

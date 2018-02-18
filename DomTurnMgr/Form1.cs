@@ -155,6 +155,7 @@ namespace DomTurnMgr
           currentGame.CurrentTurnNumberChanged -= OnCurrentTurnNumberChanged;
           currentGame.HostingTimeChanged -= OnHostingTimeChanged;
           currentGame.TurnsChanged -= OnTurnsChanged;
+          currentGame.RaceStatusChanged -= OnRaceStatusChanged;
         }
         // Wipe down UI - which can be used to trigger notifications
         lblTurnNumber.Text = "";
@@ -164,6 +165,7 @@ namespace DomTurnMgr
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
         currentGame.TurnsChanged += OnTurnsChanged;
+        currentGame.RaceStatusChanged += OnRaceStatusChanged;
 
         // TODO: Merge this with teh Form.Visible event handler below
         this.RefreshUI();
@@ -209,6 +211,18 @@ namespace DomTurnMgr
 
       // Update the UI
       UpdateTurnsList();
+    }
+
+    protected void OnRaceStatusChanged(object sender, EventArgs e)
+    {
+      if (this.InvokeRequired)
+      {
+        Invoke(new Action<object, EventArgs>(OnRaceStatusChanged), sender, e);
+        return;
+      }
+
+      // Update the UI
+      UpdateRaceStatusList();
     }
 
     private void Timer_Elapsed(object sender, EventArgs e)
@@ -310,6 +324,37 @@ namespace DomTurnMgr
         notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", "New turn available!", ToolTipIcon.Info);
       }
       lblTurnNumber.Text = turnNum;
+    }
+
+    private void UpdateRaceStatusList()
+    {
+      lvRaceStatus.Items.Clear();
+
+      foreach (var r in currentGame.RaceStatus)
+      {
+        string status = "Turn Outstanding";
+        var col = SystemColors.WindowText;
+
+        // Render differently if finished turn
+        if (r.Value == true)
+        {
+          status = "Turn Complete";
+          col = SystemColors.GrayText;
+        }
+
+        var lvi = new ListViewItem(new[] {
+            r.Key,
+            status
+          });
+        lvi.ForeColor = col;
+        lvRaceStatus.Items.Add(lvi);
+
+      }
+      lvRaceStatus.Columns[0].Width = -1;
+      lvRaceStatus.Columns[1].Width = -1;
+
+      if (lvRaceStatus.Items.Count > 0)
+        lvRaceStatus.Items[0].Selected = true;
     }
 
     private void btnStartDominions_Click(object sender, EventArgs e)
