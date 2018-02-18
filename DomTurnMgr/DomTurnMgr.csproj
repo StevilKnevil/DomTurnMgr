@@ -152,6 +152,7 @@
     <Compile Include="AddGameDialog.Designer.cs">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="EmailWatcher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FadingStatusLabel.cs">
       <SubType>Component</SubType>

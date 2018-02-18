@@ -252,14 +252,20 @@ namespace DomTurnMgr
 
       listView1.Items.Clear();
 
-      foreach (var turn in currentGame.Turns)
+      // Create a sorted list of turns
+      List<Game.Turn> turnList = new List<Game.Turn>(currentGame.Turns.Values);
+      // Reverse sort the list
+      turnList.Sort((x,y)=> y.CompareTo(x));
+      foreach (var turn in turnList)
       {
+        // TODO: set the group and colour based on current turn number, set the status text based on the Turn flags. 
+        // Need to fall back in case can't get connection to server (as the curtrent turn number will be undefined
         string status = "Turn Outstanding";
         var col = SystemColors.WindowText;
         var group = listView1.Groups["pendingGroup"];
 
         // Render differently if finished turn
-        if (turn.hasBeenSentToEmailServer)
+        if (turn.HasBeenSentToEmailServer)
         { 
           status = "Turn Complete";
           col = SystemColors.GrayText;

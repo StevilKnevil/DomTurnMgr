@@ -19,9 +19,8 @@ namespace DomTurnMgr
    */
   class Game
   {
-    
 
-    public class Turn
+    public class Turn : IComparable
     {
       enum Status
       {
@@ -32,11 +31,14 @@ namespace DomTurnMgr
       };
       internal Game Owner;
       internal int Number;
+      internal string outboundMsgID = "";
+      internal string inboundMsgID = "";
+
       internal bool existsOnEmailServer;
       internal bool downloadedFromEmailServer; // < Implies file name is valid
       internal bool inputFileExists; // < .trn file exists on disk
       internal bool outputFileExists; // < .2h file exists on disk
-      internal bool hasBeenSentToEmailServer; // < .2h file exists on disk
+      internal bool HasBeenSentToEmailServer => outboundMsgID != "";
       internal bool hasBeenRecievedByEmailServer; // < .2h file exists on disk
 
       private string assetsFolder
@@ -66,14 +68,37 @@ namespace DomTurnMgr
         }
       }
 
-      public Turn(Game owner, int number)
+      public Turn(Game owner, EmailWatcher.TurnInfo ti)
       {
         this.Owner = owner;
-        this.Number = number;
+        this.Number = ti.Number;
+        this.outboundMsgID = ti.outboundMsgID;
+        this.inboundMsgID = ti.inboundMsgID;
+
+        Update();
       }
 
-      internal void Update()
+      internal void Merge(EmailWatcher.TurnInfo ti)
       {
+        if (this.Number != ti.Number)
+          throw new ArgumentException("Mismatched turn numbers");
+
+        if (this.outboundMsgID == string.Empty)
+          this.outboundMsgID = ti.outboundMsgID;
+        else if (this.outboundMsgID == ti.outboundMsgID)
+          throw new ArgumentException("Mismatched outboundMsgID");
+
+        if (this.inboundMsgID == string.Empty)
+          this.inboundMsgID = ti.inboundMsgID;
+        else if (this.inboundMsgID == ti.inboundMsgID)
+          throw new ArgumentException("Mismatched inboundMsgID");
+
+        Update();
+      }
+
+      private void Update()
+      {
+#if false
         this.existsOnEmailServer = GMailHelpers.getAvailableTurns(Owner.Name).Contains(this.Number);
         this.inputFileExists = File.Exists(this.inputFilename);
         this.outputFileExists = File.Exists(this.outputFilename);
@@ -101,107 +126,54 @@ namespace DomTurnMgr
         {
           // re-download .2h file from email
         }
+#endif
       }
 
-#if false
-      internal class DateComparer : IComparer<Turn>
+      public int CompareTo(object that)
       {
-        public int Compare(Turn x, Turn y)
-        {
-          if (x.outboundMsgID == null && y.outboundMsgID == null)
-          {
-            // Sort by date of incoming message
-            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.inboundMsgID);
-            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.inboundMsgID);
-            return yD.CompareTo(xD);
-          }
-          else if (x.outboundMsgID == null)
-          {
-            return -1;
-          }
-          else if (y.outboundMsgID == null)
-          {
-            return 1;
-          }
-          else
-          {
-            // Sort by date of outgoing message
-            DateTime xD = GMailHelpers.GetMessageTime(Program.GmailService, "me", x.outboundMsgID);
-            DateTime yD = GMailHelpers.GetMessageTime(Program.GmailService, "me", y.outboundMsgID);
-            return yD.CompareTo(xD);
-          }
-        }
+        Turn t = (Turn)that;
+        if (this.Owner != t.Owner)
+          // TODO: Make Game implement IComparable?
+          return this.Owner.Name.CompareTo(t.Owner.Name);
+        return this.Number.CompareTo(t.Number);
       }
-#endif
+     
     }
+
+    EmailWatcher emailWatcher;
 
     public Game(string name)
     {
       Name = name;
-      GMailHelpers.AddGame(name);
+      emailWatcher = new EmailWatcher(name);
+      emailWatcher.TurnsChanged += EmailWatcher_TurnsChanged;
       //syncTurnsFromEmail();
 
       // Check to see if there are any new turns in email
       Update();
     }
 
-    private void syncTurnsFromEmail()
-    {
-      // Pop up a dialog
-      SplashScreen ss = new SplashScreen();
-      ss.lblGameName.Text = this.Name;
-      ss.Show();
-      ss.Refresh();
-
-      // Populate message header cache
-      {
-        ss.progressBar1.SetValueDirect(0);
-#if false
-        IList<string> outboundTurns = GetOutboundTurns();
-        IList<string> inboundTurns = GetInboundTurns();
-
-        ss.progressBar1.SetValueDirect(20);
-
-        Dictionary<int, Turn> t = new Dictionary<int, Turn>();
-
-        // calc the delta for each inbound & outbound message
-        int outDelta = 40 / (outboundTurns.Count + 1);
-        int inDelta = 40 / (inboundTurns.Count + 1);
-
-        int currentItem = 0;
-        foreach (var msgID in inboundTurns)
-        {
-          ss.progressBar1.SetValueDirect((int)(20 + 40 * ((float)currentItem++ / (float)inboundTurns.Count)));
-          GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        }
-
-        currentItem = 0;
-        foreach (var msgID in outboundTurns)
-        {
-          ss.progressBar1.SetValueDirect((int)(60 + 40 * ((float)currentItem++ / (float)outboundTurns.Count)));
-          GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-        }
-#endif
-        ss.progressBar1.SetValueDirect(100);
-      }
-
-      // hide the dialog
-      ss.Hide();
-    }
-
-    public async void Update()
+    private void EmailWatcher_TurnsChanged(object sender, CollectionChangeEventArgs e)
     {
       // Make sure we have constructed a turn for each email that exists
-      foreach (var t in GMailHelpers.getAvailableTurns(this.Name))
+      foreach (var t in (e.Element as Dictionary<int, EmailWatcher.TurnInfo>).Values)
       {
-        this.turns.Add(new Turn(this, t));
+        if (!this.turns.Keys.Contains(t.Number))
+        {
+          this.turns.Add(t.Number, new Turn(this, t));
+        }
+        else
+        {
+          this.turns[t.Number].Merge(t);
+        }
       }
-      foreach (var t in Turns)
-      {
-        t.Update();
-      }
+
+      OnTurnsChanged(EventArgs.Empty);
+    }
+    
+    public async void Update()
+    {
       await Task.Run(() => { updateHostingTime(); });
-      //await Task.Run(() => { updateTurns(); });
     }
 
     public bool IsValid(out string errMsg)
@@ -223,7 +195,7 @@ namespace DomTurnMgr
 
     public string Name { get; private set; }
 
-    #region CurrentTurnNumber
+#region CurrentTurnNumber
     private int currentTurnNumber = 0;
     public int CurrentTurnNumber
     {
@@ -250,9 +222,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion CurrentTurnNumber
+#endregion CurrentTurnNumber
 
-    #region Hosting Time
+#region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime
@@ -279,11 +251,11 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion Hosting Time
+#endregion Hosting Time
 
-    #region Turns List
-    private List<Turn> turns = new List<Turn>();
-    public IReadOnlyCollection<Turn> Turns => turns as IReadOnlyCollection<Turn>;
+#region Turns List
+    private Dictionary<int, Turn> turns = new Dictionary<int, Turn>();
+    public IReadOnlyDictionary<int, Turn> Turns => turns;
 
     public event EventHandler TurnsChanged;
     protected virtual void OnTurnsChanged(EventArgs e)
@@ -294,9 +266,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion Turns List
+#endregion Turns List
     
-    #region Race Status
+#region Race Status
     private Dictionary<string, bool> raceStatus = new Dictionary<string, bool>();
     public IReadOnlyDictionary<string, bool> RaceStatus => raceStatus as IReadOnlyDictionary<string, bool>;
 
@@ -309,7 +281,7 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-    #endregion Race Status
+#endregion Race Status
     
     private void updateHostingTime()
     {

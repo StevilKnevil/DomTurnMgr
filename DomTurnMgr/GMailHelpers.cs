@@ -37,141 +37,7 @@ namespace DomTurnMgr
     }
     #endregion
 
-    private class MessageCache
-    {
-      private string gameName;
-
-      internal MessageCache(string gameName)
-      {
-        this.gameName = gameName;
-        // perform the update
-        Update();
-      }
-
-      internal IEnumerable<int> getAvailableTurns()
-      {
-        return turnList.Keys;
-      }
-
-      internal string getInboundMsgID(int turnNumber)
-      {
-        return turnList[turnNumber].inboundMsgID;
-      }
-      internal string getOutboundMsgID(int turnNumber)
-      {
-        return turnList[turnNumber].outboundMsgID;
-      }
-
-      private struct TurnInfo
-      {
-        internal string outboundMsgID;
-        internal string inboundMsgID;
-      };
-      // set up an event for when this changes
-      private Dictionary<int, TurnInfo> turnList = new Dictionary<int, TurnInfo>();
-
-      private IList<string> GetInboundTurns()
-      {
-        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-        return GetTurns(Properties.Settings.Default.ServerAddress, playerAddress);
-      }
-
-      private IList<string> GetOutboundTurns()
-      {
-        string playerAddress = Program.GmailService.Users.GetProfile("me").Execute().EmailAddress;
-        return GetTurns(playerAddress, Properties.Settings.Default.ServerAddress);
-      }
-
-      private IList<string> GetTurns(string from, string to)
-      {
-        string searchStringFmt = "from:{0} to:{1} has:attachment subject:{2}";
-        string searchString = string.Format(searchStringFmt, from, to, this.gameName);
-        return GMailHelpers.GetTurns(Program.GmailService, searchString);
-      }
-
-      internal void Update()
-      {
-#if false
-        try
-#endif
-        {
-          this.turnList.Clear();
-          IList<string> outboundTurns = GetOutboundTurns();
-          IList<string> inboundTurns = GetInboundTurns();
-
-          // Fill in the sent message IDs
-          foreach (var msgID in inboundTurns)
-          {
-
-            string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-            int turnIndex = getTurnNumberFromSubject(subject);
-            if (turnIndex > 0)
-            {
-              TurnInfo ti;
-              if (turnList.ContainsKey(turnIndex))
-              {
-                ti = turnList[turnIndex];
-              }
-              else
-              {
-                ti = new TurnInfo();
-              }
-              ti.inboundMsgID = msgID;
-              turnList[turnIndex] = ti;
-            }
-          }
-
-          foreach (var msgID in outboundTurns)
-          {
-            // now work out which turn this applies to
-            string subject = GMailHelpers.GetMessageHeader(Program.GmailService, msgID, "Subject");
-            int turnIndex = getTurnNumberFromSubject(subject);
-
-            TurnInfo ti;
-            if (turnList.ContainsKey(turnIndex))
-            {
-              ti = turnList[turnIndex];
-            }
-            else
-            {
-              ti = new TurnInfo();
-            }
-            ti.outboundMsgID = msgID;
-            turnList[turnIndex] = ti;
-          }
-
-          // TODO: Event Handler
-          //OnTurnsChanged(EventArgs.Empty);
-        }
-#if false
-        catch (Exception e)
-        {
-          // Likely No internet connection;
-          System.Windows.Forms.MessageBox.Show(e.ToString());
-        }
-#endif
-    }
-
-      private int getTurnNumberFromSubject(string subject)
-      {
-        int turnNumber = 0;
-
-        string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
-        if (!int.TryParse(turnIndexString, out turnNumber))
-        {
-          // perhaps this is the first turn
-          if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
-          {
-            turnNumber = 1;
-          }
-        }
-        return turnNumber;
-      }
-    }
-
-    private static Dictionary<string, MessageCache> messageCaches = new Dictionary<string, MessageCache>();
-
-    private static string GetMessageHeader(GmailService service, string msgID, string headerName)
+    internal static string GetMessageHeader(GmailService service, string msgID, string headerName)
     {
       if (!messageHeaderCache.ContainsKey(msgID))
       {
@@ -181,7 +47,7 @@ namespace DomTurnMgr
     }
     
     // TODO: construct the search string elsehere and pass it in. Rather than building it here
-    private static IList<string> GetTurns(GmailService service, string searchString)
+    internal static IList<string> GetTurns(GmailService service, string searchString)
     {
       IList<string> retVal = new List<string>();
 
@@ -356,12 +222,7 @@ namespace DomTurnMgr
     }
 #endregion helper functions
 
-    public static void AddGame(string name)
-    {
-      // TODO make this async
-      messageCaches[name] = new MessageCache(name);
-    }
-
+    /*
     public static string GetTRNFile(string gameName, int turnNumber)
     {
       string messageID = messageCaches[gameName].getInboundMsgID(turnNumber);
@@ -377,11 +238,7 @@ namespace DomTurnMgr
       }
       return "";
     }
-
-    public static IEnumerable<int> getAvailableTurns(string gameName)
-    {
-      return messageCaches[gameName].getAvailableTurns();
-    }
+    */
 
   }
 }
