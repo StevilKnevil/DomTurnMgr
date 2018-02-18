@@ -223,7 +223,7 @@ namespace DomTurnMgr
 
     public string Name { get; private set; }
 
-#region CurrentTurnNumber
+    #region CurrentTurnNumber
     private int currentTurnNumber = 0;
     public int CurrentTurnNumber
     {
@@ -250,9 +250,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-#endregion CurrentTurnNumber
+    #endregion CurrentTurnNumber
 
-#region Hosting Time
+    #region Hosting Time
     public bool IsValidHostingTime { get; private set; }
     private DateTime hostingTime;
     public DateTime HostingTime
@@ -279,9 +279,9 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-#endregion Hosting Time
+    #endregion Hosting Time
 
-#region Turns List
+    #region Turns List
     private List<Turn> turns = new List<Turn>();
     public IReadOnlyCollection<Turn> Turns => turns as IReadOnlyCollection<Turn>;
 
@@ -294,7 +294,7 @@ namespace DomTurnMgr
         handler(this, e);
       }
     }
-#endregion Turns List
+    #endregion Turns List
     
     #region Race Status
     private Dictionary<string, bool> raceStatus = new Dictionary<string, bool>();
