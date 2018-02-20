@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -21,7 +22,7 @@ namespace DomTurnMgr
     TurnManager turnManager;
     ServerWatcher serverWatcher;
 
-    public Game(string name)
+    private Game(string name)
     {
       this.name = name;
       turnManager = new TurnManager(this);
@@ -32,6 +33,40 @@ namespace DomTurnMgr
       serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
 
       turnManager.Update();
+    }
+
+    private static string GetFilename(string name)
+    {
+      return String.Format(@"{0}\DomTurnManager\{1}\{1}.json",
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), name);
+    }
+
+    public static Game CreateOrLoadGame(string name)
+    {
+      string gameFilename = GetFilename(name);
+
+      if (File.Exists(gameFilename))
+      {
+        using (StreamReader sw = new StreamReader(gameFilename))
+        {
+          return JsonConvert.DeserializeObject<Game>(sw.ReadToEnd());
+        }
+      }
+      else
+      {
+        return new Game(name);
+      }
+    }
+
+    public void Save()
+    {
+      string gameFilename = GetFilename(name);
+
+      using (StreamWriter sw = new StreamWriter(gameFilename))
+      {
+        string s = JsonConvert.SerializeObject(this);
+        sw.Write(s);
+      }
     }
 
     public double UpdateInterval

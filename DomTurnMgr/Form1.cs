@@ -73,8 +73,6 @@ namespace DomTurnMgr
     Game currentGame;
     List<HostingWarningTimer> hostingWarningTimers;
 
-    static readonly string gameFilename = @"d:\temp\gameObj.json";
-
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
      * Form listens to events when game properties change and responds appropriately
@@ -125,7 +123,7 @@ namespace DomTurnMgr
           // Store the game name in preferences for next time.
           Properties.Settings.Default.GameName = sgd.GameName;
           Properties.Settings.Default.Save();
-          this.SetGame(new Game(sgd.GameName));
+          this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
         }
         else
         {
@@ -135,18 +133,7 @@ namespace DomTurnMgr
       }
       else
       {
-        if (File.Exists(gameFilename))
-        {
-          using (StreamReader sw = new StreamReader(gameFilename))
-          {
-            Game g = JsonConvert.DeserializeObject<Game>(sw.ReadToEnd());
-            SetGame(g);
-          }
-        }
-        else
-        {
-          SetGame(new Game(Properties.Settings.Default.GameName));
-        }
+        SetGame(Game.CreateOrLoadGame(Properties.Settings.Default.GameName));
       }
     }
 
@@ -219,12 +206,7 @@ namespace DomTurnMgr
         return;
       }
 
-      // Serialise out the game for next time. For now just serialise when turns change as everything else is quick to update
-      using (StreamWriter sw = new StreamWriter(gameFilename))
-      {
-        string s = JsonConvert.SerializeObject(currentGame);
-        sw.Write(s);
-      }
+      currentGame.Save();
 
       // Update the UI
       UpdateTurnsList();
@@ -607,7 +589,7 @@ namespace DomTurnMgr
         // Store the game name in preferences for next time.
         Properties.Settings.Default.GameName = sgd.GameName;
         Properties.Settings.Default.Save();
-        this.SetGame(new Game(sgd.GameName));
+        this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
       }
     }
   }
