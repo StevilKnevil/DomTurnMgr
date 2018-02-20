@@ -176,7 +176,7 @@ namespace DomTurnMgr
         currentGame.TurnsChanged += OnTurnsChanged;
         currentGame.RaceStatusChanged += OnRaceStatusChanged;
 
-        // TODO: Merge this with teh Form.Visible event handler below
+        // TODO: Merge this with the Form.Visible event handler below
         this.RefreshUI();
       }
     }
