@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -13,8 +14,7 @@ namespace DomTurnMgr
 {
   public partial class Game
   {
-    [Serializable()]
-    public class Turn : IComparable
+    public class Turn : IComparable, ISerializable
     {
       enum Status
       {
@@ -23,7 +23,7 @@ namespace DomTurnMgr
         InProgress,
         Submitted,
       };
-      [NonSerialized()]
+
       internal Game Owner;
       internal int Number;
       internal string outboundMsgID = "";
@@ -65,32 +65,10 @@ namespace DomTurnMgr
       }
 #endif
 
-      internal Turn(Game owner, EmailWatcher.TurnInfo ti)
+      internal Turn(Game owner, int number)
       {
         this.Owner = owner;
-        this.Number = ti.Number;
-        this.outboundMsgID = ti.outboundMsgID;
-        this.inboundMsgID = ti.inboundMsgID;
-
-        Update();
-      }
-
-      internal void Merge(EmailWatcher.TurnInfo ti)
-      {
-        if (this.Number != ti.Number)
-          throw new ArgumentException("Mismatched turn numbers");
-
-        if (this.outboundMsgID == string.Empty)
-          this.outboundMsgID = ti.outboundMsgID;
-        else if (this.outboundMsgID != ti.outboundMsgID)
-          throw new ArgumentException("Mismatched outboundMsgID");
-
-        if (this.inboundMsgID == string.Empty)
-          this.inboundMsgID = ti.inboundMsgID;
-        else if (this.inboundMsgID != ti.inboundMsgID)
-          throw new ArgumentException("Mismatched inboundMsgID");
-
-        Update();
+        this.Number = number;
       }
 
       private void Update()
@@ -134,7 +112,22 @@ namespace DomTurnMgr
           return this.Owner.Name.CompareTo(t.Owner.Name);
         return this.Number.CompareTo(t.Number);
       }
-     
+
+      #region ISerializable
+      public void GetObjectData(SerializationInfo info, StreamingContext context)
+      {
+        info.AddValue("Number", Number, typeof(int));
+        info.AddValue("inboundMsgID", inboundMsgID, typeof(string));
+        info.AddValue("outboundMsgID", outboundMsgID, typeof(string));
+      }
+
+      internal Turn(SerializationInfo info, StreamingContext context)
+      {
+        Number = (int)info.GetValue("Number", typeof(int));
+        inboundMsgID = (string)info.GetValue("inboundMsgID", typeof(string));
+        outboundMsgID = (string)info.GetValue("outboundMsgID", typeof(string));
+      }
+      #endregion ISerializable
     }
   }
 }

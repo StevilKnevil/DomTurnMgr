@@ -16,39 +16,28 @@ namespace DomTurnMgr
   /*
    * Have the email and server watcher as nested classes within this (as partial class def?) Then the form can just watch the 'EmailInterface' and the 'ServerInterface' rather than bouncing through the Game class.
    */
-  [Serializable()]
   partial class Game : ISerializable
   {
-    EmailWatcher emailWatcher;
+    TurnManager turnManager;
     ServerWatcher serverWatcher;
 
     public Game(string name)
     {
-      Name = name;
+      this.name = name;
+      turnManager = new TurnManager(this);
+
+      serverWatcher = new ServerWatcher(name);
+      serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
+      serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
+      serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
+
+      turnManager.Update();
     }
 
     public double UpdateInterval
     {
       get { return serverWatcher.UpdateInterval; }
-      set { emailWatcher.UpdateInterval = value; serverWatcher.UpdateInterval = value;  }
-    }
-
-    private void EmailWatcher_TurnsChanged(object sender, CollectionChangeEventArgs e)
-    {
-      // Make sure we have constructed a turn for each email that exists
-      foreach (var t in (e.Element as Dictionary<int, EmailWatcher.TurnInfo>).Values)
-      {
-        if (!this.turns.Keys.Contains(t.Number))
-        {
-          this.turns.Add(t.Number, new Turn(this, t));
-        }
-        else
-        {
-          this.turns[t.Number].Merge(t);
-        }
-      }
-
-      OnTurnsChanged(EventArgs.Empty);
+      set { serverWatcher.UpdateInterval = value;  }
     }
 
     private void ServerWatcher_CurrentTurnNumberChanged(object sender, IntEventArgs e)
@@ -69,7 +58,7 @@ namespace DomTurnMgr
 
     public void Update()
     {
-      emailWatcher.Update();
+      turnManager.Update();
       serverWatcher.Update();
     }
 
@@ -94,17 +83,6 @@ namespace DomTurnMgr
     public string Name
     {
       get { return name; }
-      private set
-      {
-        name = value;
-        emailWatcher = new EmailWatcher(name);
-        emailWatcher.TurnsChanged += EmailWatcher_TurnsChanged;
-
-        serverWatcher = new ServerWatcher(name);
-        serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
-        serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
-        serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
-      }
     }
 
     #region CurrentTurnNumber
@@ -158,13 +136,11 @@ namespace DomTurnMgr
     #endregion Hosting Time
 
     #region Turns List
-    private Dictionary<int, Turn> turns = new Dictionary<int, Turn>();
-    public IReadOnlyDictionary<int, Turn> Turns => turns;
-
-    public event EventHandler TurnsChanged;
-    protected virtual void OnTurnsChanged(EventArgs e)
+    public IReadOnlyList<Turn> Turns => turnManager.Turns;
+    public event CollectionChangeEventHandler TurnsChanged
     {
-      TurnsChanged?.Invoke(this, e);
+      add { turnManager.TurnsChanged += value; }
+      remove { turnManager.TurnsChanged -= value; }
     }
     #endregion Turns List
     
@@ -177,7 +153,7 @@ namespace DomTurnMgr
     {
       RaceStatusChanged?.Invoke(this, e);
     }
-#endregion Race Status
+    #endregion Race Status
 
     #region ISerializable
     public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -185,19 +161,18 @@ namespace DomTurnMgr
       info.AddValue("Name", Name, typeof(string));
       info.AddValue("CurrentTurnNumber", currentTurnNumber, typeof(int));
       info.AddValue("HostingTime", hostingTime, typeof(DateTime));
-      info.AddValue("Turns", turns, typeof(Dictionary<int, Turn>));
       info.AddValue("RaceStatus", raceStatus, typeof(Dictionary<string, bool>));
+      turnManager.GetObjectData(info, context);
     }
 
-    public Game(SerializationInfo info, StreamingContext context)
+    public Game(SerializationInfo info, StreamingContext context) : this((string)info.GetValue("Name", typeof(string)))
     {
       // TODO: could use basic serialisation, with a parameterless constructor, and set up the watchers when Name is set.
       // Reset the property value using the GetValue method.
       currentTurnNumber = (int)info.GetValue("CurrentTurnNumber", typeof(int));
       hostingTime = (DateTime)info.GetValue("HostingTime", typeof(DateTime));
-      turns = (Dictionary<int, Turn>)info.GetValue("Turns", typeof(Dictionary<int, Turn>));
       raceStatus = (Dictionary<string, bool>)info.GetValue("RaceStatus", typeof(Dictionary<string, bool>));
-      Name = (string)info.GetValue("Name", typeof(string));
+      turnManager = new TurnManager(this, info, context);
     }
     #endregion ISerializable
   }

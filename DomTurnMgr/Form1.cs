@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Gmail.v1.Data;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -72,7 +73,7 @@ namespace DomTurnMgr
     Game currentGame;
     List<HostingWarningTimer> hostingWarningTimers;
 
-    static readonly string gameFilename = @"d:\temp\gameObj.bin";
+    static readonly string gameFilename = @"d:\temp\gameObj.json";
 
     /*
      * TODO: Move to an event based mechanism. When form is shown - move to a timer update of 1 min. When form is hidden, timer update of 1 hour.
@@ -136,11 +137,11 @@ namespace DomTurnMgr
       {
         if (File.Exists(gameFilename))
         {
-          FileStream s = new FileStream(gameFilename, FileMode.Open);
-          IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-          Game g = formatter.Deserialize(s) as Game;
-          s.Close();
-          SetGame(g);
+          using (StreamReader sw = new StreamReader(gameFilename))
+          {
+            Game g = JsonConvert.DeserializeObject<Game>(sw.ReadToEnd());
+            SetGame(g);
+          }
         }
         else
         {
@@ -219,10 +220,11 @@ namespace DomTurnMgr
       }
 
       // Serialise out the game for next time. For now just serialise when turns change as everything else is quick to update
-      FileStream s = new FileStream(gameFilename, FileMode.Create);
-      IFormatter formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-      formatter.Serialize(s, this);
-      s.Close();
+      using (StreamWriter sw = new StreamWriter(gameFilename))
+      {
+        string s = JsonConvert.SerializeObject(currentGame);
+        sw.Write(s);
+      }
 
       // Update the UI
       UpdateTurnsList();
@@ -268,7 +270,7 @@ namespace DomTurnMgr
       listView1.Items.Clear();
 
       // Create a sorted list of turns
-      List<Game.Turn> turnList = new List<Game.Turn>(currentGame.Turns.Values);
+      List<Game.Turn> turnList = new List<Game.Turn>(currentGame.Turns);
       // Reverse sort the list
       turnList.Sort((x,y)=> y.CompareTo(x));
       foreach (var turn in turnList)

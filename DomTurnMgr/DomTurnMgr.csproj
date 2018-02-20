@@ -152,7 +152,6 @@
     <Compile Include="AddGameDialog.Designer.cs">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="EmailWatcher.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="FadingStatusLabel.cs">
       <SubType>Component</SubType>
@@ -168,6 +167,9 @@
     </Compile>
     <Compile Include="Game.cs" />
     <Compile Include="GameTurn.cs">
+      <DependentUpon>Game.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GameTurnManager.cs">
       <DependentUpon>Game.cs</DependentUpon>
     </Compile>
     <Compile Include="GMailHelpers.cs" />
