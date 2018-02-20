@@ -34,7 +34,7 @@ namespace DomTurnMgr
       //internal bool inputFileExists; // < .trn file exists on disk
       //internal bool outputFileExists; // < .2h file exists on disk
       internal bool HasBeenSentToEmailServer => outboundMsgID != "";
-      //internal bool hasBeenRecievedByEmailServer; // < .2h file exists on disk
+      //internal bool hasBeenRecievedByEmailServer; // < Race has completed on server
 
 #if false
       private string assetsFolder
