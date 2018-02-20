@@ -158,6 +158,7 @@ namespace DomTurnMgr
         lblTurnNumber.Text = "";
 
         currentGame = game;
+        this.Text = "Dominions Turn Manager - " + game.Name;
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
