@@ -125,10 +125,11 @@ namespace DomTurnMgr
     }
 
     private string name;
-    public string Name
-    {
-      get { return name; }
-    }
+    public string Name => name;
+    private string race = "Arcoscephale";
+    public string Race => race;
+    private string era = "mid";
+    public string Era => era;
 
     #region CurrentTurnNumber
     private int currentTurnNumber = 0;

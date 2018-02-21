@@ -29,8 +29,6 @@ namespace DomTurnMgr
       internal string outboundMsgID = "";
       internal string inboundMsgID = "";
 
-      //internal bool existsOnEmailServer;
-      //internal bool downloadedFromEmailServer; // < Implies file name is valid
       internal string InputFilePath => Path.Combine(Owner.GetArchiveDir(), inputFilename);
       internal string OutputFilePath => Path.Combine(Owner.GetArchiveDir(), outputFilename);
       internal bool InputFileExists => File.Exists(InputFilePath); // < .trn file exists on disk
@@ -38,23 +36,10 @@ namespace DomTurnMgr
       internal bool HasBeenSentToEmailServer => outboundMsgID != "";
       //internal bool hasBeenRecievedByEmailServer; // < Race has completed on server
 
-      private string inputFilename
-      {
-        get {
-          return String.Format(@"{0}.trn.{1}",
-            "mid_arcoscephale",
-            this.Number);
-        }
-      }
-      private string outputFilename
-      {
-        get
-        {
-          return String.Format(@"{0}.2h.{1}",
-            "mid_arcoscephale",
-            this.Number);
-        }
-      }
+      private string filenameWithoutExtension => string.Format("{0}_{1}", Owner.Era.ToLower(), Owner.Race.ToLower());
+
+      private string inputFilename => string.Format(@"{0}.trn.{1}", this.filenameWithoutExtension, this.Number);
+      private string outputFilename => string.Format(@"{0}.2h.{1}", this.filenameWithoutExtension, this.Number);
 
       internal Turn(Game owner, int number)
       {
