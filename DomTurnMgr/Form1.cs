@@ -264,10 +264,15 @@ namespace DomTurnMgr
         var col = SystemColors.WindowText;
         var group = listView1.Groups["pendingGroup"];
 
+        if (turn.OutputFileExists)
+        {
+          status = "Turn In Progress";
+        }
+
         // Render differently if finished turn
         if (turn.HasBeenSentToEmailServer)
         { 
-          status = "Turn Complete";
+          status = "Turn Sent to Server";
           col = SystemColors.GrayText;
           group = listView1.Groups["completeGroup"];
         }
