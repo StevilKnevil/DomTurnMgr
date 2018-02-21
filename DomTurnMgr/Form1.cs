@@ -365,11 +365,29 @@ namespace DomTurnMgr
 
     private void btnStartDominions_Click(object sender, EventArgs e)
     {
+      if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) || 
+        currentGame == null ||
+        currentGame.Name == "")
+      {
+        PreferencesForm pf = new PreferencesForm();
+        pf.ShowDialog();
+      }
+
+      // Make sure that we have selected a sensible turn
+      if (listView1.SelectedItems.Count != 1)
+        return;
+      Game.Turn turn = listView1.SelectedItems[0].Tag as Game.Turn;
+
+      // Copy the appropriate files from archive
+      turn.CopyFilesFromArchive();
+
       Process process = new Process();
       // Configure the process using the StartInfo properties.
       process.StartInfo.FileName = Program.SettingsManager.GameExePath;
       process.StartInfo.Arguments = currentGame.Name;
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+      process.EnableRaisingEvents = true;
+      process.Exited += (send, evt) => { turn.CopyFilesToArchive(); };
       process.Start();
     }
 
@@ -487,7 +505,6 @@ namespace DomTurnMgr
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
 #endif
     }
-
 
     private void refresh_Click(object sender, EventArgs e)
     {

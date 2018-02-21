@@ -36,21 +36,11 @@ namespace DomTurnMgr
       internal bool HasBeenSentToEmailServer => outboundMsgID != "";
       //internal bool hasBeenRecievedByEmailServer; // < Race has completed on server
 
-#if false
-      private string assetsFolder
-      {
-        get
-        {
-          return String.Format(@"{0}\DomTurnManager\{1}",
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Owner.Name);
-        }
-      }
       private string inputFilename
       {
         get {
-          return String.Format(@"{0}\{1}.trn",
-            this.assetsFolder,
-            // TODO we need the race encoding so that we can builf up 'mid_arcosphalese_35.trn' for example
+          return String.Format(@"{0}.trn.{1}",
+            "mid_arcoscephale",
             this.Number);
         }
       }
@@ -58,12 +48,11 @@ namespace DomTurnMgr
       {
         get
         {
-          return String.Format(@"{0}\{1}.trn",
-            this.assetsFolder,
+          return String.Format(@"{0}.2h.{1}",
+            "mid_arcoscephale",
             this.Number);
         }
       }
-#endif
 
       internal Turn(Game owner, int number)
       {
@@ -71,37 +60,84 @@ namespace DomTurnMgr
         this.Number = number;
       }
 
-      private void Update()
+      private void DownloadFilesFromEmails()
       {
-#if false
-        this.existsOnEmailServer = GMailHelpers.getAvailableTurns(Owner.Name).Contains(this.Number);
-        this.inputFileExists = File.Exists(this.inputFilename);
-        this.outputFileExists = File.Exists(this.outputFilename);
-        if (!this.existsOnEmailServer)
+        if (!File.Exists(this.inputFilename))
         {
-          // Deleted email?
-        }
-        if (this.existsOnEmailServer && !this.inputFileExists)
-        {
-          // download turn file from email
-          if (File.Exists(inputFilename))
-          {
-            // Already have this attachment, nothing to do
-            // TODO: Download anyway and binary compare?
-            return;
-          }
-
+          Debug.Assert(this.inboundMsgID != "");
           // Get the attchment from the selected message
-          string filename = GMailHelpers.GetTRNFile(this.Owner.Name, this.Number);
+          string filename = GMailHelpers.GetAttachment(this.inboundMsgID);
           // copy the file to the correct output location
-          Directory.CreateDirectory(Path.GetDirectoryName(inputFilename));
-          File.Copy(filename, inputFilename);
+          File.Copy(filename, Path.Combine(Owner.GetArchiveDir(), inputFilename), true);
         }
-        if (this.hasBeenSentToEmailServer && !this.outputFileExists)
+
+        if (!File.Exists(this.inputFilename) && this.outboundMsgID != string.Empty)
         {
-          // re-download .2h file from email
+          // Get the attchment from the selected message
+          string filename = GMailHelpers.GetAttachment(this.outboundMsgID);
+          // copy the file to the correct output location
+          File.Copy(filename, Path.Combine(Owner.GetArchiveDir(), outputFilename), true);
         }
-#endif
+      }
+
+      internal void CopyFilesFromArchive()
+      {
+        // Ensure that we have the files in the archive, if not, get them from email
+        DownloadFilesFromEmails();
+
+        // Now copy the files form the archive to the save game dir
+        {
+          string srcFile = Path.Combine(Owner.GetArchiveDir(), inputFilename);
+          string dstFile = Path.Combine(Program.SettingsManager.SaveGameDirectory,
+            Owner.Name,
+            Path.GetFileNameWithoutExtension(inputFilename));
+
+          Debug.Assert(File.Exists(srcFile));
+          File.Copy(srcFile, dstFile, true);
+        }
+
+        {
+          string srcFile = Path.Combine(Owner.GetArchiveDir(), outputFilename);
+          string dstFile = Path.Combine(Program.SettingsManager.SaveGameDirectory,
+            Owner.Name,
+            Path.GetFileNameWithoutExtension(outputFilename));
+
+          if (File.Exists(srcFile))
+          {
+            File.Copy(srcFile, dstFile, true);
+          }
+          else if (File.Exists(dstFile))
+          {
+            // Clean up stale dest file
+            File.Delete(dstFile);
+          }
+        }
+      }
+
+      internal void CopyFilesToArchive()
+      {
+        string archDir = Owner.GetArchiveDir();
+
+        // TODO: just ensure that the trn in the save game dir is the same as the one in the archive
+        // TODO: ensure that the file has the correct turn number in it
+
+        // Ensure that we have the trn file in the archive - we should have that from email.
+        // TODO: we could do a binary compare
+        Debug.Assert(File.Exists(archDir + @"\" + inputFilename));
+
+        // Copy the .2h file into the archive
+        string srcFile = String.Format("{0}\\{1}\\{2}",
+          Program.SettingsManager.SaveGameDirectory,
+          Owner.Name,
+          Path.GetFileNameWithoutExtension(outputFilename));
+        string dstFile = archDir + @"\" + outputFilename;
+        if (File.Exists(srcFile))
+        {
+          // TODO: Inspect to ensure it is for the correct turn
+          // TODO: Ensure that the timestamp on this file is newer than the one in the archive
+
+          File.Copy(srcFile, dstFile, true);
+        }
       }
 
       public int CompareTo(object that)
@@ -127,6 +163,7 @@ namespace DomTurnMgr
         inboundMsgID = (string)info.GetValue("inboundMsgID", typeof(string));
         outboundMsgID = (string)info.GetValue("outboundMsgID", typeof(string));
       }
+
       #endregion ISerializable
     }
   }

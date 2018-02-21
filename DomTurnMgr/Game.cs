@@ -31,14 +31,21 @@ namespace DomTurnMgr
       serverWatcher.CurrentTurnNumberChanged += ServerWatcher_CurrentTurnNumberChanged;
       serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
       serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
-
     }
+
+    private static string GetArchiveDir(string name)
+    {
+      return String.Format(@"{0}\DomTurnManager\{1}",
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), name);
+    }
+    private string GetArchiveDir() => GetArchiveDir(this.Name);
 
     private static string GetFilename(string name)
     {
-      return String.Format(@"{0}\DomTurnManager\{1}\{1}.json",
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), name);
+      return String.Format(@"{0}\{1}.json",
+        GetArchiveDir(name), name);
     }
+    private string GetFilename() => GetFilename(this.Name);
 
     public static Game CreateOrLoadGame(string name)
     {
@@ -63,6 +70,7 @@ namespace DomTurnMgr
     public void Save()
     {
       string gameFilename = GetFilename(name);
+      Directory.CreateDirectory(Path.GetDirectoryName(gameFilename));
 
       using (StreamWriter sw = new StreamWriter(gameFilename))
       {

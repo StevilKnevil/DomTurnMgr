@@ -100,6 +100,21 @@ namespace DomTurnMgr
       }
     }
 
+    public static string GetAttachment(string msgID)
+    {
+      string tempFolder = Path.GetTempPath() + @"DomTurnMgr\" + msgID;
+      Directory.CreateDirectory(tempFolder);
+      GMailHelpers.GetAttachments(Program.GmailService, "me", msgID, tempFolder);
+
+      IEnumerable<string> trnFiles = Directory.EnumerateFiles(tempFolder, "*.*");
+      Debug.Assert(trnFiles.Count() == 1);
+      if (trnFiles.Count() == 1)
+      {
+        return trnFiles.ElementAt(0);
+      }
+      return "";
+    }
+
     public static void ReplyToMessage(GmailService service, String userId, String messageId, String attachmentFile)
     {
       // Use mimekit: https://stackoverflow.com/questions/47217335/reply-to-email-in-c-sharp
@@ -220,25 +235,8 @@ namespace DomTurnMgr
           throw new System.Exception("Illegal base64url string!");}
       return Convert.FromBase64String(s); // Standard base64 decoder
     }
-#endregion helper functions
+    #endregion helper functions
 
-    /*
-    public static string GetTRNFile(string gameName, int turnNumber)
-    {
-      string messageID = messageCaches[gameName].getInboundMsgID(turnNumber);
-      string tempFolder = Path.GetTempPath() + @"DomTurnMgr\" + messageID;
-      Directory.CreateDirectory(tempFolder);
-      GMailHelpers.GetAttachments(Program.GmailService, "me", messageCaches[gameName].getInboundMsgID(turnNumber), tempFolder);
-      // look in the dir, and 
-      IEnumerable<string> trnFiles = Directory.EnumerateFiles(tempFolder, "*.trn");
-      Debug.Assert(trnFiles.Count() == 1);
-      if (trnFiles.Count() == 1)
-      {
-        return trnFiles.ElementAt(0);
-      }
-      return "";
-    }
-    */
 
   }
 }
