@@ -22,9 +22,11 @@ namespace DomTurnMgr
     TurnManager turnManager;
     ServerWatcher serverWatcher;
 
-    private Game(string name)
+    private Game(string name, string race, string era)
     {
       this.name = name;
+      this.race = race;
+      this.era = era;
       turnManager = new TurnManager(this);
 
       serverWatcher = new ServerWatcher(name);
@@ -40,17 +42,17 @@ namespace DomTurnMgr
     }
     private string GetArchiveDir() => GetArchiveDir(this.Name);
 
-    private static string GetFilename(string name)
+    private static string GetFilename(string name, string race, string era)
     {
-      return String.Format(@"{0}\{1}.json",
-        GetArchiveDir(name), name);
+      return String.Format(@"{0}\{1}_{2}_{3}.json",
+        GetArchiveDir(name), name, era, race);
     }
-    private string GetFilename() => GetFilename(this.Name);
+    private string GetFilename() => GetFilename(this.Name, this.Race, this.Era);
 
-    public static Game CreateOrLoadGame(string name)
+    public static Game CreateOrLoadGame(string name, string race, string era)
     {
       Game result;
-      string gameFilename = GetFilename(name);
+      string gameFilename = GetFilename(name, race, era);
 
       if (File.Exists(gameFilename))
       {
@@ -61,7 +63,7 @@ namespace DomTurnMgr
       }
       else
       {
-        result = new Game(name);
+        result = new Game(name, race, era);
       }
       result.Update();
       return result;
@@ -69,7 +71,7 @@ namespace DomTurnMgr
 
     public void Save()
     {
-      string gameFilename = GetFilename(name);
+      string gameFilename = GetFilename();
       Directory.CreateDirectory(Path.GetDirectoryName(gameFilename));
 
       using (StreamWriter sw = new StreamWriter(gameFilename))
@@ -205,13 +207,16 @@ namespace DomTurnMgr
     public void GetObjectData(SerializationInfo info, StreamingContext context)
     {
       info.AddValue("Name", Name, typeof(string));
+      info.AddValue("Race", Race, typeof(string));
+      info.AddValue("Era", Era, typeof(string));
       info.AddValue("CurrentTurnNumber", currentTurnNumber, typeof(int));
       info.AddValue("HostingTime", hostingTime, typeof(DateTime));
       info.AddValue("RaceStatus", raceStatus, typeof(Dictionary<string, bool>));
       turnManager.GetObjectData(info, context);
     }
 
-    public Game(SerializationInfo info, StreamingContext context) : this((string)info.GetValue("Name", typeof(string)))
+    public Game(SerializationInfo info, StreamingContext context) : 
+      this((string)info.GetValue("Name", typeof(string)), (string)info.GetValue("Race", typeof(string)), (string)info.GetValue("Era", typeof(string)))
     {
       // TODO: could use basic serialisation, with a parameterless constructor, and set up the watchers when Name is set.
       // Reset the property value using the GetValue method.

@@ -114,26 +114,23 @@ namespace DomTurnMgr
         }
       }
 
-      if (Program.SettingsManager.GameName == "")
+      if (Program.SettingsManager.GameName == null || Program.SettingsManager.GameName == "")
       {
         // prompt for which game
-        AddGameDialog sgd = new AddGameDialog();
-        if (sgd.ShowDialog() == DialogResult.OK)
-        {
-          // Store the game name in preferences for next time.
-          Program.SettingsManager.GameName = sgd.GameName;
-          Properties.Settings.Default.Save();
-          this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
-        }
-        else
-        {
-          // Quit
-          this.Load += (s, e) => { ForceClose(); };
-        }
+        newGame_Click(this, EventArgs.Empty);
       }
       else
       {
-        SetGame(Game.CreateOrLoadGame(Program.SettingsManager.GameName));
+        SetGame(Game.CreateOrLoadGame(
+          Program.SettingsManager.GameName, 
+          Program.SettingsManager.GameRace, 
+          Program.SettingsManager.GameEra));
+      }
+
+      if (this.currentGame == null)
+      {
+        // No game loaded (user cancelled the add game dialog?) - Quit
+        this.Load += (s, e) => { ForceClose(); };
       }
     }
 
@@ -158,7 +155,7 @@ namespace DomTurnMgr
         lblTurnNumber.Text = "";
 
         currentGame = game;
-        this.Text = "Dominions Turn Manager - " + game.Name;
+        this.Text = "Dominions Turn Manager - " + game.Name + " " + game.Era + " " + game.Race;
 
         currentGame.CurrentTurnNumberChanged += OnCurrentTurnNumberChanged;
         currentGame.HostingTimeChanged += OnHostingTimeChanged;
@@ -611,8 +608,12 @@ namespace DomTurnMgr
       {
         // Store the game name in preferences for next time.
         Program.SettingsManager.GameName = sgd.GameName;
-        Properties.Settings.Default.Save();
-        this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
+        Program.SettingsManager.GameRace = sgd.GameRace;
+        Program.SettingsManager.GameEra = sgd.GameEra;
+        this.SetGame(Game.CreateOrLoadGame(
+          Program.SettingsManager.GameName,
+          Program.SettingsManager.GameRace,
+          Program.SettingsManager.GameEra));
       }
     }
   }
