@@ -34,17 +34,5 @@ namespace DomTurnMgr.Properties {
                 this["ServerAddress"] = value;
             }
         }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GameName {
-            get {
-                return ((string)(this["GameName"]));
-            }
-            set {
-                this["GameName"] = value;
-            }
-        }
     }
 }

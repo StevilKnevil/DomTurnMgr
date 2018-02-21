@@ -204,6 +204,93 @@ namespace DomTurnMgr
       }
     }
 
+    const string GAME_NAME_KEYNAME = "GameName";
+    private string gameName;
+    public string GameName
+    {
+      get
+      {
+        if (gameName == null)
+        {
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
+          {
+            gameName = regKey.GetValue(GAME_NAME_KEYNAME) as string;
+          }
+        }
+        return gameName;
+      }
+
+      set
+      {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(GAME_NAME_KEYNAME, value);
+        }
+
+        gameName = value;
+      }
+    }
+
+    const string GAME_RACE_KEYNAME = "GameRace";
+    private string gameRace;
+    public string GameRace
+    {
+      get
+      {
+        if (gameRace == null)
+        {
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
+          {
+            gameRace = regKey.GetValue(GAME_RACE_KEYNAME) as string;
+          }
+        }
+        return gameRace;
+      }
+
+      set
+      {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(GAME_RACE_KEYNAME, value);
+        }
+
+        gameRace = value;
+      }
+    }
+
+    const string GAME_ERA_KEYNAME = "GameEra";
+    private string gameEra;
+    public string GameEra
+    {
+      get
+      {
+        if (gameEra == null)
+        {
+          // try reading from registry
+          using (RegistryKey regKey = getRegKey())
+          {
+            gameEra = regKey.GetValue(GAME_ERA_KEYNAME) as string;
+          }
+        }
+        return gameEra;
+      }
+
+      set
+      {
+        using (RegistryKey regKey = getRegKey())
+        {
+          // write the string to the reg key
+          regKey.SetValue(GAME_ERA_KEYNAME, value);
+        }
+
+        gameEra = value;
+      }
+    }
+
     private RegistryKey getRegKey()
     {
       RegistryKey regKey;

@@ -114,14 +114,14 @@ namespace DomTurnMgr
         }
       }
 
-      if (Properties.Settings.Default.GameName == "")
+      if (Program.SettingsManager.GameName == "")
       {
         // prompt for which game
         AddGameDialog sgd = new AddGameDialog();
         if (sgd.ShowDialog() == DialogResult.OK)
         {
           // Store the game name in preferences for next time.
-          Properties.Settings.Default.GameName = sgd.GameName;
+          Program.SettingsManager.GameName = sgd.GameName;
           Properties.Settings.Default.Save();
           this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
         }
@@ -133,7 +133,7 @@ namespace DomTurnMgr
       }
       else
       {
-        SetGame(Game.CreateOrLoadGame(Properties.Settings.Default.GameName));
+        SetGame(Game.CreateOrLoadGame(Program.SettingsManager.GameName));
       }
     }
 
@@ -610,7 +610,7 @@ namespace DomTurnMgr
       if (sgd.ShowDialog() == DialogResult.OK)
       {
         // Store the game name in preferences for next time.
-        Properties.Settings.Default.GameName = sgd.GameName;
+        Program.SettingsManager.GameName = sgd.GameName;
         Properties.Settings.Default.Save();
         this.SetGame(Game.CreateOrLoadGame(sgd.GameName));
       }
