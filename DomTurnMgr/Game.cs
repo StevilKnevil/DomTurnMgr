@@ -32,7 +32,6 @@ namespace DomTurnMgr
       serverWatcher.HostingTimeChanged += ServerWatcher_HostingTimeChanged;
       serverWatcher.RaceStatusChanged += ServerWatcher_RaceStatusChanged;
 
-      turnManager.Update();
     }
 
     private static string GetFilename(string name)
@@ -43,19 +42,22 @@ namespace DomTurnMgr
 
     public static Game CreateOrLoadGame(string name)
     {
+      Game result;
       string gameFilename = GetFilename(name);
 
       if (File.Exists(gameFilename))
       {
         using (StreamReader sw = new StreamReader(gameFilename))
         {
-          return JsonConvert.DeserializeObject<Game>(sw.ReadToEnd());
+          result = JsonConvert.DeserializeObject<Game>(sw.ReadToEnd());
         }
       }
       else
       {
-        return new Game(name);
+        result = new Game(name);
       }
+      result.Update();
+      return result;
     }
 
     public void Save()
