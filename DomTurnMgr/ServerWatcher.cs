@@ -80,66 +80,12 @@ namespace DomTurnMgr
 
         await Task.Run(() =>
         {
-          string data = "";
-          try
-          {
-            string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + this.gameName;
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            if (response.StatusCode == HttpStatusCode.OK)
-            {
-              Stream receiveStream = response.GetResponseStream();
-              StreamReader readStream = null;
-
-              if (response.CharacterSet == null)
-              {
-                readStream = new StreamReader(receiveStream);
-              }
-              else
-              {
-                readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-              }
-
-              data = readStream.ReadToEnd();
-
-              response.Close();
-              readStream.Close();
-            }
-          }
-          catch (Exception)
-          {
-            // Likely no internet connection
-          }
+          string data = GetServerData(this.gameName);
 
           // Find the remaining time in the string
           {
-            DateTime result = new DateTime();
-            bool success = false;
-
-            string pattern = @"Next turn due: (.*)\n";
-            Regex re = new Regex(pattern);
-            MatchCollection matches = re.Matches(data);
-            if (matches.Count == 1)
-            {
-              if (matches[0].Captures.Count == 1)
-              {
-                if (matches[0].Groups.Count == 2)
-                {
-                  string s = matches[0].Groups[1].Value;
-                  // trim the trainling 'st' 'nd' 'rd' 'th' from the string
-                  s = s.Remove(s.Length - 2);
-                  success = DateTime.TryParseExact(s,
-                    "HH:mm GMT on dddd MMMM d",
-                    new System.Globalization.CultureInfo("en-US"),
-                    System.Globalization.DateTimeStyles.None,
-                    out result);
-                }
-              }
-            }
-
-            if (success)
+            DateTime result;
+            if (ExtractHostingTime(data, out result))
             {
               FireHostingTimeChanged(new DateTimeEventArgs(result));
             }
@@ -147,24 +93,8 @@ namespace DomTurnMgr
 
           // Find the current turn number
           {
-            bool success = false;
-            int result = -1;
-            string pattern = @"Turn number (\d*)";
-            Regex re = new Regex(pattern);
-            MatchCollection matches = re.Matches(data);
-            if (matches.Count == 1)
-            {
-              if (matches[0].Captures.Count == 1)
-              {
-                if (matches[0].Groups.Count == 2)
-                {
-                  string s = matches[0].Groups[1].Value;
-                  result = int.Parse(s);
-                  success = true;
-                }
-              }
-            }
-            if (success)
+            int result;
+            if (ExtractTurnNumber(data, out result))
             {
               FireCurrentTurnNumberChanged(new IntEventArgs(result));
             }
@@ -172,27 +102,121 @@ namespace DomTurnMgr
 
           // Find the state of each races turn
           {
-            Dictionary<string, bool> result = new Dictionary<string, bool>();
-            string pattern = @"<tr><td>(.*)<\/td><td>&nbsp;&nbsp;&nbsp;&nbsp;<\/td><td>(2h file received|Waiting for 2h file)<\/td><\/tr>\n";
-            Regex re = new Regex(pattern);
-            MatchCollection matches = re.Matches(data);
-            foreach (Match m in matches)
-            {
-              if (m.Captures.Count == 1 && m.Groups.Count == 3)
-              {
-                bool turnComplete = false;
-                if (m.Groups[2].Value == "2h file received")
-                  turnComplete = true;
-                string raceName = m.Groups[1].Value.Trim(' ');
-                result[raceName] = turnComplete;
-              }
-            }
+            Dictionary<string, bool> result = ExtractRaceInfo(data);
             FireRaceStatusChanged(new CollectionChangeEventArgs(CollectionChangeAction.Refresh, result));
           }
 
           performingUpdate = false;
         });
       }
+    }
+
+    internal static string GetServerData(string gameName)
+    {
+      string data = "";
+      try
+      {
+        string urlAddress = "http://www.llamaserver.net/gameinfo.cgi?game=" + gameName;
+
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+        HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+          Stream receiveStream = response.GetResponseStream();
+          StreamReader readStream = null;
+
+          if (response.CharacterSet == null)
+          {
+            readStream = new StreamReader(receiveStream);
+          }
+          else
+          {
+            readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+          }
+
+          data = readStream.ReadToEnd();
+
+          response.Close();
+          readStream.Close();
+        }
+      }
+      catch (Exception)
+      {
+        // Likely no internet connection
+      }
+
+      return data;
+    }
+
+    internal static bool ExtractHostingTime(string data, out DateTime result)
+    {
+      bool success = false;
+      result = new DateTime();
+      string pattern = @"Next turn due: (.*)\n";
+      Regex re = new Regex(pattern);
+      MatchCollection matches = re.Matches(data);
+      if (matches.Count == 1)
+      {
+        if (matches[0].Captures.Count == 1)
+        {
+          if (matches[0].Groups.Count == 2)
+          {
+            string s = matches[0].Groups[1].Value;
+            // trim the trainling 'st' 'nd' 'rd' 'th' from the string
+            s = s.Remove(s.Length - 2);
+            success = DateTime.TryParseExact(s,
+              "HH:mm GMT on dddd MMMM d",
+              new System.Globalization.CultureInfo("en-US"),
+              System.Globalization.DateTimeStyles.None,
+              out result);
+          }
+        }
+      }
+      return success;
+    }
+
+    internal static bool ExtractTurnNumber(string data, out int result)
+    {
+      bool success = false;
+      result = -1;
+      string pattern = @"Turn number (\d*)";
+      Regex re = new Regex(pattern);
+      MatchCollection matches = re.Matches(data);
+      if (matches.Count == 1)
+      {
+        if (matches[0].Captures.Count == 1)
+        {
+          if (matches[0].Groups.Count == 2)
+          {
+            string s = matches[0].Groups[1].Value;
+            result = int.Parse(s);
+            success = true;
+          }
+        }
+      }
+      return success;
+    }
+
+    internal static Dictionary<string, bool> ExtractRaceInfo(string data)
+    {
+      Dictionary<string, bool> result = new Dictionary<string, bool>();
+      string pattern = @"<tr><td>(.*)<\/td><td>&nbsp;&nbsp;&nbsp;&nbsp;<\/td><td>(2h file received|Waiting for 2h file)<\/td><\/tr>\n";
+      Regex re = new Regex(pattern);
+      MatchCollection matches = re.Matches(data);
+      foreach (Match m in matches)
+      {
+        if (m.Captures.Count == 1 && m.Groups.Count == 3)
+        {
+          bool turnComplete = false;
+          if (m.Groups[2].Value == "2h file received")
+            turnComplete = true;
+          string raceName = m.Groups[1].Value.Trim(' ');
+          result[raceName] = turnComplete;
+        }
+      }
+
+      return result;
     }
   }
 }
