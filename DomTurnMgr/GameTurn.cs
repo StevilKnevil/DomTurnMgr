@@ -31,8 +31,10 @@ namespace DomTurnMgr
 
       //internal bool existsOnEmailServer;
       //internal bool downloadedFromEmailServer; // < Implies file name is valid
-      //internal bool inputFileExists; // < .trn file exists on disk
-      //internal bool outputFileExists; // < .2h file exists on disk
+      internal string InputFilePath => Path.Combine(Owner.GetArchiveDir(), inputFilename);
+      internal string OutputFilePath => Path.Combine(Owner.GetArchiveDir(), outputFilename);
+      internal bool InputFileExists => File.Exists(InputFilePath); // < .trn file exists on disk
+      internal bool OutputFileExists => File.Exists(OutputFilePath); // < .2h file exists on disk
       internal bool HasBeenSentToEmailServer => outboundMsgID != "";
       //internal bool hasBeenRecievedByEmailServer; // < Race has completed on server
 
@@ -62,21 +64,21 @@ namespace DomTurnMgr
 
       private void DownloadFilesFromEmails()
       {
-        if (!File.Exists(this.inputFilename))
+        if (!this.InputFileExists)
         {
           Debug.Assert(this.inboundMsgID != "");
           // Get the attchment from the selected message
           string filename = GMailHelpers.GetAttachment(this.inboundMsgID);
           // copy the file to the correct output location
-          File.Copy(filename, Path.Combine(Owner.GetArchiveDir(), inputFilename), true);
+          File.Copy(filename, InputFilePath, true);
         }
 
-        if (!File.Exists(this.inputFilename) && this.outboundMsgID != string.Empty)
+        if (!this.OutputFileExists && this.outboundMsgID != string.Empty)
         {
           // Get the attchment from the selected message
           string filename = GMailHelpers.GetAttachment(this.outboundMsgID);
           // copy the file to the correct output location
-          File.Copy(filename, Path.Combine(Owner.GetArchiveDir(), outputFilename), true);
+          File.Copy(filename, OutputFilePath, true);
         }
       }
 
@@ -87,22 +89,22 @@ namespace DomTurnMgr
 
         // Now copy the files form the archive to the save game dir
         {
-          string srcFile = Path.Combine(Owner.GetArchiveDir(), inputFilename);
+          string srcFile = InputFilePath;
           string dstFile = Path.Combine(Program.SettingsManager.SaveGameDirectory,
             Owner.Name,
             Path.GetFileNameWithoutExtension(inputFilename));
 
-          Debug.Assert(File.Exists(srcFile));
+          Debug.Assert(this.InputFileExists);
           File.Copy(srcFile, dstFile, true);
         }
 
         {
-          string srcFile = Path.Combine(Owner.GetArchiveDir(), outputFilename);
+          string srcFile = OutputFilePath;
           string dstFile = Path.Combine(Program.SettingsManager.SaveGameDirectory,
             Owner.Name,
             Path.GetFileNameWithoutExtension(outputFilename));
 
-          if (File.Exists(srcFile))
+          if (this.OutputFileExists)
           {
             File.Copy(srcFile, dstFile, true);
           }
