@@ -396,78 +396,6 @@ namespace DomTurnMgr
       process.Start();
     }
 
-    private void btnGetTrn_Click(object sender, EventArgs e)
-    {
-#if false
-      // Make sure that we have selected a sensible turn
-      if (listView1.SelectedItems.Count != 1)
-        return;
-      string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
-
-      if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) ||
-        currentGame.Name == "")
-      {
-        PreferencesForm pf = new PreferencesForm();
-        pf.ShowDialog();
-      }
-
-      string saveGameDir = Program.SettingsManager.SaveGameDirectory + @"\" + currentGame.Name;
-
-      if (!Directory.Exists(saveGameDir))
-      {
-        // first time - create dir
-        Directory.CreateDirectory(saveGameDir);
-      }
-
-      // Make sure that we only have files for a single race
-      var twohFiles = Directory.EnumerateFiles(saveGameDir, "*.2h");
-      var trnFiles = Directory.EnumerateFiles(saveGameDir, "*.trn");
-      bool okToContinue = true;
-      if (okToContinue && twohFiles.Count() > 1)
-      {
-        DialogResult r = MessageBox.Show("Multiple .2h files detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
-        okToContinue = (r == DialogResult.OK);
-      }
-      if (okToContinue && trnFiles.Count() > 1)
-      {
-        DialogResult r = MessageBox.Show("Multiple .trn files detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
-        okToContinue = (r == DialogResult.OK);
-      }
-      // Make sure that we the files we are deleting are older than the last message that we recieved
-      if (okToContinue)
-      {
-        var mailTime = GMailHelpers.GetMessageTime(Program.GmailService, "me", msgId);
-        foreach (string f in twohFiles)
-        {
-          var fileTime = File.GetLastWriteTimeUtc(f);
-          if (mailTime < fileTime)
-          {
-            DialogResult r = MessageBox.Show("Turn files newer than selected email have been detected\n\nOK to delete all?", "Warning", MessageBoxButtons.OKCancel);
-            okToContinue = (r == DialogResult.OK);
-            break;
-          }
-        }
-      }
-
-      if (okToContinue)
-      {
-        // delete current files from save game location
-        foreach (string f in twohFiles)
-        {
-          File.Delete(f);
-        }
-        foreach (string f in trnFiles)
-        {
-          File.Delete(f);
-        }
-
-        // Get the attchment from the selected message
-        GMailHelpers.GetAttachments(Program.GmailService, "me", msgId, saveGameDir);
-        fadingStatusText1.Text = "Downloaded: " + listView1.SelectedItems[0].Text;
-      }
-#endif
-    }
-
     private void btnSend2h_Click(object sender, EventArgs e)
     {
       // Make sure that we have selected a sensible turn
@@ -482,34 +410,9 @@ namespace DomTurnMgr
         pf.ShowDialog();
       }
 
-#if false
-      string saveGameDir = Program.SettingsManager.SaveGameDirectory + @"\" + currentGame.Name;
-
-      Debug.Assert(Directory.Exists(saveGameDir));
-
-      var twohFiles = Directory.EnumerateFiles(saveGameDir, "*.2h");
-      if (twohFiles.Count() > 1)
-      {
-        MessageBox.Show("Multiple .2h files detected\n\nCurrently only one race per game is supported", "Error", MessageBoxButtons.OK);
-        return;
-      }
-      if (twohFiles.Count() == 0)
-      {
-        MessageBox.Show("Couldn't find .2h file. Have you played your turn?\n\n" + saveGameDir, "Error", MessageBoxButtons.OK);
-        return;
-      }
-
-      string twohFile = twohFiles.First();
-
-      // Get the attchment from the selected message
-      string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
-      GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
-#endif
-
       turn.SendToServer();
 
       currentGame.Update();
-
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
     }
 

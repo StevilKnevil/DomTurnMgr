@@ -41,11 +41,11 @@
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.button2 = new System.Windows.Forms.Button();
       this.button3 = new System.Windows.Forms.Button();
-      this.button1 = new System.Windows.Forms.Button();
       this.listView1 = new System.Windows.Forms.ListView();
       this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
       this.timeRemainingLbl = new System.Windows.Forms.ToolStripStatusLabel();
       this.label1 = new System.Windows.Forms.Label();
@@ -58,7 +58,6 @@
       this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
       this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-      this.fadingStatusText1 = new DomTurnMgr.FadingStatusLabel();
       this.menuStrip1.SuspendLayout();
       this.statusStrip1.SuspendLayout();
       this.contextMenuStrip1.SuspendLayout();
@@ -132,7 +131,7 @@
       // button2
       // 
       this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button2.Location = new System.Drawing.Point(661, 131);
+      this.button2.Location = new System.Drawing.Point(661, 75);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(75, 50);
       this.button2.TabIndex = 1;
@@ -143,24 +142,13 @@
       // button3
       // 
       this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button3.Location = new System.Drawing.Point(661, 187);
+      this.button3.Location = new System.Drawing.Point(661, 131);
       this.button3.Name = "button3";
       this.button3.Size = new System.Drawing.Size(75, 50);
       this.button3.TabIndex = 2;
       this.button3.Text = "Send Completed Turn";
       this.button3.UseVisualStyleBackColor = true;
       this.button3.Click += new System.EventHandler(this.btnSend2h_Click);
-      // 
-      // button1
-      // 
-      this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button1.Location = new System.Drawing.Point(661, 75);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(75, 50);
-      this.button1.TabIndex = 0;
-      this.button1.Text = "Get Turn";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Click += new System.EventHandler(this.btnGetTrn_Click);
       // 
       // listView1
       // 
@@ -207,6 +195,12 @@
       this.statusStrip1.Size = new System.Drawing.Size(748, 22);
       this.statusStrip1.TabIndex = 5;
       this.statusStrip1.Text = "statusStrip1";
+      // 
+      // fadingStatusText1
+      // 
+      this.fadingStatusText1.Duration = 3F;
+      this.fadingStatusText1.Name = "fadingStatusText1";
+      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
       // 
       // toolStripStatusLabel2
       // 
@@ -316,12 +310,6 @@
       this.splitContainer1.SplitterDistance = 438;
       this.splitContainer1.TabIndex = 9;
       // 
-      // fadingStatusText1
-      // 
-      this.fadingStatusText1.Duration = 3F;
-      this.fadingStatusText1.Name = "fadingStatusText1";
-      this.fadingStatusText1.Size = new System.Drawing.Size(0, 17);
-      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -331,7 +319,6 @@
       this.Controls.Add(this.lblTurnNumber);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.statusStrip1);
-      this.Controls.Add(this.button1);
       this.Controls.Add(this.button3);
       this.Controls.Add(this.button2);
       this.Controls.Add(this.menuStrip1);
@@ -361,7 +348,6 @@
     private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
     private System.Windows.Forms.Button button2;
     private System.Windows.Forms.Button button3;
-    private System.Windows.Forms.Button button1;
     private System.Windows.Forms.ListView listView1;
     private System.Windows.Forms.ColumnHeader columnHeader1;
     private System.Windows.Forms.ColumnHeader columnHeader2;
