@@ -367,6 +367,11 @@ namespace DomTurnMgr
 
     private void btnStartDominions_Click(object sender, EventArgs e)
     {
+      // Make sure that we have selected a sensible turn
+      if (listView1.SelectedItems.Count != 1)
+        return;
+      Game.Turn turn = listView1.SelectedItems[0].Tag as Game.Turn;
+
       if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) || 
         currentGame == null ||
         currentGame.Name == "")
@@ -374,11 +379,6 @@ namespace DomTurnMgr
         PreferencesForm pf = new PreferencesForm();
         pf.ShowDialog();
       }
-
-      // Make sure that we have selected a sensible turn
-      if (listView1.SelectedItems.Count != 1)
-        return;
-      Game.Turn turn = listView1.SelectedItems[0].Tag as Game.Turn;
 
       // Copy the appropriate files from archive
       turn.CopyFilesFromArchive();
@@ -389,7 +389,10 @@ namespace DomTurnMgr
       process.StartInfo.Arguments = currentGame.Name;
       process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
       process.EnableRaisingEvents = true;
+      // Ensure we archive any results at the end
       process.Exited += (send, evt) => { turn.CopyFilesToArchive(); };
+
+      // Start Dominions
       process.Start();
     }
 
