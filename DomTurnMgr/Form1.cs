@@ -470,11 +470,10 @@ namespace DomTurnMgr
 
     private void btnSend2h_Click(object sender, EventArgs e)
     {
-#if false
-
       // Make sure that we have selected a sensible turn
       if (listView1.SelectedItems.Count != 1)
         return;
+      Game.Turn turn = listView1.SelectedItems[0].Tag as Game.Turn;
 
       if (!Directory.Exists(Program.SettingsManager.SaveGameDirectory) ||
         currentGame.Name == "")
@@ -483,6 +482,7 @@ namespace DomTurnMgr
         pf.ShowDialog();
       }
 
+#if false
       string saveGameDir = Program.SettingsManager.SaveGameDirectory + @"\" + currentGame.Name;
 
       Debug.Assert(Directory.Exists(saveGameDir));
@@ -504,11 +504,13 @@ namespace DomTurnMgr
       // Get the attchment from the selected message
       string msgId = (listView1.SelectedItems[0].Tag as Game.Turn).inboundMsgID;
       GMailHelpers.ReplyToMessage(Program.GmailService, "me", msgId, twohFile);
+#endif
+
+      turn.SendToServer();
 
       currentGame.Update();
 
       fadingStatusText1.Text = "Sent: " + listView1.SelectedItems[0].Text;
-#endif
     }
 
     private void refresh_Click(object sender, EventArgs e)

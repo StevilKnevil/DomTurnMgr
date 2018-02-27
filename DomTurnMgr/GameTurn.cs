@@ -127,6 +127,18 @@ namespace DomTurnMgr
         }
       }
 
+      internal void SendToServer()
+      {
+        string archDir = Owner.GetArchiveDir();
+
+        // TODO: Ensure that the file in save games dir match the one in the archive
+        string filename = archDir + @"\" + outputFilename;
+        Debug.Assert(File.Exists(filename));
+
+        // Send the file
+        GMailHelpers.ReplyToMessage(Program.GmailService, "me", outboundMsgID, filename);
+      }
+
       public int CompareTo(object that)
       {
         Turn t = (Turn)that;
