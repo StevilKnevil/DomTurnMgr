@@ -55,8 +55,12 @@ namespace DomTurnMgr
                     ti = new Turn(this.owner, turnIndex);
                     turns.Add(ti);
                   }
-                  ti.inboundMsgID = msgID;
-                  turnsChanged = true;
+                  // make sure we haven't had a turn resent
+                  if (ti.outboundMsgID == null)
+                  {
+                    ti.inboundMsgID = msgID;
+                    turnsChanged = true;
+                  }
                 }
               }
             }
@@ -75,8 +79,12 @@ namespace DomTurnMgr
                   ti = new Turn(this.owner, turnIndex);
                   turns.Add(ti);
                 }
-                ti.outboundMsgID = msgID;
-                turnsChanged = true;
+                // make sure we haven't had a turn resent
+                if (ti.outboundMsgID == null)
+                {
+                  ti.outboundMsgID = msgID;
+                  turnsChanged = true;
+                }
               }
             }
 
