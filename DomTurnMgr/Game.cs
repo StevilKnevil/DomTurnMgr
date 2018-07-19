@@ -287,9 +287,7 @@ namespace DomTurnMgr
           {
             if (t.ContainsKey(turnIndex))
             {
-              // TODO: throw an exception
-              System.Windows.Forms.MessageBox.Show(
-                string.Format("Duplicate turn number found:\n\nFound turns for different games.\nUpdate game name in preferences."));
+			  // This could be a resent turn - TODO playing the same race in different games could be a problem!
               break;
             }
             t[turnIndex] = turn;
