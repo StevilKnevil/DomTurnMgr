@@ -43,7 +43,7 @@ namespace DomTurnMgr
 
     // This mutex will be used to see if this app is already running.
     private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
-    private static Form1 theForm;
+    private static Form theForm;
     private static System.Timers.Timer updateTimer;
     [STAThreadAttribute]
     static void Main(string[] args)
@@ -62,7 +62,13 @@ namespace DomTurnMgr
 
         // create a timer to check for new content.
         isAppUpdateAvailable();
+
+#if false
         theForm = new Form1();
+#else
+        theForm = new MainForm();
+#endif
+
         Application.Run(theForm);
         mutex.ReleaseMutex();
       }
@@ -185,7 +191,11 @@ namespace DomTurnMgr
           {
             ApplicationDeployment.CurrentDeployment.Update();
             // TODO Store current window state so that it can be returned correctly after restart.
+#if false
             theForm.ForceClose();
+#else
+            throw new NotImplementedException();
+#endif
             Application.Restart();
           }
           catch (DeploymentDownloadException)
@@ -241,7 +251,7 @@ namespace DomTurnMgr
         }
       }
     }
-    #endregion Auto Update
+#endregion Auto Update
 
   }
 }
