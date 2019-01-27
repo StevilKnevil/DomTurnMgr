@@ -17,20 +17,15 @@ namespace DomTurnMgr
       InitializeComponent();
     }
 
-    // TODO: Move this to program
-    TurnManager tm;
-
     private void MainForm_Load(object sender, EventArgs e)
     {
-      string libDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
-      tm = new TurnManager(libDir);
       UpdateUI();
     }
 
     private void UpdateUI()
     {
       tabControl1.TabPages.Clear();
-      foreach (string gameName in tm.GameNames)
+      foreach (string gameName in Program.TurnManager.GameNames)
       {
         GameControl gc = new GameControl();
         gc.Dock = System.Windows.Forms.DockStyle.Fill;

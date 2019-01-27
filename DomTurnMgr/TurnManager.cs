@@ -26,22 +26,38 @@ namespace DomTurnMgr
         Result,
       }
 
-      public GameFile(string filePath, int turnNumber)
+      public GameFile(string gameName, string filePath, int turnNumber)
       {
+        GameName = gameName;
         RaceName = Path.GetFileNameWithoutExtension(filePath);
-        Type = (FileType)Enum.Parse(
-          typeof(FileType), 
-          Path.GetExtension(filePath), 
-          false);
+        Type = FromExtension(Path.GetExtension(filePath));
         TurnNumber = turnNumber;
       }
 
-      //public string FilePath{ get; }
+      public string GameName{ get; }
       public string RaceName { get; }
       public FileType Type { get; }
       public int TurnNumber { get; }
 
-      public string Extension => Type.ToString();
+      public string Extension => ToExtension(Type);
+
+      public static FileType FromExtension(string extn)
+      {
+        if (String.Compare(extn, ".trn", true) == 0) return FileType.Turn;
+        if (String.Compare(extn, ".2h", true) == 0) return FileType.Result;
+        return FileType.Unknown;
+      }
+
+      public static string ToExtension(FileType t)
+      {
+        switch(t)
+        {
+          case FileType.Turn: return ".trn";
+          case FileType.Result: return ".2h";
+        }
+        return "Unknown";
+      }
+
     }
 
     public event EventHandler<GameFile> FileAdded;
@@ -61,7 +77,7 @@ namespace DomTurnMgr
 
     public bool GameExists(string gameName)
     {
-      return GameNames.Contains(Path.Combine(LibraryDir, gameName));
+      return GameNames.Contains(gameName);
     }
 
     public bool AddGame(string gameName)
@@ -69,21 +85,43 @@ namespace DomTurnMgr
       return Directory.CreateDirectory(Path.Combine(LibraryDir, gameName)).Exists;
     }
 
-    public bool AddTurn(string gameName, string turnPath, int turnNumber)
+    private string GetPathForFile(GameFile file)
+    {
+      string filename = file.RaceName + "_" + file.TurnNumber + "." + file.Extension;
+      return Path.Combine(new string[] { LibraryDir, file.GameName , filename });
+    }
+
+    public GameFile Import(string gameName, string turnPath, int turnNumber)
     {
       if (!GameExists(gameName))
       {
         AddGame(gameName);
       }
 
-      GameFile file = new GameFile(turnPath, turnNumber);
-      string destFilename = file.RaceName + "_" + file.TurnNumber + "." + file.Extension;
-      string destPath = Path.Combine(LibraryDir, destFilename);
-      File.Copy(turnPath, destPath);
+      GameFile file = new GameFile(gameName, turnPath, turnNumber);
 
-      FileAdded(this, file);
+      // todo: compare files
+      string destFilePath = GetPathForFile(file);
+      if (File.Exists(destFilePath))
+      {
+        File.Delete(destFilePath);
+      }
+      File.Copy(turnPath, destFilePath);
 
-      return true;
+      // Call the event handlers
+      if (FileAdded!= null)
+        FileAdded(this, file);
+
+      return file;
+    }
+
+    public string Export(GameFile file, string destDir)
+    {
+      string destFile = Path.Combine(
+        destDir,
+        file.RaceName + file.Extension);
+      File.Copy(GetPathForFile(file), destFile);
+      return destFile;
     }
 
   }

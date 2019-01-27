@@ -41,6 +41,9 @@ namespace DomTurnMgr
 
     public static SettingsManager SettingsManager = new SettingsManager();
 
+    // TODO: Move this to program
+    public static TurnManager TurnManager;
+
     // This mutex will be used to see if this app is already running.
     private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
     private static Form theForm;
@@ -66,6 +69,13 @@ namespace DomTurnMgr
 #if false
         theForm = new Form1();
 #else
+        string libDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
+        TurnManager = new TurnManager(libDir);
+
+        //string gameName = "SteLand";
+        //var file = TurnManager.Import(gameName, @"C:\Users\Steve\Downloads\early_tienchi.trn", 9);
+        //GameLauncher gl = new GameLauncher("SteLand", TurnManager, file);
+
         theForm = new MainForm();
 #endif
 
