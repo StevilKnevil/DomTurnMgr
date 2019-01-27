@@ -172,6 +172,7 @@
     <Compile Include="GameControl.Designer.cs">
       <DependentUpon>GameControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameLauncher.cs" />
     <Compile Include="GMailHelpers.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -227,9 +228,6 @@
     <EmbeddedResource Include="SplashScreen.resx">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="client_secret.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="DomTurnMgr_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />

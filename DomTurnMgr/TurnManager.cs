@@ -17,30 +17,34 @@ namespace DomTurnMgr
 
     private readonly string LibraryDir;
 
-    public enum FileType
+    public class GameFile
     {
-      Unknown,
-      Turn,
-      Result,
-    }
-
-    public class FileChangedEventArgs : EventArgs
-    {
-      public FileChangedEventArgs(FileType type, string gameName, string raceName, int turnNumber)
+      public enum FileType
       {
-        Type = type;
-        GameName = gameName;
-        RaceName = raceName;
+        Unknown,
+        Turn,
+        Result,
+      }
+
+      public GameFile(string filePath, int turnNumber)
+      {
+        RaceName = Path.GetFileNameWithoutExtension(filePath);
+        Type = (FileType)Enum.Parse(
+          typeof(FileType), 
+          Path.GetExtension(filePath), 
+          false);
         TurnNumber = turnNumber;
       }
 
-      public FileType Type { get; private set; }
-      public string GameName { get; private set; }
-      public string RaceName { get; private set; }
-      public int TurnNumber { get; private set; }
+      //public string FilePath{ get; }
+      public string RaceName { get; }
+      public FileType Type { get; }
+      public int TurnNumber { get; }
+
+      public string Extension => Type.ToString();
     }
 
-    public event EventHandler<FileChangedEventArgs> FileAdded;
+    public event EventHandler<GameFile> FileAdded;
 
     public IEnumerable<string> GameNames
     {
@@ -72,24 +76,12 @@ namespace DomTurnMgr
         AddGame(gameName);
       }
 
-      string extension = Path.GetExtension(turnPath);
-      string raceName = Path.GetFileNameWithoutExtension(turnPath);
-      string destFilename = raceName + "_" + turnNumber + "." + extension;
+      GameFile file = new GameFile(turnPath, turnNumber);
+      string destFilename = file.RaceName + "_" + file.TurnNumber + "." + file.Extension;
       string destPath = Path.Combine(LibraryDir, destFilename);
       File.Copy(turnPath, destPath);
 
-      FileType type = FileType.Unknown;
-      if (extension == "trn")
-      {
-        type = FileType.Turn;
-      }
-      if (extension == "2h")
-      {
-        type = FileType.Result;
-      }
-      FileChangedEventArgs args = new FileChangedEventArgs(type, gameName, raceName, turnNumber);
-
-      FileAdded(this, args);
+      FileAdded(this, file);
 
       return true;
     }
