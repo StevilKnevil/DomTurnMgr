@@ -23,22 +23,22 @@ namespace DomTurnMgr
     {
       string gameName = Parent.Text;
       TurnManager tm = Program.TurnManager;
-      TurnManager.GameFile currentFile = new TurnManager.GameFile(
+      TurnManager.GameTurn currentTurn = new TurnManager.GameTurn(
         "SteLand",
-        @"C:\Users\Steve\Downloads\early_tienchi.trn",
+        "early_tienchi",
         9
       );
 
       GameLauncher gl = new GameLauncher();
 
-      string turnFilePath = tm.Export(currentFile, gl.tempDestDir);
+      tm.Export(currentTurn, gl.tempGameDir);
 
-      string resultFile = await gl.LaunchAsync(turnFilePath);
+      string resultFile = await gl.LaunchAsync();
 
       if (!String.IsNullOrEmpty(resultFile))
       {
         // insert the saved game back into the library
-        tm.Import(gameName, resultFile, currentFile.TurnNumber);
+        tm.Import(resultFile, currentTurn);
       }
     }
   }

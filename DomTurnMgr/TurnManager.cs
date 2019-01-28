@@ -17,50 +17,34 @@ namespace DomTurnMgr
 
     private readonly string LibraryDir;
 
-    public class GameFile
+    public class GameTurn
     {
-      public enum FileType
-      {
-        Unknown,
-        Turn,
-        Result,
-      }
+      public string GameName;
+      public string RaceName;
+      public int TurnNumber;
 
-      public GameFile(string gameName, string filePath, int turnNumber)
+      public GameTurn(string gameName, string raceName, int turnNumber)
       {
         GameName = gameName;
-        RaceName = Path.GetFileNameWithoutExtension(filePath);
-        Type = FromExtension(Path.GetExtension(filePath));
+        RaceName = raceName;
         TurnNumber = turnNumber;
       }
 
-      public string GameName{ get; }
-      public string RaceName { get; }
-      public FileType Type { get; }
-      public int TurnNumber { get; }
+      public string ToPath() => Path.Combine(new string[] {
+        GameName,
+        RaceName,
+        TurnNumber.ToString()
+      });
 
-      public string Extension => ToExtension(Type);
-
-      public static FileType FromExtension(string extn)
+      /*
+      public static GameTurn CreateFromPath()
       {
-        if (String.Compare(extn, ".trn", true) == 0) return FileType.Turn;
-        if (String.Compare(extn, ".2h", true) == 0) return FileType.Result;
-        return FileType.Unknown;
+        return new GameTurn();
       }
-
-      public static string ToExtension(FileType t)
-      {
-        switch(t)
-        {
-          case FileType.Turn: return ".trn";
-          case FileType.Result: return ".2h";
-        }
-        return "Unknown";
-      }
-
+      */
     }
 
-    public event EventHandler<GameFile> FileAdded;
+    //public event EventHandler<GameFile> FileAdded;
 
     public IEnumerable<string> GameNames
     {
@@ -75,53 +59,41 @@ namespace DomTurnMgr
       }
     } 
 
-    public bool GameExists(string gameName)
+    public void Import(string sourceFilePath, GameTurn gameTurn)
     {
-      return GameNames.Contains(gameName);
-    }
+      if (Path.GetExtension(sourceFilePath) != ".trn" && Path.GetExtension(sourceFilePath) != ".2h")
+        throw new ArgumentException("Expected .trn or .2h");
 
-    public bool AddGame(string gameName)
-    {
-      return Directory.CreateDirectory(Path.Combine(LibraryDir, gameName)).Exists;
-    }
+      // Ensure the correct directory is created
+      string destDir = Path.Combine(LibraryDir, gameTurn.ToPath());
+      Directory.CreateDirectory(destDir);
 
-    private string GetPathForFile(GameFile file)
-    {
-      string filename = file.RaceName + "_" + file.TurnNumber + file.Extension;
-      return Path.Combine(new string[] { LibraryDir, file.GameName , filename });
-    }
-
-    public GameFile Import(string gameName, string turnPath, int turnNumber)
-    {
-      if (!GameExists(gameName))
-      {
-        AddGame(gameName);
-      }
-
-      GameFile file = new GameFile(gameName, turnPath, turnNumber);
-
-      // todo: compare files
-      string destFilePath = GetPathForFile(file);
+      // todo: compare files timestamps etc
+      string destFilePath = Path.Combine(destDir, Path.GetFileName(sourceFilePath));
       if (File.Exists(destFilePath))
       {
         File.Delete(destFilePath);
       }
-      File.Copy(turnPath, destFilePath);
+
+      File.Copy(sourceFilePath, destFilePath);
 
       // Call the event handlers
-      if (FileAdded!= null)
-        FileAdded(this, file);
-
-      return file;
+      //if (FileAdded!= null)
+      //  FileAdded(this, file);
     }
 
-    public string Export(GameFile file, string destDir)
+    public void Export(GameTurn gameTurn, string destDir)
     {
-      string destFilePath = Path.Combine(
-        destDir,
-        file.RaceName + file.Extension);
-      File.Copy(GetPathForFile(file), destFilePath);
-      return destFilePath;
+      // Export all files from library
+      string sourceDir = Path.Combine(LibraryDir, gameTurn.ToPath());
+
+      string[] fileList = Directory.GetFiles(sourceDir, "*.*");
+
+      // Copy picture files.
+      foreach (string f in fileList)
+      {
+        File.Copy(f, Path.Combine(destDir, Path.GetFileName(f)));
+      }
     }
 
   }

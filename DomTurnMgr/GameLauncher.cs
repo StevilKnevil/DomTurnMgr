@@ -11,28 +11,25 @@ namespace DomTurnMgr
   class GameLauncher
   {
     private string tempGameName { get; }
-    public string tempDestDir => Path.Combine(
+    public string tempGameDir => Path.Combine(
           Program.SettingsManager.SaveGameDirectory,
           tempGameName);
 
     public GameLauncher()
     {
       tempGameName = Guid.NewGuid().ToString();
-      Directory.CreateDirectory(tempDestDir);
+      Directory.CreateDirectory(tempGameDir);
     }
 
     ~GameLauncher()
     {
-      Directory.Delete(tempDestDir, true);
+      Directory.Delete(tempGameDir, true);
     }
 
-    public Task<string> LaunchAsync(string turnFilePath)
+    public Task<string> LaunchAsync()
     {
       return Task.Run<string>(() =>
       {
-        if (Path.GetDirectoryName(turnFilePath) == tempGameName)
-          throw new ArgumentException($"Turn file: ${turnFilePath} is not in game directory ${tempGameName}");
-
         Process process = new Process();
         // Configure the process using the StartInfo properties.
         process.StartInfo.FileName = Program.SettingsManager.GameExePath;
@@ -45,12 +42,14 @@ namespace DomTurnMgr
         string resultFilePath = null;
         if (process.ExitCode == 0)
         {
-          resultFilePath = Path.ChangeExtension(turnFilePath, ".2h");
-
-          // Import the result into the turn manager
-          if (!File.Exists(resultFilePath))
+          var files = Directory.EnumerateFiles(tempGameDir, "*.2h");
+          if (files.Count() == 1)
           {
-            resultFilePath = null;
+            resultFilePath = files.First();
+          }
+          else if (files.Count() > 1)
+          {
+            throw new Exception();
           }
         }
 
