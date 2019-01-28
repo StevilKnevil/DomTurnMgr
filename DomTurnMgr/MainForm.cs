@@ -25,7 +25,7 @@ namespace DomTurnMgr
     private void UpdateUI()
     {
       tabControl1.TabPages.Clear();
-      foreach (string gameName in Program.TurnManager.GameNames)
+      foreach (string gameName in Program.TurnManager.GetGameNames())
       {
         GameControl gc = new GameControl();
         gc.Dock = System.Windows.Forms.DockStyle.Fill;

@@ -46,18 +46,27 @@ namespace DomTurnMgr
 
     //public event EventHandler<GameFile> FileAdded;
 
-    public IEnumerable<string> GameNames
+    public IEnumerable<string> GetGameNames()
     {
-      get {
-        List<string> dirs = new List<string>();
-        var paths = Directory.EnumerateDirectories(LibraryDir);
-        foreach (var path in paths)
-        {
-          dirs.Add(Path.GetFileName(path));
-        }
-        return dirs;
+      List<string> dirs = new List<string>();
+      var paths = Directory.EnumerateDirectories(LibraryDir);
+      foreach (var path in paths)
+      {
+        dirs.Add(Path.GetFileName(path));
       }
-    } 
+      return dirs;
+    }
+
+    public IEnumerable<string> GetRaceNames(string gameName)
+    {
+      List<string> dirs = new List<string>();
+      var paths = Directory.EnumerateDirectories(Path.Combine(LibraryDir, gameName));
+      foreach (var path in paths)
+      {
+        dirs.Add(Path.GetFileName(path));
+      }
+      return dirs;
+    }
 
     public void Import(string sourceFilePath, GameTurn gameTurn)
     {
