@@ -19,12 +19,27 @@ namespace DomTurnMgr
       InitializeComponent();
     }
 
-    private void button2_Click(object sender, EventArgs e)
+    private async void button2_Click(object sender, EventArgs e)
     {
       string gameName = Parent.Text;
       TurnManager tm = Program.TurnManager;
-      TurnManager.GameFile currentFile;
-      //GameLauncher gl = new GameLauncher(gameName, tm, currentFile);
+      TurnManager.GameFile currentFile = new TurnManager.GameFile(
+        "SteLand",
+        @"C:\Users\steve.thompson.AIRBOXSYSTEMS\Downloads\early_tienchi.trn",
+        9
+      );
+
+      GameLauncher gl = new GameLauncher();
+
+      string turnFilePath = tm.Export(currentFile, gl.tempDestDir);
+
+      string resultFile = await gl.LaunchAsync(turnFilePath);
+
+      if (!String.IsNullOrEmpty(resultFile))
+      {
+        // insert the saved game back into the library
+        tm.Import(gameName, resultFile, currentFile.TurnNumber);
+      }
     }
   }
 }

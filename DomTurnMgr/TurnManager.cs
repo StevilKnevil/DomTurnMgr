@@ -87,7 +87,7 @@ namespace DomTurnMgr
 
     private string GetPathForFile(GameFile file)
     {
-      string filename = file.RaceName + "_" + file.TurnNumber + "." + file.Extension;
+      string filename = file.RaceName + "_" + file.TurnNumber + file.Extension;
       return Path.Combine(new string[] { LibraryDir, file.GameName , filename });
     }
 
@@ -117,11 +117,11 @@ namespace DomTurnMgr
 
     public string Export(GameFile file, string destDir)
     {
-      string destFile = Path.Combine(
+      string destFilePath = Path.Combine(
         destDir,
         file.RaceName + file.Extension);
-      File.Copy(GetPathForFile(file), destFile);
-      return destFile;
+      File.Copy(GetPathForFile(file), destFilePath);
+      return destFilePath;
     }
 
   }

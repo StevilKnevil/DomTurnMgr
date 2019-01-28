@@ -13,61 +13,62 @@ namespace DomTurnMgr
     private Process process;
     private TurnManager turnManager;
     private string gameName;
-    private TurnManager.GameFile sourceFile;
+    private string turnFilePath;
+    private int turnNumber;
 
     private string tempGameName => System.Windows.Forms.Application.ProductName;
-    private string tempDestDir => Path.Combine(
+    public string tempDestDir => Path.Combine(
           Program.SettingsManager.SaveGameDirectory,
           tempGameName);
 
-    public GameLauncher(string gn, TurnManager tm, TurnManager.GameFile turnFile)
+    public GameLauncher()
     {
-      turnManager = tm;
-      gameName = gn;
-      sourceFile = turnFile;
-
+      // TODO: This should be re-entrant - GUID for the game name? Wipe out in Dispose?
       // Empty all files from that directory
       Directory.CreateDirectory(tempDestDir);
       foreach (string path in Directory.EnumerateFiles(tempDestDir, "*.trn"))
       {
         File.Delete(path);
       }
-      // copy the save file to the save game directory (and rename appropriately)
-      tm.Export(turnFile, tempDestDir);
-
-      process = new Process();
-      // Configure the process using the StartInfo properties.
-      process.StartInfo.FileName = Program.SettingsManager.GameExePath;
-      process.StartInfo.Arguments = tempGameName;
-      process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-
-      // Watch for when process finishes
-      process.EnableRaisingEvents = true;
-      process.Exited += process_Exited;
-
-      process.Start();
     }
 
-
-    private void process_Exited(object sender, System.EventArgs e)
+    public async Task<string> LaunchAsync(string turnFilePath)
     {
-      if(process.ExitCode == 0)
+      //return await new Task<string>(() =>
       {
-        // Success
-        string currentResult = Path.Combine(new string[] {
-          tempDestDir,
-          sourceFile.RaceName + "." + TurnManager.GameFile.ToExtension(TurnManager.GameFile.FileType.Result)
-        });
+        if (Path.GetDirectoryName(turnFilePath) == tempGameName)
+          throw new ArgumentException($"Turn file: ${turnFilePath} is not in game directory ${tempGameName}");
 
-        // Import the result into the turn manager
-        if (File.Exists(currentResult))
+        process = new Process();
+        // Configure the process using the StartInfo properties.
+        process.StartInfo.FileName = Program.SettingsManager.GameExePath;
+        process.StartInfo.Arguments = tempGameName;
+        process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
+
+        // Watch for when process finishes
+        process.EnableRaisingEvents = true;
+        //      process.Exited += process_Exited;
+
+        process.Start();
+        process.WaitForExit();
+
+        string resultFilePath = null;
+        if (process.ExitCode == 0)
         {
-          turnManager.Import(gameName, currentResult, sourceFile.TurnNumber);
-        }
-      }
+          resultFilePath = Path.ChangeExtension(turnFilePath, ".2h");
 
-      process.Exited -= process_Exited;
+          // Import the result into the turn manager
+          if (!File.Exists(resultFilePath))
+          {
+            resultFilePath = null;
+          }
+        }
+
+        return resultFilePath;
+      }
+      //});
     }
+
   }
 
 
