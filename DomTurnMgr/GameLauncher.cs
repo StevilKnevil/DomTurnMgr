@@ -16,25 +16,25 @@ namespace DomTurnMgr
     private string turnFilePath;
     private int turnNumber;
 
-    private string tempGameName => System.Windows.Forms.Application.ProductName;
+    private string tempGameName { get; }
     public string tempDestDir => Path.Combine(
           Program.SettingsManager.SaveGameDirectory,
           tempGameName);
 
     public GameLauncher()
     {
-      // TODO: This should be re-entrant - GUID for the game name? Wipe out in Dispose?
-      // Empty all files from that directory
+      tempGameName = Guid.NewGuid().ToString();
       Directory.CreateDirectory(tempDestDir);
-      foreach (string path in Directory.EnumerateFiles(tempDestDir, "*.trn"))
-      {
-        File.Delete(path);
-      }
     }
 
-    public async Task<string> LaunchAsync(string turnFilePath)
+    ~GameLauncher()
     {
-      //return await new Task<string>(() =>
+      Directory.Delete(tempDestDir, true);
+    }
+
+    public Task<string> LaunchAsync(string turnFilePath)
+    {
+      return Task.Run<string>(() =>
       {
         if (Path.GetDirectoryName(turnFilePath) == tempGameName)
           throw new ArgumentException($"Turn file: ${turnFilePath} is not in game directory ${tempGameName}");
@@ -44,10 +44,6 @@ namespace DomTurnMgr
         process.StartInfo.FileName = Program.SettingsManager.GameExePath;
         process.StartInfo.Arguments = tempGameName;
         process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
-
-        // Watch for when process finishes
-        process.EnableRaisingEvents = true;
-        //      process.Exited += process_Exited;
 
         process.Start();
         process.WaitForExit();
@@ -65,8 +61,7 @@ namespace DomTurnMgr
         }
 
         return resultFilePath;
-      }
-      //});
+      });
     }
 
   }

@@ -25,7 +25,7 @@ namespace DomTurnMgr
       TurnManager tm = Program.TurnManager;
       TurnManager.GameFile currentFile = new TurnManager.GameFile(
         "SteLand",
-        @"C:\Users\steve.thompson.AIRBOXSYSTEMS\Downloads\early_tienchi.trn",
+        @"C:\Users\Steve\Downloads\early_tienchi.trn",
         9
       );
 
