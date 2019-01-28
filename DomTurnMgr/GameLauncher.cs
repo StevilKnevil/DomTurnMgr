@@ -10,12 +10,6 @@ namespace DomTurnMgr
 {
   class GameLauncher
   {
-    private Process process;
-    private TurnManager turnManager;
-    private string gameName;
-    private string turnFilePath;
-    private int turnNumber;
-
     private string tempGameName { get; }
     public string tempDestDir => Path.Combine(
           Program.SettingsManager.SaveGameDirectory,
@@ -39,7 +33,7 @@ namespace DomTurnMgr
         if (Path.GetDirectoryName(turnFilePath) == tempGameName)
           throw new ArgumentException($"Turn file: ${turnFilePath} is not in game directory ${tempGameName}");
 
-        process = new Process();
+        Process process = new Process();
         // Configure the process using the StartInfo properties.
         process.StartInfo.FileName = Program.SettingsManager.GameExePath;
         process.StartInfo.Arguments = tempGameName;
