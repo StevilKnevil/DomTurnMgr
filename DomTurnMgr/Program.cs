@@ -45,7 +45,8 @@ namespace DomTurnMgr
     public static TurnManager TurnManager;
 
     // This mutex will be used to see if this app is already running.
-    private static Mutex mutex = new Mutex(true, "{8338C9EF-8BF3-475E-B2CD-661CDE336222}");
+    private static bool isFirst = false;
+    private static Mutex mutex = new Mutex(true, "{4817C9FE-3A6D-422F-A9C3-D0D306EB64D7}", out isFirst);
     private static Form theForm;
     private static System.Timers.Timer updateTimer;
     [STAThreadAttribute]
@@ -53,7 +54,7 @@ namespace DomTurnMgr
     {
       // Make sure we only have one instance running
       // https://stackoverflow.com/a/522874
-      if (mutex.WaitOne(TimeSpan.Zero, true))
+      if (isFirst)
       {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
