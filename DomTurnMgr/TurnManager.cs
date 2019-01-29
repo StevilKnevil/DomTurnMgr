@@ -68,6 +68,22 @@ namespace DomTurnMgr
       return dirs;
     }
 
+    public IEnumerable<int> GetTurnNumbers(string gameName, string raceName)
+    {
+      List<int> dirs = new List<int>();
+      var paths = Directory.EnumerateDirectories(Path.Combine(new string[] {LibraryDir, gameName, raceName}));
+      foreach (var path in paths)
+      {
+        string name = Path.GetFileName(path);
+        int num = 0;
+        if (int.TryParse(name, out num))
+        {
+          dirs.Add(num);
+        }
+      }
+      return dirs;
+    }
+
     public void Import(string sourceFilePath, GameTurn gameTurn)
     {
       if (Path.GetExtension(sourceFilePath) != ".trn" && Path.GetExtension(sourceFilePath) != ".2h")

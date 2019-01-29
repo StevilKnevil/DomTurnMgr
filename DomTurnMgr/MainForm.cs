@@ -29,6 +29,7 @@ namespace DomTurnMgr
       {
         GameControl gc = new GameControl();
         gc.Dock = System.Windows.Forms.DockStyle.Fill;
+        gc.GameName = gameName;
 
         var tp = new TabPage(gameName);
         tp.Controls.Add(gc);
