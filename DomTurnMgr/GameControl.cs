@@ -83,5 +83,44 @@ namespace DomTurnMgr
     {
       UpdateTurnList();
     }
+
+    private void GameControl_DragDrop(object sender, DragEventArgs e)
+    {
+      string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+      foreach (string file in files)
+      {
+        if (Path.GetExtension(file) == ".trn" || Path.GetExtension(file) == ".2h")
+        {
+          TurnManager.GameTurn gameTurn = 
+            new TurnManager.GameTurn(
+            gameName, GetRaceNameFromFile(file), GetTurnNumberFromFile(file));
+
+          Program.TurnManager.Import(file, gameTurn);
+        }
+      }
+    }
+    private void GameControl_DragEnter(object sender, DragEventArgs e)
+    {
+      if (e.Data.GetDataPresent(DataFormats.FileDrop))
+        e.Effect = DragDropEffects.Copy;
+    }
+
+    private static int GetTurnNumberFromFile(string file)
+    {
+      byte[] test = new byte[1];
+      using (BinaryReader reader = new BinaryReader(new FileStream(file, FileMode.Open)))
+      {
+        reader.BaseStream.Seek(0xE, SeekOrigin.Begin);
+        reader.Read(test, 0, 1);
+      }
+
+      int turnNum = test[0];
+      return turnNum;
+    }
+    private static string GetRaceNameFromFile(string file)
+    {
+      return Path.GetFileNameWithoutExtension(file);
+    }
+
   }
 }

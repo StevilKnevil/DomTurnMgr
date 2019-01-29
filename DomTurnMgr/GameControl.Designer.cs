@@ -90,6 +90,7 @@
       // 
       // GameControl
       // 
+      this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.Controls.Add(this.button2);
@@ -99,6 +100,8 @@
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
       this.Size = new System.Drawing.Size(422, 209);
+      this.DragDrop += new System.Windows.Forms.DragEventHandler(this.GameControl_DragDrop);
+      this.DragEnter += new System.Windows.Forms.DragEventHandler(this.GameControl_DragEnter);
       this.ResumeLayout(false);
       this.PerformLayout();
 
