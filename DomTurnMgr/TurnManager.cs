@@ -44,7 +44,7 @@ namespace DomTurnMgr
       */
     }
 
-    //public event EventHandler<GameFile> FileAdded;
+    public event EventHandler TurnsChanged;
 
     public IEnumerable<string> GetGameNames()
     {
@@ -103,8 +103,8 @@ namespace DomTurnMgr
       File.Copy(sourceFilePath, destFilePath);
 
       // Call the event handlers
-      //if (FileAdded!= null)
-      //  FileAdded(this, file);
+      if (TurnsChanged!= null)
+        TurnsChanged(this, new EventArgs());
     }
 
     public void Export(GameTurn gameTurn, string destDir)
