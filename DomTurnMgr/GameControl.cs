@@ -39,6 +39,10 @@ namespace DomTurnMgr
     public GameControl()
     {
       InitializeComponent();
+      AllowDrop = true;
+      DragEnter += GameControl_DragEnter;
+      DragDrop += GameControl_DragDrop;
+
       Program.TurnManager.TurnsChanged += TurnManager_TurnsChanged;
     }
 
