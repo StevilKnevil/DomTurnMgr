@@ -132,6 +132,12 @@ namespace DomTurnMgr
             gameName, GetNationNameFromFile(file), GetTurnNumberFromFile(file));
 
           Program.TurnManager.Import(file, gameTurn);
+
+          int itemIdx = comboBox1.Items.IndexOf(gameTurn.RaceName);
+          if (itemIdx > -1)
+          {
+            comboBox1.SelectedIndex = itemIdx;
+          }
         }
       }
     }
