@@ -94,10 +94,14 @@ namespace DomTurnMgr
       }
     }
 
-
-    private async void button2_Click(object sender, EventArgs e)
+    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
-      button2.Enabled = false;
+      UpdateTurnList();
+    }
+
+    private async void launchDomsButton_Click(object sender, EventArgs e)
+    {
+      launchDomsButton.Enabled = false;
       TurnManager tm = Program.TurnManager;
       TurnManager.GameTurn currentTurn = new TurnManager.GameTurn(GameName, raceName, turnNumber);
 
@@ -112,12 +116,7 @@ namespace DomTurnMgr
         // insert the saved game back into the library
         tm.Import(resultFile, currentTurn);
       }
-      button2.Enabled = true;
-    }
-
-    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-      UpdateTurnList();
+      launchDomsButton.Enabled = true;
     }
 
     private void GameControl_DragDrop(object sender, DragEventArgs e)

@@ -32,7 +32,7 @@
       this.comboBox1 = new System.Windows.Forms.ComboBox();
       this.listBox1 = new System.Windows.Forms.ListBox();
       this.button1 = new System.Windows.Forms.Button();
-      this.button2 = new System.Windows.Forms.Button();
+      this.launchDomsButton = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // label1
@@ -79,21 +79,21 @@
       // 
       // button2
       // 
-      this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.button2.Location = new System.Drawing.Point(344, 3);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(75, 50);
-      this.button2.TabIndex = 4;
-      this.button2.Text = "Launch Dominions";
-      this.button2.UseVisualStyleBackColor = true;
-      this.button2.Click += new System.EventHandler(this.button2_Click);
+      this.launchDomsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.launchDomsButton.Location = new System.Drawing.Point(344, 3);
+      this.launchDomsButton.Name = "button2";
+      this.launchDomsButton.Size = new System.Drawing.Size(75, 50);
+      this.launchDomsButton.TabIndex = 4;
+      this.launchDomsButton.Text = "Launch Dominions";
+      this.launchDomsButton.UseVisualStyleBackColor = true;
+      this.launchDomsButton.Click += new System.EventHandler(this.launchDomsButton_Click);
       // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Controls.Add(this.button2);
+      this.Controls.Add(this.launchDomsButton);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.listBox1);
       this.Controls.Add(this.comboBox1);
@@ -113,6 +113,6 @@
     private System.Windows.Forms.ComboBox comboBox1;
     private System.Windows.Forms.ListBox listBox1;
     private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button launchDomsButton;
     }
 }
