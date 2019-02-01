@@ -94,7 +94,7 @@ namespace DomTurnMgr
       Directory.CreateDirectory(destDir);
 
       // todo: compare files timestamps etc
-      string destFilePath = Path.Combine(destDir, Path.GetFileName(sourceFilePath));
+      string destFilePath = Path.Combine(destDir, gameTurn.RaceName + Path.GetExtension(sourceFilePath));
       if (File.Exists(destFilePath))
       {
         File.Delete(destFilePath);
