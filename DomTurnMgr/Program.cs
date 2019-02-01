@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define SINGLEINSTANCEx
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
@@ -45,8 +47,12 @@ namespace DomTurnMgr
     public static TurnManager TurnManager;
 
     // This mutex will be used to see if this app is already running.
+#if !SINGLEINSTANCE
+    private static bool isFirst = true;
+#else
     private static bool isFirst = false;
     private static Mutex mutex = new Mutex(true, "{4817C9FE-3A6D-422F-A9C3-D0D306EB64D7}", out isFirst);
+#endif
     private static Form theForm;
     private static System.Timers.Timer updateTimer;
     [STAThreadAttribute]
@@ -81,7 +87,9 @@ namespace DomTurnMgr
 #endif
 
         Application.Run(theForm);
+#if SINGLEINSTANCE
         mutex.ReleaseMutex();
+#endif
       }
       else
       {
@@ -143,7 +151,7 @@ namespace DomTurnMgr
       }
     }
 
-    #region Auto Update
+#region Auto Update
     private static UpdateCheckInfo getAppInfo()
     {
       UpdateCheckInfo info = null;
