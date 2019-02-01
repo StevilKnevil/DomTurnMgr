@@ -83,8 +83,7 @@ namespace DomTurnMgr
       TurnManager tm = Program.TurnManager;
       var turns = tm.GetTurnNumbers(GameName, raceName);
       listBox1.Items.Clear();
-      turns.OrderByDescending(x => x);
-      listBox1.Items.AddRange(turns.Select(x => x.ToString()).ToArray());
+      listBox1.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
       if (listBox1.Items.Contains(currentTurn))
       {
         listBox1.SelectedValue = currentTurn;
