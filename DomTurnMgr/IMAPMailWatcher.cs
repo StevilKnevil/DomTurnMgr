@@ -18,14 +18,14 @@ namespace DomTurnMgr
   {
     public class ServerConfig
     {
-      public ServerConfig(Uri address, int port, string username, SecureString password)
+      public ServerConfig(string address, int port, string username, SecureString password)
       {
         Address = address;
         Port = port;
         Credentials = new NetworkCredential(username, password);
       }
 
-      public Uri Address { get; }
+      public string Address { get; }
       public int Port { get; }
       public ICredentials Credentials;
     }
@@ -45,23 +45,20 @@ namespace DomTurnMgr
         this.attachment = attachment; 
       }
 
-      public void Write(string destDir)
+      public MemoryStream CreateMemoryStream()
       {
+        MemoryStream stream = null;
         // download the attachment just like we did with the body
         var part = folder.GetBodyPart(item.UniqueId, attachment) as MimePart;
 
         // We only care about mime parts
         if (part != null)
         {
-          // note: it's possible for this to be null, but most will specify a filename
-          var fileName = part.FileName;
-
-          var path = Path.Combine(destDir, fileName);
-
           // decode and save the content to a file
-          using (var stream = System.IO.File.Create(path))
-            part.Content.DecodeTo(stream);
+          stream = new MemoryStream();
+          part.Content.DecodeTo(stream);
         }
+        return stream;
       }
     }
 
@@ -69,13 +66,15 @@ namespace DomTurnMgr
     bool disposed = false;
 
     private ServerConfig config;
+    private SearchQuery query;
     private ImapClient client;
     private IMailFolder folder;
     public EventHandler<MessageAttachment> AttachmentsAvailable;
 
-    public IMAPMailWatcher(ServerConfig config, string searchString)
+    public IMAPMailWatcher(ServerConfig config, SearchQuery query)
     {
       this.config = config;
+      this.query = query;
       // create the client
       client = new ImapClient();
     }
@@ -116,16 +115,14 @@ namespace DomTurnMgr
     private void EnsureAutheticated()
     {
       if (!client.IsConnected)
-        client.Connect(config.Address.DnsSafeHost, config.Port, SecureSocketOptions.SslOnConnect);
+        client.Connect(config.Address, config.Port, SecureSocketOptions.SslOnConnect);
       if (!client.IsAuthenticated)
         client.Authenticate(config.Credentials);
 
       // Refresh folder
-      folder = client.GetFolder("Wolstenzia"); // client.Inbox;
+      folder = client.Inbox;
       if (!folder.IsOpen)
         folder.Open(FolderAccess.ReadOnly);
-      //client.Connect("imap.gmail.com", 993, SecureSocketOptions.SslOnConnect);
-      //client.Authenticate("steeveeet", "dnimtxqgtzhfgsck");
     }
 
     public void DownloadAttachments()
@@ -133,43 +130,21 @@ namespace DomTurnMgr
       // No need to do anything if nobody is listening for events.
       if (AttachmentsAvailable != null)
       { 
-        // Async
-        // get a list of all messages for the current game
-        // Check the filename of tha attachment, and if the turn manager doesn't contain it, download, decode and import it.
-        // download the attachment and import into turn manager
-
         EnsureAutheticated();
 
-        // search for messages where the Subject header contains either "MimeKit" or "MailKit"
-        //var query = SearchQuery.SubjectContains("New turn file: Steland").Or(SearchQuery.SubjectContains("MailKit"));
-        var query = SearchQuery.SubjectContains("New turn file: Wolstenzia");
         var uids = folder.Search(query);
 
         // fetch summary information for the search results (we will want the UID and the BODYSTRUCTURE
-        // of each message so that we can extract the text body and the attachments)
-        var items = folder.Fetch(uids, MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+        // of each message so that we can extract the subject and the attachments)
+        var items = folder.Fetch(uids, 
+          MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
 
         foreach (var item in items)
         {
           foreach (var attachment in item.Attachments)
           {
             MessageAttachment ma = new MessageAttachment(item, folder, attachment);
-
             AttachmentsAvailable(this, ma);
-
-            /*
-            if (turnMarshaller.HasInterest(item.Envelope.Subject, attachment.FileName))
-            {
-              // send the strem to the turn marshaller
-            }
-            if (String.Compare(Path.GetExtension(attachment.FileName), ".trn", true) == 0 ||
-              String.Compare(Path.GetExtension(attachment.FileName), ".2h", true) == 0)
-            {
-              // Also Check subject for turn number
-              // This is an attachment of interest
-              attachment.
-            }
-            */
           }
         }
       }

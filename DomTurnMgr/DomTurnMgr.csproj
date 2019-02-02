@@ -182,6 +182,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="NationDetails.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="PreferencesForm.cs">
       <SubType>Form</SubType>

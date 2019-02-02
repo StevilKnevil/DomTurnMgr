@@ -18,9 +18,6 @@ using System.Deployment.Application;
 
 namespace DomTurnMgr
 {
-  /*
-   *   Option to delete old turn emails from gmail
-   */
   class Program
   {
     // If modifying these scopes, delete your previously saved credentials
@@ -75,13 +72,39 @@ namespace DomTurnMgr
 #if false
         theForm = new Form1();
 #else
-        //IMAPMailWatcher.DownloadAttachments();
         // See what exists in the library and creat a game manager for each game found
         var paths = Directory.EnumerateDirectories(LibraryDirectory);
         foreach (var path in paths)
         {
-          var game = new GameManager(path);
-          GameManagers[game.GameName] = game;
+
+          var gameManager = new GameManager(path);
+          GameManagers[gameManager.GameName] = gameManager;
+
+          var query = 
+            MailKit.Search.SearchQuery.SubjectContains("New turn file: " + gameManager.GameName).And(
+              MailKit.Search.SearchQuery.FromContains("turns@llamaserver.net"));
+
+          var config = new IMAPMailWatcher.ServerConfig(
+            "imap.gmail.com", 993, "Test", new System.Security.SecureString());
+
+          IMAPMailWatcher mw = new IMAPMailWatcher(config, query);
+
+          void Handler(object sender, IMAPMailWatcher.MessageAttachment ma)
+          {
+            var ext = Path.GetExtension(ma.Filename);
+            if (String.Compare(ext, ".trn", true) == 0 ||
+              String.Compare(ext, ".2h", true) == 0)
+            {
+
+              // Also Check subject for turn number
+              // This is an attachment of interest
+              using (MemoryStream s = ma.CreateMemoryStream())
+              {
+                gameManager.Import(s, ext);
+              }
+            }
+          }
+          mw.AttachmentsAvailable += Handler;
         }
 
         theForm = new MainForm();

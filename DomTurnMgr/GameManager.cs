@@ -23,16 +23,49 @@ namespace DomTurnMgr
       public string RaceName;
       public int TurnNumber;
 
-      public GameTurn(string gameName, string raceName, int turnNumber)
+      public GameTurn(string raceName, int turnNumber)
       {
         RaceName = raceName;
         TurnNumber = turnNumber;
+      }
+      public GameTurn(Stream stream)
+      {
+        RaceName = GetNationName(stream);
+        TurnNumber = GetTurnNumber(stream);
       }
 
       public string ToPath() => Path.Combine(new string[] {
         RaceName,
         TurnNumber.ToString()
       });
+
+      private static int GetTurnNumber(Stream stream)
+      {
+        byte[] test = new byte[1];
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+          reader.BaseStream.Seek(0xE, SeekOrigin.Begin);
+          reader.Read(test, 0, 1);
+        }
+
+        int turnNum = test[0];
+        return turnNum;
+      }
+
+      private static string GetNationName(Stream stream)
+      {
+        // Instead get offset 0x1a to get the race ID
+        byte[] test = new byte[1];
+        using (BinaryReader reader = new BinaryReader(stream))
+        {
+          reader.BaseStream.Seek(0x1A, SeekOrigin.Begin);
+          reader.Read(test, 0, 1);
+        }
+
+        int nationID = test[0];
+        return NationDetails.Get(nationID).Filename;
+      }
+
     }
 
     public event EventHandler TurnsChanged;
@@ -83,8 +116,31 @@ namespace DomTurnMgr
       File.Copy(sourceFilePath, destFilePath);
 
       // Call the event handlers
-      if (TurnsChanged!= null)
-        TurnsChanged(this, new EventArgs());
+      TurnsChanged?.Invoke(this, new EventArgs());
+    }
+
+    public void Import(MemoryStream sourceStream, string extension)
+    {
+      if (extension != ".trn" && extension != ".2h")
+        throw new ArgumentException("Expected .trn or .2h");
+
+      var gt = new GameTurn(sourceStream);
+      // Ensure the correct directory is created
+      string destDir = Path.Combine(LibraryDir, gt.ToPath());
+      Directory.CreateDirectory(destDir);
+
+      // todo: compare files timestamps etc
+      string destFilePath = Path.Combine(destDir, gt.RaceName + extension);
+      if (File.Exists(destFilePath))
+      {
+        File.Delete(destFilePath);
+      }
+
+      // Write the file to the stream
+      sourceStream.WriteTo(File.Create(destFilePath));
+
+      // Call the event handlers
+      TurnsChanged?.Invoke(this, new EventArgs());
     }
 
     public void Export(GameTurn gameTurn, string destDir)
