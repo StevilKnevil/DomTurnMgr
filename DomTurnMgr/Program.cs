@@ -79,10 +79,6 @@ namespace DomTurnMgr
         string libDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
         TurnManager = new TurnManager(libDir);
 
-        //TurnManager.GameTurn gameTurn = new TurnManager.GameTurn("SteLand", "early_tienchi", 9);
-        //TurnManager.Import(@"C:\Users\Steve\Downloads\early_tienchi.trn", gameTurn);
-        //GameLauncher gl = new GameLauncher("SteLand", TurnManager, file);
-
         theForm = new MainForm();
 #endif
 
