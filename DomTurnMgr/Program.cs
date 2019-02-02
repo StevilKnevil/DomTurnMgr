@@ -76,6 +76,7 @@ namespace DomTurnMgr
 #if false
         theForm = new Form1();
 #else
+        //IMAPMailWatcher.DownloadAttachments();
         string libDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
         TurnManager = new TurnManager(libDir);
 
