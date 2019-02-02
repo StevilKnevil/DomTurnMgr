@@ -35,13 +35,6 @@ namespace DomTurnMgr
         RaceName,
         TurnNumber.ToString()
       });
-
-      /*
-      public static GameTurn CreateFromPath()
-      {
-        return new GameTurn();
-      }
-      */
     }
 
     public event EventHandler TurnsChanged;
