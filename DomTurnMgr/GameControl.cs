@@ -32,18 +32,19 @@ namespace DomTurnMgr
       set
       {
         gameName = value;
+        Program.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
         UpdateUI();
       }
     }
 
+    private GameManager gameManager => Program.GameManagers[GameName];
+
     public GameControl()
     {
       InitializeComponent();
-
-      Program.TurnManager.TurnsChanged += TurnManager_TurnsChanged;
     }
 
-    private void TurnManager_TurnsChanged(object sender, EventArgs e)
+    private void GameManager_TurnsChanged(object sender, EventArgs e)
     {
       UpdateUI();
     }
@@ -57,8 +58,7 @@ namespace DomTurnMgr
     {
       string currentRace = raceName;
       // For this game, populate the races combo
-      TurnManager tm = Program.TurnManager;
-      var races = tm.GetRaceNames(GameName);
+      var races = gameManager.GetRaceNames();
       comboBox1.Items.Clear();
       comboBox1.Items.AddRange(races.ToArray());
       if (!string.IsNullOrEmpty(currentRace) && comboBox1.Items.Contains(currentRace))
@@ -77,8 +77,7 @@ namespace DomTurnMgr
     public void UpdateTurnList()
     {
       int currentTurn = turnNumber;
-      TurnManager tm = Program.TurnManager;
-      var turns = tm.GetTurnNumbers(GameName, raceName);
+      var turns = gameManager.GetTurnNumbers(raceName);
       listBox1.Items.Clear();
       listBox1.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
       if (listBox1.Items.Contains(currentTurn))
@@ -102,19 +101,18 @@ namespace DomTurnMgr
     private async void launchDomsButton_Click(object sender, EventArgs e)
     {
       launchDomsButton.Enabled = false;
-      TurnManager tm = Program.TurnManager;
-      TurnManager.GameTurn currentTurn = new TurnManager.GameTurn(GameName, raceName, turnNumber);
+      GameManager.GameTurn currentTurn = new GameManager.GameTurn(GameName, raceName, turnNumber);
 
       GameLauncher gl = new GameLauncher();
 
-      tm.Export(currentTurn, gl.tempGameDir);
+      gameManager.Export(currentTurn, gl.tempGameDir);
 
       string resultFile = await gl.LaunchAsync();
 
       if (!String.IsNullOrEmpty(resultFile))
       {
         // insert the saved game back into the library
-        tm.Import(resultFile, currentTurn);
+        gameManager.Import(resultFile, currentTurn);
       }
       launchDomsButton.Enabled = true;
     }
@@ -126,11 +124,11 @@ namespace DomTurnMgr
       {
         if (Path.GetExtension(file) == ".trn" || Path.GetExtension(file) == ".2h")
         {
-          TurnManager.GameTurn gameTurn =
-            new TurnManager.GameTurn(
+          GameManager.GameTurn gameTurn =
+            new GameManager.GameTurn(
             gameName, GetNationNameFromFile(file), GetTurnNumberFromFile(file));
 
-          Program.TurnManager.Import(file, gameTurn);
+          gameManager.Import(file, gameTurn);
 
           int itemIdx = comboBox1.Items.IndexOf(gameTurn.RaceName);
           if (itemIdx > -1)

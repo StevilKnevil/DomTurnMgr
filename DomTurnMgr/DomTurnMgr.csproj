@@ -198,7 +198,7 @@
     <Compile Include="SplashScreen.Designer.cs">
       <DependentUpon>SplashScreen.cs</DependentUpon>
     </Compile>
-    <Compile Include="TurnManager.cs" />
+    <Compile Include="GameManager.cs" />
     <EmbeddedResource Include="AddGameDialog.resx">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </EmbeddedResource>

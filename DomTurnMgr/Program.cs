@@ -42,9 +42,8 @@ namespace DomTurnMgr
     }
 
     public static SettingsManager SettingsManager = new SettingsManager();
-
-    // TODO: Move this to program
-    public static TurnManager TurnManager;
+    public static string LibraryDirectory => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
+    public static IDictionary<string, GameManager> GameManagers = new Dictionary<string, GameManager>();
 
     // This mutex will be used to see if this app is already running.
 #if !SINGLEINSTANCE
@@ -77,8 +76,13 @@ namespace DomTurnMgr
         theForm = new Form1();
 #else
         //IMAPMailWatcher.DownloadAttachments();
-        string libDir = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
-        TurnManager = new TurnManager(libDir);
+        // See what exists in the library and creat a game manager for each game found
+        var paths = Directory.EnumerateDirectories(LibraryDirectory);
+        foreach (var path in paths)
+        {
+          var game = new GameManager(path);
+          GameManagers[game.GameName] = game;
+        }
 
         theForm = new MainForm();
 #endif

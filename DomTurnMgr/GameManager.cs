@@ -7,31 +7,29 @@ using System.Threading.Tasks;
 
 namespace DomTurnMgr
 {
-  class TurnManager
+  class GameManager
   {
-    public TurnManager(string libraryDir)
+    private readonly string LibraryDir;
+    public string GameName => Path.GetFileName(LibraryDir);
+
+    public GameManager(string libraryDir)
     {
       LibraryDir = libraryDir;
       Directory.CreateDirectory(LibraryDir);
     }
 
-    private readonly string LibraryDir;
-
     public class GameTurn
     {
-      public string GameName;
       public string RaceName;
       public int TurnNumber;
 
       public GameTurn(string gameName, string raceName, int turnNumber)
       {
-        GameName = gameName;
         RaceName = raceName;
         TurnNumber = turnNumber;
       }
 
       public string ToPath() => Path.Combine(new string[] {
-        GameName,
         RaceName,
         TurnNumber.ToString()
       });
@@ -39,7 +37,7 @@ namespace DomTurnMgr
 
     public event EventHandler TurnsChanged;
 
-    public IEnumerable<string> GetGameNames()
+    public IEnumerable<string> GetRaceNames()
     {
       List<string> dirs = new List<string>();
       var paths = Directory.EnumerateDirectories(LibraryDir);
@@ -50,21 +48,10 @@ namespace DomTurnMgr
       return dirs;
     }
 
-    public IEnumerable<string> GetRaceNames(string gameName)
-    {
-      List<string> dirs = new List<string>();
-      var paths = Directory.EnumerateDirectories(Path.Combine(LibraryDir, gameName));
-      foreach (var path in paths)
-      {
-        dirs.Add(Path.GetFileName(path));
-      }
-      return dirs;
-    }
-
-    public IEnumerable<int> GetTurnNumbers(string gameName, string raceName)
+    public IEnumerable<int> GetTurnNumbers(string raceName)
     {
       List<int> dirs = new List<int>();
-      var paths = Directory.EnumerateDirectories(Path.Combine(new string[] {LibraryDir, gameName, raceName}));
+      var paths = Directory.EnumerateDirectories(Path.Combine(LibraryDir, raceName));
       foreach (var path in paths)
       {
         string name = Path.GetFileName(path);
