@@ -13,13 +13,15 @@ using System.Xml.Serialization;
 namespace DomTurnMgr
 {
   [Serializable]
-  public class IMAPServerConfig : IXmlSerializable
+  public class IMAPServerConfig : IMailServerConfig, IXmlSerializable
   {
+    [XmlIgnore]
     public ICredentials Credentials => new NetworkCredential(Username, Password);
-    public string Address;
-    public int Port;
-    public string Username;
-    public string Password;
+
+    public string Address { get; set; }
+    public int Port { get; set; }
+    public string Username { get; set; }
+    public string Password { get; set; }
 
     public IMAPServerConfig()
     {
