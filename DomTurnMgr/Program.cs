@@ -130,25 +130,30 @@ namespace DomTurnMgr
 
       if (MailServerConfigs.Count == 0)
       {
-        // We have no email server configured, so add one now.
-        var fm = new MailServerConfigForm();
-        if (fm.ShowDialog() == DialogResult.OK)
-        {
-          var configName = fm.ConfigName;
-          var config = new IMAPServerConfig(
-            fm.HostName,
-            fm.Port,
-            fm.Username,
-            fm.Password);
+        AddMailServerConfig();
+      }
+    }
 
-          // write to file
-          XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
-          TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, configName + ".mailconfig"));
-          ser.Serialize(writer, config);
-          writer.Close();
+    private static void AddMailServerConfig()
+    {
+      // We have no email server configured, so add one now.
+      var fm = new MailServerConfigForm();
+      if (fm.ShowDialog() == DialogResult.OK)
+      {
+        var configName = fm.ConfigName;
+        var config = new IMAPServerConfig(
+          fm.HostName,
+          fm.Port,
+          fm.Username,
+          fm.Password);
 
-          MailServerConfigs[configName] = config;
-        }
+        // write to file
+        XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
+        TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, configName + ".mailconfig"));
+        ser.Serialize(writer, config);
+        writer.Close();
+
+        MailServerConfigs[configName] = config;
       }
     }
 
@@ -171,6 +176,36 @@ namespace DomTurnMgr
           var gameManager = new GameManager(gameSettings, path);
           GameManagers[gameManager.GameName] = gameManager;
         }
+      }
+
+      if (GameManagers.Count == 0)
+      {
+        AddGameManager();
+      }
+    }
+
+    private static void AddGameManager()
+    {
+      // We have no email server configured, so add one now.
+      var fm = new GameSettingsForm();
+      if (fm.ShowDialog() == DialogResult.OK)
+      {
+        var gameSettings = new GameSettings(
+          fm.GameName,
+          fm.MailServerConfigName,
+          fm.QuerySubjectText,
+          fm.QuerySenderText);
+
+        // write to file
+        string path = Path.Combine(LibraryDirectory, gameSettings.Name);
+        XmlSerializer ser = new XmlSerializer(typeof(GameSettings));
+        TextWriter writer = new StreamWriter(Path.Combine(path, gameSettings.Name + ".gameconfig"));
+        ser.Serialize(writer, gameSettings);
+        writer.Close();
+
+
+        var gameManager = new GameManager(gameSettings, path);
+        GameManagers[gameManager.GameName] = gameManager;
       }
     }
 

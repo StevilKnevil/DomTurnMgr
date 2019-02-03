@@ -10,6 +10,14 @@ namespace DomTurnMgr
   {
     public GameSettings() {}
 
+    public GameSettings(string gameName, string mailServerConfigName, string querySubjectText, string querySenderText)
+    {
+      Name = gameName;
+      MailServerConfigName = mailServerConfigName;
+      Query.SubjectMatch = querySubjectText;
+      Query.SenderMatch = querySenderText;
+    }
+
     public string Name;
     public struct MailSearchQuery
     {
