@@ -16,20 +16,6 @@ namespace DomTurnMgr
 {
   class IMAPMailWatcher : IDisposable
   {
-    public class ServerConfig
-    {
-      public ServerConfig(string address, int port, string username, SecureString password)
-      {
-        Address = address;
-        Port = port;
-        Credentials = new NetworkCredential(username, password);
-      }
-
-      public string Address { get; }
-      public int Port { get; }
-      public ICredentials Credentials;
-    }
-
     public class MessageAttachment
     {
       private IMessageSummary item;
@@ -65,13 +51,13 @@ namespace DomTurnMgr
     // Flag: Has Dispose already been called?
     bool disposed = false;
 
-    private ServerConfig config;
+    private IMAPServerConfig config;
     private SearchQuery query;
     private ImapClient client;
     private IMailFolder folder;
     public EventHandler<MessageAttachment> AttachmentsAvailable;
 
-    public IMAPMailWatcher(ServerConfig config, SearchQuery query)
+    public IMAPMailWatcher(IMAPServerConfig config, SearchQuery query)
     {
       this.config = config;
       this.query = query;
