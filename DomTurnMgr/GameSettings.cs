@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DomTurnMgr
 {
-  class GameSettings
+  public class GameSettings
   {
     public GameSettings() {}
 
