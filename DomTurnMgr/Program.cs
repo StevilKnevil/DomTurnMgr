@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading;
 using Microsoft.Win32;
 using System.Deployment.Application;
+using System.Xml.Serialization;
 
 namespace DomTurnMgr
 {
@@ -41,6 +42,7 @@ namespace DomTurnMgr
     public static SettingsManager SettingsManager = new SettingsManager();
     public static string LibraryDirectory => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
     public static IDictionary<string, GameManager> GameManagers = new Dictionary<string, GameManager>();
+    public static Dictionary<string, IMailServerConfig> MailServerConfigs = new Dictionary<string, IMailServerConfig>();
 
     // This mutex will be used to see if this app is already running.
 #if !SINGLEINSTANCE
@@ -72,22 +74,29 @@ namespace DomTurnMgr
 #if false
         theForm = new Form1();
 #else
+        // TODO: Validate and init app settings
+        {
+
+        }
+
+        // load the email settings
+        InitMailServerConfigs();
+
         // See what exists in the library and creat a game manager for each game found
         var paths = Directory.EnumerateDirectories(LibraryDirectory);
         foreach (var path in paths)
         {
-
+          // check for a GameSettings file, if there is then it's a Game!
           var gameManager = new GameManager(path);
           GameManagers[gameManager.GameName] = gameManager;
 
-          var query = 
+          var query =
             MailKit.Search.SearchQuery.SubjectContains("New turn file: " + gameManager.GameName).And(
               MailKit.Search.SearchQuery.FromContains("turns@llamaserver.net"));
 
-          var config = new IMAPMailWatcher.ServerConfig(
-            "imap.gmail.com", 993, "Test", new System.Security.SecureString());
-
-          IMAPMailWatcher mw = new IMAPMailWatcher(config, query);
+          IMAPMailWatcher mw = new IMAPMailWatcher(
+            MailServerConfigs.Values.First() as IMAPServerConfig, 
+            query);
 
           void Handler(object sender, IMAPMailWatcher.MessageAttachment ma)
           {
@@ -124,6 +133,40 @@ namespace DomTurnMgr
             NativeMethods.WM_SHOWME,
             IntPtr.Zero,
             IntPtr.Zero);
+      }
+    }
+
+    private static void InitMailServerConfigs()
+    {
+      foreach (var file in Directory.EnumerateFiles(LibraryDirectory, "*.mailconfig"))
+      {
+        XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
+        StreamReader reader = new StreamReader(file);
+        MailServerConfigs[Path.GetFileNameWithoutExtension(file)] = (IMAPServerConfig)ser.Deserialize(reader);
+        reader.Close();
+      }
+
+      if (MailServerConfigs.Count == 0)
+      {
+        // We have no email server configured, so add one now.
+        var fm = new MailServerConfigForm();
+        if (fm.ShowDialog() == DialogResult.OK)
+        {
+          var configName = fm.ConfigName;
+          var config = new IMAPServerConfig(
+            fm.HostName,
+            fm.Port,
+            fm.Username,
+            fm.Password);
+
+          // write to file
+          XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
+          TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, configName + ".mailconfig"));
+          ser.Serialize(writer, config);
+          writer.Close();
+
+          MailServerConfigs[configName] = config;
+        }
       }
     }
 
