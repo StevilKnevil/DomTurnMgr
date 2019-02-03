@@ -49,7 +49,7 @@ namespace DomTurnMgr
     }
 
     // Flag: Has Dispose already been called?
-    bool disposed = false;
+    private bool disposed = false;
 
     private IMAPServerConfig config;
     private SearchQuery query;
