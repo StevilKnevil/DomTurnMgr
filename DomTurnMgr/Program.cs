@@ -79,6 +79,20 @@ namespace DomTurnMgr
 
         }
 
+        /*
+        var gs = new GameSettings();
+        gs.MailServerConfigName = "Gmail";
+        gs.Name = "SteLand";
+        gs.Query.SubjectMatch = "New turn file: " + gs.Name;
+        gs.Query.SenderMatch = "turns@llamaserver.net";
+
+        // write to file
+        XmlSerializer ser = new XmlSerializer(typeof(GameSettings));
+        TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, gs.Name + ".gameconfig"));
+        ser.Serialize(writer, gs);
+        writer.Close();
+        */
+
         // load the email settings
         InitMailServerConfigs();
 
@@ -157,34 +171,6 @@ namespace DomTurnMgr
           var gameManager = new GameManager(gameSettings, path);
           GameManagers[gameManager.GameName] = gameManager;
         }
-
-        /*
-        var query =
-          MailKit.Search.SearchQuery.SubjectContains("New turn file: " + gameManager.GameName).And(
-            MailKit.Search.SearchQuery.FromContains("turns@llamaserver.net"));
-
-        IMAPMailWatcher mw = new IMAPMailWatcher(
-          MailServerConfigs.Values.First() as IMAPServerConfig, 
-          query);
-
-        void Handler(object sender, IMAPMailWatcher.MessageAttachment ma)
-        {
-          var ext = Path.GetExtension(ma.Filename);
-          if (String.Compare(ext, ".trn", true) == 0 ||
-            String.Compare(ext, ".2h", true) == 0)
-          {
-
-            // Also Check subject for turn number
-            // This is an attachment of interest
-            using (MemoryStream s = ma.CreateMemoryStream())
-            {
-              gameManager.Import(s, ext);
-            }
-          }
-        }
-
-        mw.AttachmentsAvailable += Handler;
-        */
       }
     }
 
