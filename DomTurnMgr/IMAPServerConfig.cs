@@ -15,9 +15,6 @@ namespace DomTurnMgr
   [Serializable]
   public class IMAPServerConfig : IMailServerConfig, IXmlSerializable
   {
-    [XmlIgnore]
-    public ICredentials Credentials => new NetworkCredential(Username, Password);
-
     public string Address { get; set; }
     public int Port { get; set; }
     public string Username { get; set; }
@@ -48,9 +45,9 @@ namespace DomTurnMgr
       while (reader.NodeType != System.Xml.XmlNodeType.EndElement)
       {
         string nodeName = reader.Name;
-        var f = this.GetType().GetField(nodeName);
+        var f = this.GetType().GetProperty(nodeName);
         XmlSerializer valueSerializer =
-                          new XmlSerializer(f.FieldType);
+                          new XmlSerializer(f.PropertyType);
 
         reader.ReadStartElement(nodeName);
         object tempValue = null;
@@ -67,10 +64,10 @@ namespace DomTurnMgr
     {
       Protect();
 
-      foreach (var f in GetType().GetFields())
+      foreach (var f in GetType().GetProperties())
       {
         string fieldName = f.Name;
-        XmlSerializer valueSerializer = new XmlSerializer(f.FieldType);
+        XmlSerializer valueSerializer = new XmlSerializer(f.PropertyType);
         writer.WriteStartElement(fieldName);
         valueSerializer.Serialize(writer, f.GetValue(this));
         writer.WriteEndElement();

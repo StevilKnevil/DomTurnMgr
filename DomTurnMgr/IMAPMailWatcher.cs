@@ -103,7 +103,7 @@ namespace DomTurnMgr
       if (!client.IsConnected)
         client.Connect(config.Address, config.Port, SecureSocketOptions.SslOnConnect);
       if (!client.IsAuthenticated)
-        client.Authenticate(config.Credentials);
+        client.Authenticate(config.Username, config.Password);
 
       // Refresh folder
       folder = client.Inbox;
