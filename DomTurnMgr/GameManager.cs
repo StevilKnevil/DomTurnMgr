@@ -28,10 +28,21 @@ namespace DomTurnMgr
         RaceName = raceName;
         TurnNumber = turnNumber;
       }
-      public GameTurn(Stream stream)
+
+      public GameTurn(string filePath)
       {
-        RaceName = GetNationName(stream);
-        TurnNumber = GetTurnNumber(stream);
+        using (var fs = new FileStream(filePath, FileMode.Open))
+        using (var reader = new BinaryReader(fs))
+        {
+          RaceName = GetNationName(reader);
+          TurnNumber = GetTurnNumber(reader);
+        }
+      }
+
+      public GameTurn(BinaryReader reader)
+      {
+        RaceName = GetNationName(reader);
+        TurnNumber = GetTurnNumber(reader);
       }
 
       public string ToPath() => Path.Combine(new string[] {
@@ -39,31 +50,23 @@ namespace DomTurnMgr
         TurnNumber.ToString()
       });
 
-      private static int GetTurnNumber(Stream stream)
-      {
-        byte[] test = new byte[1];
-        using (BinaryReader reader = new BinaryReader(stream))
-        {
-          reader.BaseStream.Seek(0xE, SeekOrigin.Begin);
-          reader.Read(test, 0, 1);
-        }
-
-        int turnNum = test[0];
-        return turnNum;
-      }
-
-      private static string GetNationName(Stream stream)
+      private static string GetNationName(BinaryReader reader)
       {
         // Instead get offset 0x1a to get the race ID
         byte[] test = new byte[1];
-        using (BinaryReader reader = new BinaryReader(stream))
-        {
-          reader.BaseStream.Seek(0x1A, SeekOrigin.Begin);
-          reader.Read(test, 0, 1);
-        }
-
+        reader.BaseStream.Seek(0x1A, SeekOrigin.Begin);
+        reader.Read(test, 0, 1);
         int nationID = test[0];
         return NationDetails.Get(nationID).Filename;
+      }
+
+      private static int GetTurnNumber(BinaryReader reader)
+      {
+        byte[] test = new byte[1];
+        reader.BaseStream.Seek(0xE, SeekOrigin.Begin);
+        reader.Read(test, 0, 1);
+        int turnNum = test[0];
+        return turnNum;
       }
 
     }
@@ -124,20 +127,23 @@ namespace DomTurnMgr
       if (extension != ".trn" && extension != ".2h")
         throw new ArgumentException("Expected .trn or .2h");
 
-      var gt = new GameTurn(sourceStream);
-      // Ensure the correct directory is created
-      string destDir = Path.Combine(LibraryDir, gt.ToPath());
-      Directory.CreateDirectory(destDir);
-
-      // todo: compare files timestamps etc
-      string destFilePath = Path.Combine(destDir, gt.RaceName + extension);
-      if (File.Exists(destFilePath))
+      using (BinaryReader reader = new BinaryReader(sourceStream))
       {
-        File.Delete(destFilePath);
-      }
+        var gt = new GameTurn(reader);
+        // Ensure the correct directory is created
+        string destDir = Path.Combine(LibraryDir, gt.ToPath());
+        Directory.CreateDirectory(destDir);
 
-      // Write the file to the stream
-      sourceStream.WriteTo(File.Create(destFilePath));
+        // todo: compare files timestamps etc
+        string destFilePath = Path.Combine(destDir, gt.RaceName + extension);
+        if (File.Exists(destFilePath))
+        {
+          File.Delete(destFilePath);
+        }
+
+        // Write the file to the stream
+        sourceStream.WriteTo(File.Create(destFilePath));
+      }
 
       // Call the event handlers
       TurnsChanged?.Invoke(this, new EventArgs());

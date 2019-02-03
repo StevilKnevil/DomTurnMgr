@@ -126,8 +126,9 @@ namespace DomTurnMgr
         {
           GameManager.GameTurn gameTurn;
           using (var fs = new FileStream(file, FileMode.Open))
+          using (var reader = new BinaryReader(fs))
           {
-            gameTurn = new GameManager.GameTurn(fs);
+            gameTurn = new GameManager.GameTurn(reader);
           }
 
           gameManager.Import(file, gameTurn);
