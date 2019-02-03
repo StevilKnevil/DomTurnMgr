@@ -7,16 +7,61 @@ using System.Threading.Tasks;
 
 namespace DomTurnMgr
 {
-  class GameManager
+  class GameManager : IDisposable
   {
-    private readonly string LibraryDir;
-    public string GameName => Path.GetFileName(LibraryDir);
+    // Flag: Has Dispose already been called?
+    private bool disposed = false;
 
-    public GameManager(string libraryDir)
+    private readonly string LibraryDir;
+    private GameSettings gameSettings;
+    private IMAPMailWatcher mailWatcher;
+    public string GameName => gameSettings.Name;
+
+    public GameManager(GameSettings gs, string libraryDir)
     {
+      gameSettings = gs;
+
       LibraryDir = libraryDir;
       Directory.CreateDirectory(LibraryDir);
+
+      var query =
+        MailKit.Search.SearchQuery.SubjectContains(gs.Query.SubjectMatch).And(
+          MailKit.Search.SearchQuery.FromContains(gs.Query.SenderMatch));
+
+      var mailConfig = Program.MailServerConfigs[GameName] as IMAPServerConfig;
+      IMAPMailWatcher mailWatcher = new IMAPMailWatcher(mailConfig, query);
+      mailWatcher.AttachmentsAvailable += MailWatcher_AttachmentsAvailable;
     }
+
+    ~GameManager()
+    {
+      Dispose(false);
+    }
+
+    #region IDisposable
+    // Public implementation of Dispose pattern callable by consumers.
+    public void Dispose()
+    {
+      Dispose(true);
+      GC.SuppressFinalize(this);
+    }
+
+    // Protected implementation of Dispose pattern.
+    protected virtual void Dispose(bool disposing)
+    {
+      if (disposed)
+        return;
+
+      if (disposing)
+      {
+        mailWatcher.Dispose();
+      }
+
+      // Free any unmanaged objects here.
+      //
+      disposed = true;
+    }
+    #endregion IDisposable
 
     public class GameTurn
     {
@@ -160,6 +205,22 @@ namespace DomTurnMgr
       foreach (string f in fileList)
       {
         File.Copy(f, Path.Combine(destDir, Path.GetFileName(f)));
+      }
+    }
+
+    private void MailWatcher_AttachmentsAvailable(object sender, IMAPMailWatcher.MessageAttachment ma)
+    {
+      var ext = Path.GetExtension(ma.Filename);
+      if (String.Compare(ext, ".trn", true) == 0 ||
+        String.Compare(ext, ".2h", true) == 0)
+      {
+
+        // Also Check subject for turn number
+        // This is an attachment of interest
+        using (MemoryStream s = ma.CreateMemoryStream())
+        {
+          Import(s, ext);
+        }
       }
     }
 

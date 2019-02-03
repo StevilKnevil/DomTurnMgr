@@ -82,39 +82,7 @@ namespace DomTurnMgr
         // load the email settings
         InitMailServerConfigs();
 
-        // See what exists in the library and creat a game manager for each game found
-        var paths = Directory.EnumerateDirectories(LibraryDirectory);
-        foreach (var path in paths)
-        {
-          // check for a GameSettings file, if there is then it's a Game!
-          var gameManager = new GameManager(path);
-          GameManagers[gameManager.GameName] = gameManager;
-
-          var query =
-            MailKit.Search.SearchQuery.SubjectContains("New turn file: " + gameManager.GameName).And(
-              MailKit.Search.SearchQuery.FromContains("turns@llamaserver.net"));
-
-          IMAPMailWatcher mw = new IMAPMailWatcher(
-            MailServerConfigs.Values.First() as IMAPServerConfig, 
-            query);
-
-          void Handler(object sender, IMAPMailWatcher.MessageAttachment ma)
-          {
-            var ext = Path.GetExtension(ma.Filename);
-            if (String.Compare(ext, ".trn", true) == 0 ||
-              String.Compare(ext, ".2h", true) == 0)
-            {
-
-              // Also Check subject for turn number
-              // This is an attachment of interest
-              using (MemoryStream s = ma.CreateMemoryStream())
-              {
-                gameManager.Import(s, ext);
-              }
-            }
-          }
-          mw.AttachmentsAvailable += Handler;
-        }
+        InitGameManagers();
 
         theForm = new MainForm();
 #endif
@@ -167,6 +135,56 @@ namespace DomTurnMgr
 
           MailServerConfigs[configName] = config;
         }
+      }
+    }
+
+    private static void InitGameManagers()
+    {
+      // See what exists in the library and creat a game manager for each game found
+      var paths = Directory.EnumerateDirectories(LibraryDirectory);
+      foreach (var path in paths)
+      {
+        // check for a GameSettings file, if there is then it's a Game!
+        GameSettings gameSettings = null;
+        string file = Path.Combine(path, Path.GetFileName(path) + ".gameconfig");
+        if (File.Exists(file))
+        {
+          XmlSerializer ser = new XmlSerializer(typeof(GameSettings));
+          StreamReader reader = new StreamReader(file);
+          gameSettings = (GameSettings)ser.Deserialize(reader);
+          reader.Close();
+
+          var gameManager = new GameManager(gameSettings, path);
+          GameManagers[gameManager.GameName] = gameManager;
+        }
+
+        /*
+        var query =
+          MailKit.Search.SearchQuery.SubjectContains("New turn file: " + gameManager.GameName).And(
+            MailKit.Search.SearchQuery.FromContains("turns@llamaserver.net"));
+
+        IMAPMailWatcher mw = new IMAPMailWatcher(
+          MailServerConfigs.Values.First() as IMAPServerConfig, 
+          query);
+
+        void Handler(object sender, IMAPMailWatcher.MessageAttachment ma)
+        {
+          var ext = Path.GetExtension(ma.Filename);
+          if (String.Compare(ext, ".trn", true) == 0 ||
+            String.Compare(ext, ".2h", true) == 0)
+          {
+
+            // Also Check subject for turn number
+            // This is an attachment of interest
+            using (MemoryStream s = ma.CreateMemoryStream())
+            {
+              gameManager.Import(s, ext);
+            }
+          }
+        }
+
+        mw.AttachmentsAvailable += Handler;
+        */
       }
     }
 

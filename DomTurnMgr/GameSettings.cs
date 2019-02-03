@@ -10,19 +10,21 @@ namespace DomTurnMgr
   {
     public GameSettings() {}
 
-    string Name;
-    struct MailSearchQuery
+    public string Name;
+    public struct MailSearchQuery
     {
-      string SubjectMatch;
-      string SenderMatch;
+      public string SubjectMatch;
+      public string SenderMatch;
     }
+    public MailSearchQuery Query;
 
-    IMailServerConfig MailServerConfig;
+    IMailServerConfig MailServerConfig => Program.MailServerConfigs[MailServerConfigName];
+    public string MailServerConfigName;
 
-    struct GameServerConfig
+    public struct GameServerConfig
     {
-      Uri GameServerAddress;
-      string adminPassword;
+      public Uri GameServerAddress;
+      public string adminPassword;
     }
   }
 }
