@@ -32,12 +32,12 @@ namespace DomTurnMgr
       set
       {
         gameName = value;
-        Program.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
+        GameManager.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
         UpdateUI();
       }
     }
 
-    private GameManager gameManager => Program.GameManagers[GameName];
+    private GameManager gameManager => GameManager.GameManagers[GameName];
 
     public GameControl()
     {

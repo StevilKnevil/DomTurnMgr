@@ -41,7 +41,6 @@ namespace DomTurnMgr
 
     public static SettingsManager SettingsManager = new SettingsManager();
     public static string LibraryDirectory => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
-    public static IDictionary<string, GameManager> GameManagers = new Dictionary<string, GameManager>();
     public static Dictionary<string, IMailServerConfig> MailServerConfigs = new Dictionary<string, IMailServerConfig>();
 
     // This mutex will be used to see if this app is already running.
@@ -174,11 +173,10 @@ namespace DomTurnMgr
           reader.Close();
 
           var gameManager = new GameManager(gameSettings, path);
-          GameManagers[gameManager.GameName] = gameManager;
         }
       }
 
-      if (GameManagers.Count == 0)
+      if (GameManager.GameManagers.Count == 0)
       {
         AddGameManager();
       }
@@ -205,7 +203,6 @@ namespace DomTurnMgr
 
 
         var gameManager = new GameManager(gameSettings, path);
-        GameManagers[gameManager.GameName] = gameManager;
       }
     }
 
