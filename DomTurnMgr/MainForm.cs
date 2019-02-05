@@ -40,15 +40,7 @@ namespace DomTurnMgr
 
     private void newGame_Click(object sender, EventArgs e)
     {
-      /*
-      AddGameDialog agd = new AddGameDialog();
-      if (agd.ShowDialog() == DialogResult.OK)
-      {
-        // Store the game name in preferences for next time.
-        Properties.Settings.Default.GameName = agd.GameName;
-        Properties.Settings.Default.Save();
-      }
-      */
+      Program.AddGameManager();
     }
 
     private void showPrefs_Click(object sender, EventArgs e)

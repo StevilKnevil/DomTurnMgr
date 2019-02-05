@@ -184,7 +184,7 @@ namespace DomTurnMgr
       }
     }
 
-    private static void AddGameManager()
+    public static void AddGameManager()
     {
       // We have no email server configured, so add one now.
       var fm = new GameSettingsForm();
