@@ -179,11 +179,11 @@
     <Compile Include="IMailServerConfig.cs" />
     <Compile Include="IMAPMailWatcher.cs" />
     <Compile Include="IMAPServerConfig.cs" />
-    <Compile Include="GaneSettingsForm.cs">
+    <Compile Include="GameSettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GaneSettingsForm.Designer.cs">
-      <DependentUpon>GaneSettingsForm.cs</DependentUpon>
+    <Compile Include="GameSettingsForm.Designer.cs">
+      <DependentUpon>GameSettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MailServerConfigForm.cs">
       <SubType>Form</SubType>
@@ -227,8 +227,8 @@
     <EmbeddedResource Include="GameControl.resx">
       <DependentUpon>GameControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GaneSettingsForm.resx">
-      <DependentUpon>GaneSettingsForm.cs</DependentUpon>
+    <EmbeddedResource Include="GameSettingsForm.resx">
+      <DependentUpon>GameSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MailServerConfigForm.resx">
       <DependentUpon>MailServerConfigForm.cs</DependentUpon>
