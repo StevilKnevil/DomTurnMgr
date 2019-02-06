@@ -15,6 +15,7 @@ namespace DomTurnMgr
     public MainForm()
     {
       InitializeComponent();
+      GameManager.GameManagersChanged += onGameManagersChanged;
     }
 
     private void MainForm_Load(object sender, EventArgs e)
@@ -61,6 +62,11 @@ namespace DomTurnMgr
       if (System.Deployment.Application.ApplicationDeployment.IsNetworkDeployed)
         myVersion = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion;
       MessageBox.Show(String.Format("Version {0}", myVersion.ToString()), "About");
+    }
+
+    private void onGameManagersChanged(object sender, GameManager gm)
+    {
+      UpdateUI();
     }
   }
 }

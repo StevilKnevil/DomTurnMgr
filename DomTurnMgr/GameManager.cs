@@ -10,6 +10,7 @@ namespace DomTurnMgr
   class GameManager : IDisposable
   {
     public static IDictionary<string, GameManager> GameManagers = new Dictionary<string, GameManager>();
+    public static EventHandler<GameManager> GameManagersChanged;
 
     // Flag: Has Dispose already been called?
     private bool disposed = false;
@@ -35,6 +36,7 @@ namespace DomTurnMgr
       mailWatcher.AttachmentsAvailable += MailWatcher_AttachmentsAvailable;
 
       GameManagers[this.GameName] = this;
+      GameManagersChanged?.Invoke(this, this);
     }
 
     ~GameManager()
