@@ -202,7 +202,6 @@ namespace DomTurnMgr
         ser.Serialize(writer, gameSettings);
         writer.Close();
 
-
         var gameManager = new GameManager(gameSettings, path);
       }
     }
