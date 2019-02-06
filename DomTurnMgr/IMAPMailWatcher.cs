@@ -111,7 +111,7 @@ namespace DomTurnMgr
         folder.Open(FolderAccess.ReadOnly);
     }
 
-    public void DownloadAttachments()
+    public void CheckForMessages()
     {
       // No need to do anything if nobody is listening for events.
       if (AttachmentsAvailable != null)
