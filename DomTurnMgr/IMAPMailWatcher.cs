@@ -98,31 +98,31 @@ namespace DomTurnMgr
     }
     #endregion IDisposable
 
-    private void EnsureAutheticated()
+    private async Task EnsureAutheticatedAsync()
     {
       if (!client.IsConnected)
-        client.Connect(config.Address, config.Port, SecureSocketOptions.SslOnConnect);
+        await client.ConnectAsync(config.Address, config.Port, SecureSocketOptions.SslOnConnect);
       if (!client.IsAuthenticated)
-        client.Authenticate(config.Username, config.Password);
+        await client.AuthenticateAsync(config.Username, config.Password);
 
       // Refresh folder
       folder = client.Inbox;
       if (!folder.IsOpen)
-        folder.Open(FolderAccess.ReadOnly);
+        await folder.OpenAsync(FolderAccess.ReadOnly);
     }
 
-    public void CheckForMessages()
+    public async Task CheckForMessagesAsync()
     {
       // No need to do anything if nobody is listening for events.
       if (AttachmentsAvailable != null)
       { 
-        EnsureAutheticated();
+        await EnsureAutheticatedAsync();
 
-        var uids = folder.Search(query);
+        var uids = await folder.SearchAsync(query);
 
         // fetch summary information for the search results (we will want the UID and the BODYSTRUCTURE
         // of each message so that we can extract the subject and the attachments)
-        var items = folder.Fetch(uids, 
+        var items = await folder.FetchAsync(uids, 
           MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
 
         foreach (var item in items)
