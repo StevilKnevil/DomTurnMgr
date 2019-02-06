@@ -196,6 +196,7 @@ namespace DomTurnMgr
 
         // write to file
         string path = Path.Combine(LibraryDirectory, gameSettings.Name);
+        Directory.CreateDirectory(path);
         XmlSerializer ser = new XmlSerializer(typeof(GameSettings));
         TextWriter writer = new StreamWriter(Path.Combine(path, gameSettings.Name + ".gameconfig"));
         ser.Serialize(writer, gameSettings);
