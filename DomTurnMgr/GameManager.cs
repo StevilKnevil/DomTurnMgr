@@ -212,18 +212,58 @@ namespace DomTurnMgr
       }
     }
 
+    private int GetTurnNumberFromSubject(string subject)
+    {
+      int turnNumber = 0;
+
+      string turnIndexString = System.Text.RegularExpressions.Regex.Match(subject, @"\d+$").Value;
+      if (!int.TryParse(turnIndexString, out turnNumber))
+      {
+        // perhaps this is the first turn
+        if (System.Text.RegularExpressions.Regex.Match(subject, @"First turn attached$").Success)
+        {
+          turnNumber = 1;
+        }
+      }
+      return turnNumber;
+    }
+
+    private bool FileExistsInLibrary(IMAPMailWatcher.MessageAttachment ma)
+    {
+      int turnNumber = GetTurnNumberFromSubject(ma.Subject);
+      string raceName = Path.GetFileNameWithoutExtension(ma.Filename);
+      if (GetTurnNumbers(raceName).Contains(turnNumber))
+      {
+        var gameTurn = new GameTurn(raceName, turnNumber);
+        string filePath = Path.Combine(new string[]
+        {
+          LibraryDir,
+          gameTurn.ToPath(),
+          ma.Filename
+        });
+
+        if (File.Exists(filePath))
+        {
+          return true;
+        }
+      }
+      return false;
+    }
+
+
     private void MailWatcher_AttachmentsAvailable(object sender, IMAPMailWatcher.MessageAttachment ma)
     {
       var ext = Path.GetExtension(ma.Filename);
       if (String.Compare(ext, ".trn", true) == 0 ||
         String.Compare(ext, ".2h", true) == 0)
       {
-
-        // Also Check subject for turn number
-        // This is an attachment of interest
-        using (MemoryStream s = ma.CreateMemoryStream())
+        if (!FileExistsInLibrary(ma))
         {
-          Import(s, ext);
+          // This is an attachment of interest
+          using (MemoryStream s = ma.CreateMemoryStream())
+          {
+            Import(s, ext);
+          }
         }
       }
     }
