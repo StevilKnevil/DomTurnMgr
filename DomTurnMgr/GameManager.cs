@@ -138,14 +138,18 @@ namespace DomTurnMgr
     public IEnumerable<int> GetTurnNumbers(string raceName)
     {
       List<int> dirs = new List<int>();
-      var paths = Directory.EnumerateDirectories(Path.Combine(LibraryDir, raceName));
-      foreach (var path in paths)
+      string nationPath = Path.Combine(LibraryDir, raceName);
+      if (Directory.Exists(nationPath))
       {
-        string name = Path.GetFileName(path);
-        int num = 0;
-        if (int.TryParse(name, out num))
+        var paths = Directory.EnumerateDirectories(nationPath);
+        foreach (var path in paths)
         {
-          dirs.Add(num);
+          string name = Path.GetFileName(path);
+          int num = 0;
+          if (int.TryParse(name, out num))
+          {
+            dirs.Add(num);
+          }
         }
       }
       return dirs;
