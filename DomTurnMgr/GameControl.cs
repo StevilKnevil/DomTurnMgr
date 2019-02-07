@@ -51,6 +51,12 @@ namespace DomTurnMgr
 
     public void UpdateUI()
     {
+      if (this.InvokeRequired)
+      {
+        this.BeginInvoke(new Action(() => this.UpdateUI()));
+        return;
+      }
+
       UpdateRaceCombo();
     }
 
