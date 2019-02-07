@@ -63,6 +63,11 @@ namespace DomTurnMgr
       this.query = query;
       // create the client
       client = new ImapClient();
+
+      var timer = new System.Threading.Timer((e) =>
+      {
+        CheckForMessagesAsync().Wait();
+      }, null, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
     }
 
     ~IMAPMailWatcher()
