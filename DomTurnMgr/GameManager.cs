@@ -15,7 +15,7 @@ namespace DomTurnMgr
     // Flag: Has Dispose already been called?
     private bool disposed = false;
 
-    private readonly string LibraryDir;
+    public string LibraryDir { get; }
     private GameSettings gameSettings;
     private IMAPMailWatcher mailWatcher;
     public string GameName => gameSettings.Name;

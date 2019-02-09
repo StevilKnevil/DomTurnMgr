@@ -30,11 +30,12 @@
     {
       this.label1 = new System.Windows.Forms.Label();
       this.comboBox1 = new System.Windows.Forms.ComboBox();
-      this.button1 = new System.Windows.Forms.Button();
       this.launchDomsButton = new System.Windows.Forms.Button();
       this.webBrowser1 = new System.Windows.Forms.WebBrowser();
       this.comboBox2 = new System.Windows.Forms.ComboBox();
       this.label2 = new System.Windows.Forms.Label();
+      this.submitTurnButton = new System.Windows.Forms.Button();
+      this.browseFilesButton = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // label1
@@ -58,16 +59,6 @@
       this.comboBox1.TabIndex = 1;
       this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
       // 
-      // button1
-      // 
-      this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.button1.Location = new System.Drawing.Point(356, 115);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(44, 44);
-      this.button1.TabIndex = 3;
-      this.button1.Text = ".2h";
-      this.button1.UseVisualStyleBackColor = true;
-      // 
       // launchDomsButton
       // 
       this.launchDomsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -87,10 +78,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.webBrowser1.IsWebBrowserContextMenuEnabled = false;
-      this.webBrowser1.Location = new System.Drawing.Point(3, 79);
+      this.webBrowser1.Location = new System.Drawing.Point(3, 59);
       this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
       this.webBrowser1.Name = "webBrowser1";
-      this.webBrowser1.Size = new System.Drawing.Size(336, 127);
+      this.webBrowser1.Size = new System.Drawing.Size(336, 147);
       this.webBrowser1.TabIndex = 5;
       // 
       // comboBox2
@@ -113,16 +104,40 @@
       this.label2.TabIndex = 7;
       this.label2.Text = "Turn";
       // 
+      // submitTurnButton
+      // 
+      this.submitTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.submitTurnButton.Enabled = false;
+      this.submitTurnButton.Location = new System.Drawing.Point(344, 59);
+      this.submitTurnButton.Name = "submitTurnButton";
+      this.submitTurnButton.Size = new System.Drawing.Size(75, 50);
+      this.submitTurnButton.TabIndex = 8;
+      this.submitTurnButton.Text = "Submit Turn";
+      this.submitTurnButton.UseVisualStyleBackColor = true;
+      this.submitTurnButton.Click += new System.EventHandler(this.submitTurnButton_Click);
+      // 
+      // browseFilesButton
+      // 
+      this.browseFilesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+      this.browseFilesButton.Location = new System.Drawing.Point(344, 156);
+      this.browseFilesButton.Name = "browseFilesButton";
+      this.browseFilesButton.Size = new System.Drawing.Size(75, 50);
+      this.browseFilesButton.TabIndex = 9;
+      this.browseFilesButton.Text = "Browse Local Files";
+      this.browseFilesButton.UseVisualStyleBackColor = true;
+      this.browseFilesButton.Click += new System.EventHandler(this.browseFilesButton_Click);
+      // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.Controls.Add(this.browseFilesButton);
+      this.Controls.Add(this.submitTurnButton);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.comboBox2);
       this.Controls.Add(this.webBrowser1);
       this.Controls.Add(this.launchDomsButton);
-      this.Controls.Add(this.button1);
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
@@ -138,10 +153,11 @@
 
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.ComboBox comboBox1;
-    private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button launchDomsButton;
     private System.Windows.Forms.WebBrowser webBrowser1;
     private System.Windows.Forms.ComboBox comboBox2;
     private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.Button submitTurnButton;
+    private System.Windows.Forms.Button browseFilesButton;
   }
 }

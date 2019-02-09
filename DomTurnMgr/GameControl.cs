@@ -163,5 +163,16 @@ namespace DomTurnMgr
       if (e.Data.GetDataPresent(DataFormats.FileDrop))
         e.Effect = DragDropEffects.Copy;
     }
+
+    private void submitTurnButton_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void browseFilesButton_Click(object sender, EventArgs e)
+    {
+      System.Diagnostics.Process.Start(gameManager.LibraryDir);
+    }
+
   }
 }
