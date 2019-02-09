@@ -37,6 +37,12 @@ namespace DomTurnMgr
       }
     }
 
+    public Uri ServerURL
+    {
+      get { return webBrowser1.Url; }
+      set { webBrowser1.Url = value; }
+    }
+
     private GameManager gameManager => GameManager.GameManagers[GameName];
 
     public GameControl()
