@@ -19,6 +19,7 @@ namespace DomTurnMgr
     private GameSettings gameSettings;
     private IMAPMailWatcher mailWatcher;
     public string GameName => gameSettings.Name;
+    public string ServerUrl => gameSettings.GameServerCfg.GameServerAddress;
 
     public GameManager(GameSettings gs, string libraryDir)
     {

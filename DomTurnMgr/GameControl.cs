@@ -33,14 +33,9 @@ namespace DomTurnMgr
       {
         gameName = value;
         GameManager.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
+        webBrowser1.Url = new Uri(gameManager.ServerUrl);
         UpdateUI();
       }
-    }
-
-    public Uri ServerURL
-    {
-      get { return webBrowser1.Url; }
-      set { webBrowser1.Url = value; }
     }
 
     private GameManager gameManager => GameManager.GameManagers[GameName];

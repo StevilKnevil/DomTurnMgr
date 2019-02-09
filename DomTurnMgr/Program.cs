@@ -192,7 +192,9 @@ namespace DomTurnMgr
           fm.GameName,
           fm.MailServerConfigName,
           fm.QuerySubjectText,
-          fm.QuerySenderText);
+          fm.QuerySenderText,
+          fm.GameServerUrlText,
+          fm.AdminPasswordText);
 
         // write to file
         string path = Path.Combine(LibraryDirectory, gameSettings.Name);
