@@ -20,7 +20,7 @@ namespace DomTurnMgr
       get
       {
         int retVal = 0;
-        int.TryParse(listBox1.SelectedItem?.ToString(), out retVal);
+        int.TryParse(comboBox2.SelectedItem?.ToString(), out retVal);
         return retVal;
       }
     }
@@ -94,18 +94,18 @@ namespace DomTurnMgr
       {
         int currentTurn = turnNumber;
         var turns = gameManager.GetTurnNumbers(raceName);
-        listBox1.Items.Clear();
-        listBox1.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
-        if (listBox1.Items.Contains(currentTurn))
+        comboBox2.Items.Clear();
+        comboBox2.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
+        if (comboBox2.Items.Contains(currentTurn))
         {
-          listBox1.SelectedValue = currentTurn;
+          comboBox2.SelectedValue = currentTurn;
         }
         else
         {
-          if (listBox1.Items.Count > 0)
-            listBox1.SelectedIndex = 0;
+          if (comboBox2.Items.Count > 0)
+            comboBox2.SelectedIndex = 0;
           else
-            listBox1.SelectedIndex = -1;
+            comboBox2.SelectedIndex = -1;
         }
       }
     }

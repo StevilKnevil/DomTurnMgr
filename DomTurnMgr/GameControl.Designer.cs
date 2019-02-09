@@ -30,10 +30,11 @@
     {
       this.label1 = new System.Windows.Forms.Label();
       this.comboBox1 = new System.Windows.Forms.ComboBox();
-      this.listBox1 = new System.Windows.Forms.ListBox();
       this.button1 = new System.Windows.Forms.Button();
       this.launchDomsButton = new System.Windows.Forms.Button();
       this.webBrowser1 = new System.Windows.Forms.WebBrowser();
+      this.comboBox2 = new System.Windows.Forms.ComboBox();
+      this.label2 = new System.Windows.Forms.Label();
       this.SuspendLayout();
       // 
       // label1
@@ -56,16 +57,6 @@
       this.comboBox1.Size = new System.Drawing.Size(294, 21);
       this.comboBox1.TabIndex = 1;
       this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-      // 
-      // listBox1
-      // 
-      this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.listBox1.FormattingEnabled = true;
-      this.listBox1.Location = new System.Drawing.Point(3, 30);
-      this.listBox1.Name = "listBox1";
-      this.listBox1.Size = new System.Drawing.Size(336, 43);
-      this.listBox1.TabIndex = 2;
       // 
       // button1
       // 
@@ -102,15 +93,36 @@
       this.webBrowser1.Size = new System.Drawing.Size(336, 127);
       this.webBrowser1.TabIndex = 5;
       // 
+      // comboBox2
+      // 
+      this.comboBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+      this.comboBox2.FormattingEnabled = true;
+      this.comboBox2.Location = new System.Drawing.Point(44, 32);
+      this.comboBox2.Name = "comboBox2";
+      this.comboBox2.Size = new System.Drawing.Size(294, 21);
+      this.comboBox2.TabIndex = 6;
+      // 
+      // label2
+      // 
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(5, 35);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(29, 13);
+      this.label2.TabIndex = 7;
+      this.label2.Text = "Turn";
+      // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.Controls.Add(this.label2);
+      this.Controls.Add(this.comboBox2);
       this.Controls.Add(this.webBrowser1);
       this.Controls.Add(this.launchDomsButton);
       this.Controls.Add(this.button1);
-      this.Controls.Add(this.listBox1);
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
@@ -126,9 +138,10 @@
 
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.ComboBox comboBox1;
-    private System.Windows.Forms.ListBox listBox1;
     private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button launchDomsButton;
     private System.Windows.Forms.WebBrowser webBrowser1;
+    private System.Windows.Forms.ComboBox comboBox2;
+    private System.Windows.Forms.Label label2;
   }
 }
