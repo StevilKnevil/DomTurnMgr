@@ -14,8 +14,10 @@ namespace DomTurnMgr
   {
     public string GameName => gameNameText.Text;
     public string MailServerConfigName => mailServerConfig.Text;
-    public string QuerySubjectText => querySubjectText.Text;
+    public string QuerySubjectText => querySubjectTextResult.Text;
     public string QuerySenderText => querySenderText.Text;
+    public string GameServerUrlText => serverInfoURLResult.Text;
+    public string AdminPasswordText => serverAdminPassword.Text;
 
     public GameSettingsForm()
     {
