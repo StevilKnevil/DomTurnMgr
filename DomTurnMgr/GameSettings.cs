@@ -10,12 +10,14 @@ namespace DomTurnMgr
   {
     public GameSettings() {}
 
-    public GameSettings(string gameName, string mailServerConfigName, string querySubjectText, string querySenderText)
+    public GameSettings(string gameName, string mailServerConfigName, string querySubjectText, string querySenderText, string serverInfoText, string adminPasswordText)
     {
       Name = gameName;
       MailServerConfigName = mailServerConfigName;
       Query.SubjectMatch = querySubjectText;
       Query.SenderMatch = querySenderText;
+      GameServerCfg.GameServerAddress = serverInfoText;
+      //GameServerCfg.AdminPassword = adminPasswordText;
     }
 
     public string Name;
@@ -31,8 +33,9 @@ namespace DomTurnMgr
 
     public struct GameServerConfig
     {
-      public Uri GameServerAddress;
-      public string adminPassword;
+      public string GameServerAddress;
+      public string AdminPassword;
     }
+    public GameServerConfig GameServerCfg;
   }
 }
