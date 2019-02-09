@@ -58,20 +58,27 @@ namespace DomTurnMgr
       }
 
       UpdateRaceCombo();
+      UpdateTurnList();
     }
 
     public void UpdateRaceCombo()
     {
-      string currentRace = raceName;
-      // For this game, populate the races combo
       var races = gameManager.GetRaceNames();
-      comboBox1.Items.Clear();
-      comboBox1.Items.AddRange(races.ToArray());
-      if (!string.IsNullOrEmpty(currentRace) && comboBox1.Items.Contains(currentRace))
+
+      // Add new items
+      foreach(var race in races)
       {
-        comboBox1.SelectedValue = currentRace;
+        if (!comboBox1.Items.Contains(race))
+        {
+          comboBox1.Items.Add(race);
+        }
       }
-      else
+
+      // TODO Remove unnecessary Items
+
+      // Make sure we have something selected
+      comboBox1.SelectedIndex = comboBox1.SelectedIndex;
+      if (comboBox1.SelectedIndex == -1)
       {
         if (comboBox1.Items.Count > 0)
           comboBox1.SelectedIndex = 0;
@@ -82,20 +89,23 @@ namespace DomTurnMgr
 
     public void UpdateTurnList()
     {
-      int currentTurn = turnNumber;
-      var turns = gameManager.GetTurnNumbers(raceName);
-      listBox1.Items.Clear();
-      listBox1.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
-      if (listBox1.Items.Contains(currentTurn))
+      if (raceName!= null)
       {
-        listBox1.SelectedValue = currentTurn;
-      }
-      else
-      {
-        if (listBox1.Items.Count > 0)
-          listBox1.SelectedIndex = 0;
+        int currentTurn = turnNumber;
+        var turns = gameManager.GetTurnNumbers(raceName);
+        listBox1.Items.Clear();
+        listBox1.Items.AddRange(turns.OrderByDescending(x => x).Select(x => x.ToString()).ToArray());
+        if (listBox1.Items.Contains(currentTurn))
+        {
+          listBox1.SelectedValue = currentTurn;
+        }
         else
-          listBox1.SelectedIndex = -1;
+        {
+          if (listBox1.Items.Count > 0)
+            listBox1.SelectedIndex = 0;
+          else
+            listBox1.SelectedIndex = -1;
+        }
       }
     }
 
