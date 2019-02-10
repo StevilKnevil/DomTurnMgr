@@ -13,8 +13,8 @@ namespace DomTurnMgr
   public partial class MailServerConfigForm : Form
   {
     public string ConfigName => configNameText.Text;
-    public string HostName => hostnameText.Text;
-    public int Port => int.Parse(portText.Text);
+    public string IMAPAddress => imapAddressText.Text;
+    public int IMAPPort => int.Parse(imapPortText.Text);
     public string Username => usernameText.Text;
     public string Password => passwordText.Text;
 

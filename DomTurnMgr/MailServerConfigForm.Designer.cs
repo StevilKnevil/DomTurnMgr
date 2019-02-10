@@ -33,8 +33,8 @@
       this.label3 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.label5 = new System.Windows.Forms.Label();
-      this.hostnameText = new System.Windows.Forms.TextBox();
-      this.portText = new System.Windows.Forms.TextBox();
+      this.imapAddressText = new System.Windows.Forms.TextBox();
+      this.imapPortText = new System.Windows.Forms.TextBox();
       this.usernameText = new System.Windows.Forms.TextBox();
       this.passwordText = new System.Windows.Forms.TextBox();
       this.configNameText = new System.Windows.Forms.TextBox();
@@ -91,25 +91,25 @@
       // 
       // hostnameText
       // 
-      this.hostnameText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.imapAddressText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.hostnameText.Location = new System.Drawing.Point(126, 63);
-      this.hostnameText.Name = "hostnameText";
-      this.hostnameText.Size = new System.Drawing.Size(323, 20);
-      this.hostnameText.TabIndex = 5;
-      this.hostnameText.Text = "imap.gmail.com";
-      this.hostnameText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.imapAddressText.Location = new System.Drawing.Point(126, 63);
+      this.imapAddressText.Name = "hostnameText";
+      this.imapAddressText.Size = new System.Drawing.Size(323, 20);
+      this.imapAddressText.TabIndex = 5;
+      this.imapAddressText.Text = "imap.gmail.com";
+      this.imapAddressText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       // 
       // portText
       // 
-      this.portText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.imapPortText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.portText.Location = new System.Drawing.Point(126, 91);
-      this.portText.Name = "portText";
-      this.portText.Size = new System.Drawing.Size(323, 20);
-      this.portText.TabIndex = 6;
-      this.portText.Text = "993";
-      this.portText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.imapPortText.Location = new System.Drawing.Point(126, 91);
+      this.imapPortText.Name = "portText";
+      this.imapPortText.Size = new System.Drawing.Size(323, 20);
+      this.imapPortText.TabIndex = 6;
+      this.imapPortText.Text = "993";
+      this.imapPortText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       // 
       // usernameText
       // 
@@ -201,8 +201,8 @@
       this.Controls.Add(this.configNameText);
       this.Controls.Add(this.passwordText);
       this.Controls.Add(this.usernameText);
-      this.Controls.Add(this.portText);
-      this.Controls.Add(this.hostnameText);
+      this.Controls.Add(this.imapPortText);
+      this.Controls.Add(this.imapAddressText);
       this.Controls.Add(this.label5);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.label3);
@@ -224,8 +224,8 @@
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.Label label5;
-    private System.Windows.Forms.TextBox hostnameText;
-    private System.Windows.Forms.TextBox portText;
+    private System.Windows.Forms.TextBox imapAddressText;
+    private System.Windows.Forms.TextBox imapPortText;
     private System.Windows.Forms.TextBox usernameText;
     private System.Windows.Forms.TextBox passwordText;
     private System.Windows.Forms.TextBox configNameText;
