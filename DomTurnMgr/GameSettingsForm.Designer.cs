@@ -104,7 +104,7 @@
       this.querySubjectText.Name = "querySubjectText";
       this.querySubjectText.Size = new System.Drawing.Size(218, 20);
       this.querySubjectText.TabIndex = 2;
-      this.querySubjectText.Text = "New turn file: {GAMENAME}";
+      this.querySubjectText.Text = "turn file: {GAMENAME}";
       this.querySubjectText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       this.querySubjectText.TextChanged += new System.EventHandler(this.onTextChanged);
       // 
