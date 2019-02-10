@@ -107,7 +107,6 @@
       // submitTurnButton
       // 
       this.submitTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.submitTurnButton.Enabled = false;
       this.submitTurnButton.Location = new System.Drawing.Point(734, 59);
       this.submitTurnButton.Name = "submitTurnButton";
       this.submitTurnButton.Size = new System.Drawing.Size(75, 50);

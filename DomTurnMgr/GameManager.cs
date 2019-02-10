@@ -201,7 +201,10 @@ namespace DomTurnMgr
         }
 
         // Write the file to the stream
-        sourceStream.WriteTo(File.Create(destFilePath));
+        using (var outStream = File.Create(destFilePath))
+        {
+          sourceStream.WriteTo(outStream);
+        }
       }
 
       // Call the event handlers
