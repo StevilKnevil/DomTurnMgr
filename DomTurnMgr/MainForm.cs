@@ -68,5 +68,92 @@ namespace DomTurnMgr
     {
       UpdateUI();
     }
+
+    /*
+    private void hostingWarningTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    {
+      HostingWarningTimer timer = sender as HostingWarningTimer;
+      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", timer.Text, ToolTipIcon.Warning);
+    }
+    */
+    /*
+    private void UpdateHostingTime()
+    {
+      timeRemainingLbl.Text = "Error retrieving hosting time";
+      if (currentGame.IsValidHostingTime)
+      {
+        DateTime result = currentGame.HostingTime;
+        timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
+        // TODO: Move to update icon function
+        this.Icon = Properties.Resources.icon_green;
+        this.notifyIcon1.Icon = Properties.Resources.icon_green;
+
+        // Update the icons with correct colour coding
+        if (result - DateTime.Now < new TimeSpan(12, 0, 0))
+        {
+          this.Icon = Properties.Resources.icon_yellow;
+          this.notifyIcon1.Icon = Properties.Resources.icon_yellow;
+        }
+        if (result - DateTime.Now < new TimeSpan(6, 0, 0))
+        {
+          this.Icon = Properties.Resources.icon_red;
+          this.notifyIcon1.Icon = Properties.Resources.icon_red;
+        }
+        // TODO: If current turn has been submitted (check with server text) then icon can be grey
+
+        // Update the timers for the warnings
+        foreach (var v in hostingWarningTimers)
+        {
+          v.Reset(result);
+        }
+      }
+    }
+    */
+
+    private void restoreForm()
+    {
+      this.TopMost = true;
+      this.WindowState = FormWindowState.Normal;
+      this.Show();
+      this.Activate();
+      this.TopMost = false;
+    }
+
+    private void onRestoreForm(object sender, EventArgs e)
+    {
+      restoreForm();
+    }
+
+    private bool doClose = false;
+    public void ForceClose()
+    {
+      this.doClose = true;
+      Close();
+    }
+
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      // if we have been actually asked to exit then do so, otherwise just hide the form.
+      if (!doClose)
+      {
+        // minimise to tray
+        e.Cancel = true;
+        this.Hide();
+      }
+    }
+
+    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    {
+      this.ForceClose();
+    }
+
+    private void MainForm_VisibleChanged(object sender, EventArgs e)
+    {
+      // Form has been hidden so perform an app update.
+      if (this.Visible == false && Program.isAppUpdateAvailable())
+      {
+        Program.silentInstallAppUpdate();
+      }
+    }
   }
 }
