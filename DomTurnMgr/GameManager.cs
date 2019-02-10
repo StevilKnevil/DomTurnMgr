@@ -212,7 +212,7 @@ namespace DomTurnMgr
 
       string[] fileList = Directory.GetFiles(sourceDir, "*.*");
 
-      // Copy picture files.
+      // Copy files.
       foreach (string f in fileList)
       {
         File.Copy(f, Path.Combine(destDir, Path.GetFileName(f)));
