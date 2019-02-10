@@ -141,7 +141,7 @@ namespace DomTurnMgr
       Close();
     }
 
-    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    private void onFormClosing(object sender, FormClosingEventArgs e)
     {
       // if we have been actually asked to exit then do so, otherwise just hide the form.
       if (!doClose)
@@ -152,12 +152,12 @@ namespace DomTurnMgr
       }
     }
 
-    private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+    private void onExitToolStripMenuItemClick(object sender, EventArgs e)
     {
       this.ForceClose();
     }
 
-    private void MainForm_VisibleChanged(object sender, EventArgs e)
+    private void onVisibleChanged(object sender, EventArgs e)
     {
       // Form has been hidden so perform an app update.
       if (this.Visible == false && Program.isAppUpdateAvailable())

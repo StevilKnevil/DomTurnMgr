@@ -148,7 +148,7 @@
       this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
       this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
       this.exitToolStripMenuItem.Text = "Exit";
-      this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+      this.exitToolStripMenuItem.Click += new System.EventHandler(this.onExitToolStripMenuItemClick);
       // 
       // notifyIcon1
       // 
@@ -168,8 +168,9 @@
       this.Controls.Add(this.menuStrip1);
       this.Name = "MainForm";
       this.Text = "MainForm";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onFormClosing);
       this.Load += new System.EventHandler(this.MainForm_Load);
-      this.VisibleChanged += new System.EventHandler(this.MainForm_VisibleChanged);
+      this.VisibleChanged += new System.EventHandler(this.onVisibleChanged);
       this.menuStrip1.ResumeLayout(false);
       this.menuStrip1.PerformLayout();
       this.tabControl1.ResumeLayout(false);
