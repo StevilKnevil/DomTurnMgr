@@ -133,6 +133,13 @@ namespace DomTurnMgr
         gameManager.Import(resultFile, currentTurn);
       }
       launchDomsButton.Enabled = true;
+      updateSubmitTurnButton();
+    }
+
+    private void updateSubmitTurnButton()
+    {
+      string[] attachments = gameManager.GetFilesForTurn(gameTurn, "*.2h");
+      submitTurnButton.Enabled = attachments.Length > 0;
     }
 
     private void GameControl_DragDrop(object sender, DragEventArgs e)
@@ -183,5 +190,9 @@ namespace DomTurnMgr
       System.Diagnostics.Process.Start(gameManager.LibraryDir);
     }
 
+    private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      updateSubmitTurnButton();
+    }
   }
 }
