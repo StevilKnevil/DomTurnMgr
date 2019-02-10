@@ -140,8 +140,10 @@ namespace DomTurnMgr
       {
         var configName = fm.ConfigName;
         var config = new MailServerConfig(
-          fm.HostName,
-          fm.Port,
+          fm.IMAPAddress,
+          fm.IMAPPort,
+          fm.SMTPAddress,
+          fm.SMTPPort,
           fm.Username,
           fm.Password);
 
