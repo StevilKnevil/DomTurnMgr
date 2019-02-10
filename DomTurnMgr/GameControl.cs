@@ -171,7 +171,11 @@ namespace DomTurnMgr
       string body = $"Please find the attached submitted turn file - {raceName} turn {turnNumber} for the game {gameName}.";
       string[] attachments = gameManager.GetFilesForTurn(gameTurn, "*.2h");
       if (attachments.Length > 0)
-        SMTPMailSender.SendMail (gameManager.MailServerConfig, subject, body, attachments);
+        SMTPMailSender.SendMail(
+          gameManager.MailServerConfig,
+          gameManager.ServerMailAccount,
+          gameManager.UserMailAccount,
+          subject, body, attachments);
     }
 
     private void browseFilesButton_Click(object sender, EventArgs e)

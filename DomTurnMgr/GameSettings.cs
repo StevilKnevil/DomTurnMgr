@@ -14,19 +14,19 @@ namespace DomTurnMgr
     {
       Name = gameName;
       MailServerConfigName = mailServerConfigName;
-      Query.SubjectMatch = querySubjectText;
-      Query.SenderMatch = querySenderText;
+      MailConfig.SubjectSearchString = querySubjectText;
+      MailConfig.ServerMailAccount = querySenderText;
       GameServerCfg.GameServerAddress = serverInfoText;
       //GameServerCfg.AdminPassword = adminPasswordText;
     }
 
     public string Name;
-    public struct MailSearchQuery
+    public struct MailConfiguration
     {
-      public string SubjectMatch;
-      public string SenderMatch;
+      public string SubjectSearchString;
+      public string ServerMailAccount;
     }
-    public MailSearchQuery Query;
+    public MailConfiguration MailConfig;
 
     public MailServerConfig MailServerConfig => MailServerConfig.MailServerConfigs[MailServerConfigName];
     public string MailServerConfigName;

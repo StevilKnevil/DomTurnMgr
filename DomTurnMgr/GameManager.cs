@@ -19,6 +19,8 @@ namespace DomTurnMgr
     private GameSettings gameSettings;
     private IMAPMailWatcher mailWatcher;
     public string GameName => gameSettings.Name;
+    public string UserMailAccount => gameSettings.MailServerConfig.Username;
+    public string ServerMailAccount => gameSettings.MailConfig.ServerMailAccount;
     public string ServerUrl => gameSettings.GameServerCfg.GameServerAddress;
     public MailServerConfig MailServerConfig => gameSettings.MailServerConfig;
 
@@ -30,8 +32,8 @@ namespace DomTurnMgr
       Directory.CreateDirectory(LibraryDir);
 
       var query =
-        MailKit.Search.SearchQuery.SubjectContains(gs.Query.SubjectMatch).And(
-          MailKit.Search.SearchQuery.FromContains(gs.Query.SenderMatch));
+        MailKit.Search.SearchQuery.SubjectContains(gs.MailConfig.SubjectSearchString).And(
+          MailKit.Search.SearchQuery.FromContains(gs.MailConfig.ServerMailAccount));
 
       var mailConfig = MailServerConfig.MailServerConfigs[gameSettings.MailServerConfigName];
       mailWatcher = new IMAPMailWatcher(mailConfig, query);

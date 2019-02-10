@@ -10,12 +10,12 @@ namespace DomTurnMgr
 {
   class SMTPMailSender
   {
-    public static void SendMail(MailServerConfig msg, string subject, string body, string[] attachmentPaths)
+    public static void SendMail(MailServerConfig msg, string toAddress, string fromAddress, string subject, string body, string[] attachmentPaths)
     {
       var message = new MimeMessage();
 
-      message.From.Add(new MailboxAddress("Joey Tribbiani", "steeveeet@gmail.com"));
-      message.To.Add(new MailboxAddress("Mrs. Chanandler Bong", "steeveeet@hotmail.com"));
+      message.To.Add(new MailboxAddress(toAddress));
+      message.From.Add(new MailboxAddress(fromAddress));
       message.Subject = subject;
 
       var builder = new BodyBuilder();
