@@ -14,6 +14,7 @@ namespace DomTurnMgr
 {
   public partial class GameControl : UserControl
   {
+    private GameManager.GameTurn gameTurn => new GameManager.GameTurn(raceName, turnNumber);
     private string raceName => comboBox1.SelectedItem?.ToString();
     private int turnNumber
     {
