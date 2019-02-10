@@ -23,7 +23,8 @@ namespace DomTurnMgr
 
     ~GameLauncher()
     {
-      Directory.Delete(tempGameDir, true);
+      if (Directory.Exists(tempGameDir))
+        Directory.Delete(tempGameDir, true);
     }
 
     public Task<string> LaunchAsync()
