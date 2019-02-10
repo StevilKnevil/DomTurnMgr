@@ -13,18 +13,18 @@ using System.Xml.Serialization;
 namespace DomTurnMgr
 {
   [Serializable]
-  public class IMAPServerConfig : IMailServerConfig, IXmlSerializable
+  public class MailServerConfig : IMailServerConfig, IXmlSerializable
   {
     public string Address { get; set; }
     public int Port { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
 
-    public IMAPServerConfig()
+    public MailServerConfig()
     {
     }
 
-    public IMAPServerConfig(string address, int port, string username, string password)
+    public MailServerConfig(string address, int port, string username, string password)
     {
       Address = address;
       Port = port;

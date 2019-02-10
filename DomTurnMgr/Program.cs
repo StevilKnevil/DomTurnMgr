@@ -121,9 +121,9 @@ namespace DomTurnMgr
     {
       foreach (var file in Directory.EnumerateFiles(LibraryDirectory, "*.mailconfig"))
       {
-        XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
+        XmlSerializer ser = new XmlSerializer(typeof(MailServerConfig));
         StreamReader reader = new StreamReader(file);
-        MailServerConfigs[Path.GetFileNameWithoutExtension(file)] = (IMAPServerConfig)ser.Deserialize(reader);
+        MailServerConfigs[Path.GetFileNameWithoutExtension(file)] = (MailServerConfig)ser.Deserialize(reader);
         reader.Close();
       }
 
@@ -140,14 +140,14 @@ namespace DomTurnMgr
       if (fm.ShowDialog() == DialogResult.OK)
       {
         var configName = fm.ConfigName;
-        var config = new IMAPServerConfig(
+        var config = new MailServerConfig(
           fm.HostName,
           fm.Port,
           fm.Username,
           fm.Password);
 
         // write to file
-        XmlSerializer ser = new XmlSerializer(typeof(IMAPServerConfig));
+        XmlSerializer ser = new XmlSerializer(typeof(MailServerConfig));
         TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, configName + ".mailconfig"));
         ser.Serialize(writer, config);
         writer.Close();

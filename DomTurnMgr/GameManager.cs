@@ -32,7 +32,7 @@ namespace DomTurnMgr
         MailKit.Search.SearchQuery.SubjectContains(gs.Query.SubjectMatch).And(
           MailKit.Search.SearchQuery.FromContains(gs.Query.SenderMatch));
 
-      var mailConfig = Program.MailServerConfigs[gameSettings.MailServerConfigName] as IMAPServerConfig;
+      var mailConfig = Program.MailServerConfigs[gameSettings.MailServerConfigName] as MailServerConfig;
       mailWatcher = new IMAPMailWatcher(mailConfig, query);
       mailWatcher.AttachmentsAvailable += MailWatcher_AttachmentsAvailable;
 

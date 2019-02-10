@@ -51,13 +51,13 @@ namespace DomTurnMgr
     // Flag: Has Dispose already been called?
     private bool disposed = false;
 
-    private IMAPServerConfig config;
+    private MailServerConfig config;
     private SearchQuery query;
     private ImapClient client;
     private IMailFolder folder;
     public EventHandler<MessageAttachment> AttachmentsAvailable;
 
-    public IMAPMailWatcher(IMAPServerConfig config, SearchQuery query)
+    public IMAPMailWatcher(MailServerConfig config, SearchQuery query)
     {
       this.config = config;
       this.query = query;
