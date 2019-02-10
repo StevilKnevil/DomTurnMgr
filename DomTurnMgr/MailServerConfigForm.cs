@@ -15,6 +15,8 @@ namespace DomTurnMgr
     public string ConfigName => configNameText.Text;
     public string IMAPAddress => imapAddressText.Text;
     public int IMAPPort => int.Parse(imapPortText.Text);
+    public string SMTPAddress => smtpAddressText.Text;
+    public int SMTPPort => int.Parse(smtpPortText.Text);
     public string Username => usernameText.Text;
     public string Password => passwordText.Text;
 
