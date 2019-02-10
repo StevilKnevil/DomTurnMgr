@@ -12,6 +12,16 @@ namespace DomTurnMgr
 {
   public partial class MainForm : Form
   {
+    // Helper to make sure that we bring this to front if a different instance starts
+    protected override void WndProc(ref System.Windows.Forms.Message m)
+    {
+      if (m.Msg == NativeMethods.WM_SHOWME)
+      {
+        restoreForm();
+      }
+      base.WndProc(ref m);
+    }
+
     public MainForm()
     {
       InitializeComponent();
