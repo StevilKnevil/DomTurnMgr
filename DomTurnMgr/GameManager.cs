@@ -236,24 +236,26 @@ namespace DomTurnMgr
       return turnNumber;
     }
 
+    public string[] GetFilesForTurn(GameTurn gameTurn, string searchString = "*")
+    {
+      string[] retval = { };
+      if (GetTurnNumbers(gameTurn.RaceName).Contains(gameTurn.TurnNumber))
+      {
+        string sourceDir = Path.Combine(LibraryDir, gameTurn.ToPath());
+        return Directory.GetFiles(sourceDir, searchString);
+      }
+      return retval;
+    }
+
     private bool FileExistsInLibrary(IMAPMailWatcher.MessageAttachment ma)
     {
       int turnNumber = GetTurnNumberFromSubject(ma.Subject);
       string raceName = Path.GetFileNameWithoutExtension(ma.Filename);
-      if (GetTurnNumbers(raceName).Contains(turnNumber))
+      var gameTurn = new GameTurn(raceName, turnNumber);
+      var files = GetFilesForTurn(gameTurn);
+      if (files.Contains(ma.Filename))
       {
-        var gameTurn = new GameTurn(raceName, turnNumber);
-        string filePath = Path.Combine(new string[]
-        {
-          LibraryDir,
-          gameTurn.ToPath(),
-          ma.Filename
-        });
-
-        if (File.Exists(filePath))
-        {
-          return true;
-        }
+        return true;
       }
       return false;
     }
