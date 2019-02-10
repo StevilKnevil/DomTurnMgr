@@ -77,20 +77,6 @@ namespace DomTurnMgr
 
         }
 
-        /*
-        var gs = new GameSettings();
-        gs.MailServerConfigName = "Gmail";
-        gs.Name = "SteLand";
-        gs.Query.SubjectMatch = "New turn file: " + gs.Name;
-        gs.Query.SenderMatch = "turns@llamaserver.net";
-
-        // write to file
-        XmlSerializer ser = new XmlSerializer(typeof(GameSettings));
-        TextWriter writer = new StreamWriter(Path.Combine(LibraryDirectory, gs.Name + ".gameconfig"));
-        ser.Serialize(writer, gs);
-        writer.Close();
-        */
-
         // load the email settings
         InitMailServerConfigs();
 
