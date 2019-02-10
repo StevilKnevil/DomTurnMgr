@@ -47,7 +47,7 @@ namespace DomTurnMgr
       if (MailServerConfig.MailServerConfigs.Keys.Contains(mailServerConfig.Text))
       {
         var msc = MailServerConfig.MailServerConfigs[mailServerConfig.Text];
-        mailServerConfigResult.Text = $"{msc.Address}, {msc.Port}, {msc.Username}";
+        mailServerConfigResult.Text = $"{msc.IMAPAddress}, {msc.IMAPPort}, {msc.Username}";
       }
       else
       {

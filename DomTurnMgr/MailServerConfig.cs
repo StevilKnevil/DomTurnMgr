@@ -17,8 +17,8 @@ namespace DomTurnMgr
   {
     public static Dictionary<string, MailServerConfig> MailServerConfigs = new Dictionary<string, MailServerConfig>();
 
-    public string Address { get; set; }
-    public int Port { get; set; }
+    public string IMAPAddress { get; set; }
+    public int IMAPPort { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
 
@@ -26,10 +26,10 @@ namespace DomTurnMgr
     {
     }
 
-    public MailServerConfig(string address, int port, string username, string password)
+    public MailServerConfig(string imapAddress, int imapPort, string username, string password)
     {
-      Address = address;
-      Port = port;
+      IMAPAddress = imapAddress;
+      IMAPPort = imapPort;
       Username = username;
       Password = password;
     }

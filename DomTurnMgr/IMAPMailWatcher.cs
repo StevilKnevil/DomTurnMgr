@@ -106,7 +106,7 @@ namespace DomTurnMgr
     private async Task EnsureAutheticatedAsync()
     {
       if (!client.IsConnected)
-        await client.ConnectAsync(config.Address, config.Port, SecureSocketOptions.SslOnConnect);
+        await client.ConnectAsync(config.IMAPAddress, config.IMAPPort, SecureSocketOptions.SslOnConnect);
       if (!client.IsAuthenticated)
         await client.AuthenticateAsync(config.Username, config.Password);
 
