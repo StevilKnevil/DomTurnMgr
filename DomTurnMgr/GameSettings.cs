@@ -28,7 +28,7 @@ namespace DomTurnMgr
     }
     public MailSearchQuery Query;
 
-    MailServerConfig MailServerConfig => MailServerConfig.MailServerConfigs[MailServerConfigName];
+    public MailServerConfig MailServerConfig => MailServerConfig.MailServerConfigs[MailServerConfigName];
     public string MailServerConfigName;
 
     public struct GameServerConfig
