@@ -176,7 +176,6 @@
     <Compile Include="GameLauncher.cs" />
     <Compile Include="GameSettings.cs" />
     <Compile Include="GMailHelpers.cs" />
-    <Compile Include="IMailServerConfig.cs" />
     <Compile Include="IMAPMailWatcher.cs" />
     <Compile Include="MailServerConfig.cs" />
     <Compile Include="GameSettingsForm.cs">

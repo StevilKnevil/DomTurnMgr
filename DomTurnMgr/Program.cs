@@ -41,7 +41,6 @@ namespace DomTurnMgr
 
     public static SettingsManager SettingsManager = new SettingsManager();
     public static string LibraryDirectory => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
-    public static Dictionary<string, IMailServerConfig> MailServerConfigs = new Dictionary<string, IMailServerConfig>();
 
     // This mutex will be used to see if this app is already running.
 #if !SINGLEINSTANCE
@@ -123,11 +122,11 @@ namespace DomTurnMgr
       {
         XmlSerializer ser = new XmlSerializer(typeof(MailServerConfig));
         StreamReader reader = new StreamReader(file);
-        MailServerConfigs[Path.GetFileNameWithoutExtension(file)] = (MailServerConfig)ser.Deserialize(reader);
+        MailServerConfig.MailServerConfigs[Path.GetFileNameWithoutExtension(file)] = (MailServerConfig)ser.Deserialize(reader);
         reader.Close();
       }
 
-      if (MailServerConfigs.Count == 0)
+      if (MailServerConfig.MailServerConfigs.Count == 0)
       {
         AddMailServerConfig();
       }
@@ -152,7 +151,7 @@ namespace DomTurnMgr
         ser.Serialize(writer, config);
         writer.Close();
 
-        MailServerConfigs[configName] = config;
+        MailServerConfig.MailServerConfigs[configName] = config;
       }
     }
 

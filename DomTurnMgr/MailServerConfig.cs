@@ -13,8 +13,10 @@ using System.Xml.Serialization;
 namespace DomTurnMgr
 {
   [Serializable]
-  public class MailServerConfig : IMailServerConfig, IXmlSerializable
+  public class MailServerConfig : IXmlSerializable
   {
+    public static Dictionary<string, MailServerConfig> MailServerConfigs = new Dictionary<string, MailServerConfig>();
+
     public string Address { get; set; }
     public int Port { get; set; }
     public string Username { get; set; }
