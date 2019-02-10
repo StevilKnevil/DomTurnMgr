@@ -1,4 +1,4 @@
-﻿#define SINGLEINSTANCEx
+﻿#define SINGLEINSTANCE
 
 using System;
 using System.Collections.Generic;
@@ -49,7 +49,7 @@ namespace DomTurnMgr
     private static bool isFirst = false;
     private static Mutex mutex = new Mutex(true, "{4817C9FE-3A6D-422F-A9C3-D0D306EB64D7}", out isFirst);
 #endif
-    private static Form theForm;
+    private static MainForm theForm;
     private static System.Timers.Timer updateTimer;
     [STAThreadAttribute]
     static void Main(string[] args)
@@ -302,11 +302,7 @@ namespace DomTurnMgr
           {
             ApplicationDeployment.CurrentDeployment.Update();
             // TODO Store current window state so that it can be returned correctly after restart.
-#if false
             theForm.ForceClose();
-#else
-            throw new NotImplementedException();
-#endif
             Application.Restart();
           }
           catch (DeploymentDownloadException)
