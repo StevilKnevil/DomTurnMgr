@@ -19,6 +19,8 @@ namespace DomTurnMgr
 
     public string IMAPAddress { get; set; }
     public int IMAPPort { get; set; }
+    public string SMTPAddress { get; set; }
+    public int SMTPPort { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
 
@@ -26,10 +28,12 @@ namespace DomTurnMgr
     {
     }
 
-    public MailServerConfig(string imapAddress, int imapPort, string username, string password)
+    public MailServerConfig(string imapAddress, int imapPort, string smtpAddress, int smtpPort, string username, string password)
     {
       IMAPAddress = imapAddress;
       IMAPPort = imapPort;
+      SMTPAddress = smtpAddress;
+      SMTPPort = smtpPort;
       Username = username;
       Password = password;
     }
