@@ -55,14 +55,14 @@
       this.comboBox1.FormattingEnabled = true;
       this.comboBox1.Location = new System.Drawing.Point(44, 3);
       this.comboBox1.Name = "comboBox1";
-      this.comboBox1.Size = new System.Drawing.Size(294, 21);
+      this.comboBox1.Size = new System.Drawing.Size(684, 21);
       this.comboBox1.TabIndex = 1;
       this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
       // 
       // launchDomsButton
       // 
       this.launchDomsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.launchDomsButton.Location = new System.Drawing.Point(344, 3);
+      this.launchDomsButton.Location = new System.Drawing.Point(734, 3);
       this.launchDomsButton.Name = "launchDomsButton";
       this.launchDomsButton.Size = new System.Drawing.Size(75, 50);
       this.launchDomsButton.TabIndex = 4;
@@ -81,7 +81,7 @@
       this.webBrowser1.Location = new System.Drawing.Point(3, 59);
       this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
       this.webBrowser1.Name = "webBrowser1";
-      this.webBrowser1.Size = new System.Drawing.Size(336, 147);
+      this.webBrowser1.Size = new System.Drawing.Size(726, 520);
       this.webBrowser1.TabIndex = 5;
       // 
       // comboBox2
@@ -92,7 +92,7 @@
       this.comboBox2.FormattingEnabled = true;
       this.comboBox2.Location = new System.Drawing.Point(44, 32);
       this.comboBox2.Name = "comboBox2";
-      this.comboBox2.Size = new System.Drawing.Size(294, 21);
+      this.comboBox2.Size = new System.Drawing.Size(684, 21);
       this.comboBox2.TabIndex = 6;
       // 
       // label2
@@ -108,7 +108,7 @@
       // 
       this.submitTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
       this.submitTurnButton.Enabled = false;
-      this.submitTurnButton.Location = new System.Drawing.Point(344, 59);
+      this.submitTurnButton.Location = new System.Drawing.Point(734, 59);
       this.submitTurnButton.Name = "submitTurnButton";
       this.submitTurnButton.Size = new System.Drawing.Size(75, 50);
       this.submitTurnButton.TabIndex = 8;
@@ -119,7 +119,7 @@
       // browseFilesButton
       // 
       this.browseFilesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.browseFilesButton.Location = new System.Drawing.Point(344, 156);
+      this.browseFilesButton.Location = new System.Drawing.Point(734, 529);
       this.browseFilesButton.Name = "browseFilesButton";
       this.browseFilesButton.Size = new System.Drawing.Size(75, 50);
       this.browseFilesButton.TabIndex = 9;
@@ -141,7 +141,7 @@
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
-      this.Size = new System.Drawing.Size(422, 209);
+      this.Size = new System.Drawing.Size(812, 582);
       this.DragDrop += new System.Windows.Forms.DragEventHandler(this.GameControl_DragDrop);
       this.DragEnter += new System.Windows.Forms.DragEventHandler(this.GameControl_DragEnter);
       this.ResumeLayout(false);
