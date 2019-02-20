@@ -66,9 +66,9 @@ namespace DomTurnMgr
       // create the client
       client = new ImapClient();
 
-      var timer = new System.Threading.Timer((e) =>
+      var timer = new System.Threading.Timer(async (e) =>
       {
-        CheckForMessagesAsync().Wait();
+        await CheckForMessagesAsync();
       }, null, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
     }
 
