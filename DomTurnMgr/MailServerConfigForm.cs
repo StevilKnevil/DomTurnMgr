@@ -25,6 +25,18 @@ namespace DomTurnMgr
       InitializeComponent();
     }
 
+    public void Init(MailServerConfig msg)
+    {
+      configNameText.Text = msg.Name;
+      imapAddressText.Text = msg.IMAPAddress;
+      imapPortText.Text = msg.IMAPPort.ToString();
+      smtpAddressText.Text = msg.SMTPAddress;
+      smtpPortText.Text = msg.SMTPPort.ToString();
+      usernameText.Text = msg.Username;
+      passwordText.Text = msg.Password;
+
+    }
+
     private void enableIMAPLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
     {
       System.Diagnostics.Process.Start(@"https://mail.google.com/mail/u/0/#settings/fwdandpop");
