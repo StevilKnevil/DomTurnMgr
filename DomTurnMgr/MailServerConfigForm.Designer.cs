@@ -131,6 +131,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.passwordText.Location = new System.Drawing.Point(126, 197);
       this.passwordText.Name = "passwordText";
+      this.passwordText.PasswordChar = '*';
       this.passwordText.Size = new System.Drawing.Size(247, 20);
       this.passwordText.TabIndex = 8;
       this.passwordText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
