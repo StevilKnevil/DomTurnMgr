@@ -16,7 +16,7 @@ namespace DomTurnMgr
 {
   class IMAPMailWatcher : IDisposable
   {
-    public class MessageAttachment
+    internal class MessageAttachment
     {
       private IMessageSummary item;
       private IMailFolder folder;
