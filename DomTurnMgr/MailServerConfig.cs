@@ -16,6 +16,14 @@ namespace DomTurnMgr
   public class MailServerConfig : IXmlSerializable
   {
     public static Dictionary<string, MailServerConfig> MailServerConfigs = new Dictionary<string, MailServerConfig>();
+    [XmlIgnore]
+    public string Name => MailServerConfigs.First(x =>
+      x.Value.IMAPAddress == this.IMAPAddress &&
+      x.Value.IMAPPort == this.IMAPPort &&
+      x.Value.SMTPAddress == this.SMTPAddress &&
+      x.Value.SMTPPort == this.SMTPPort &&
+      x.Value.Username == this.Username &&
+      x.Value.Password == this.Password).Key;
 
     public string IMAPAddress { get; set; }
     public int IMAPPort { get; set; }
