@@ -32,8 +32,16 @@ namespace DomTurnMgr
       get { return gameName; }
       set
       {
+        if (!String.IsNullOrEmpty(gameName))
+        {
+          GameManager.GameManagers[GameName].TurnsChanged -= GameManager_TurnsChanged;
+          GameManager.GameManagers[GameName].MailConnectionFailed -= Mail_ConnectionFailed;
+          GameManager.GameManagers[GameName].MailAuthenticationFailed -= Mail_AuthenticationFailed;
+        }
         gameName = value;
         GameManager.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
+        GameManager.GameManagers[GameName].MailConnectionFailed += Mail_ConnectionFailed;
+        GameManager.GameManagers[GameName].MailAuthenticationFailed += Mail_AuthenticationFailed;
         webBrowser1.Url = new Uri(gameManager.ServerUrl);
         UpdateUI();
       }
@@ -193,6 +201,16 @@ namespace DomTurnMgr
     private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
     {
       updateSubmitTurnButton();
+    }
+
+    private void Mail_ConnectionFailed(object sender, Exception ex)
+    {
+      Program.ModifyMailServerConfig(gameManager.MailServerConfig);
+    }
+
+    private void Mail_AuthenticationFailed(object sender, Exception ex)
+    {
+      Program.ModifyMailServerConfig(gameManager.MailServerConfig);
     }
   }
 }

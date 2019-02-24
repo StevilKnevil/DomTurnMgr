@@ -24,6 +24,17 @@ namespace DomTurnMgr
     public string ServerUrl => gameSettings.GameServerCfg.GameServerAddress;
     public MailServerConfig MailServerConfig => gameSettings.MailServerConfig;
 
+    public event EventHandler<Exception> MailConnectionFailed
+    {
+      add { mailWatcher.ConnectionFailed += value;}
+      remove { mailWatcher.ConnectionFailed -= value;}
+    }
+    public event EventHandler<Exception> MailAuthenticationFailed
+    {
+      add { mailWatcher.AuthenticationFailed += value; }
+      remove { mailWatcher.AuthenticationFailed -= value; }
+    }
+
     public GameManager(GameSettings gs, string libraryDir)
     {
       gameSettings = gs;

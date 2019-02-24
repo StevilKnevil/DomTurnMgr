@@ -16,7 +16,7 @@ namespace DomTurnMgr
 {
   class IMAPMailWatcher : IDisposable
   {
-    public class MessageAttachment
+    internal class MessageAttachment
     {
       private IMessageSummary item;
       private IMailFolder folder;
@@ -56,6 +56,8 @@ namespace DomTurnMgr
     private ImapClient client;
     private IMailFolder folder;
     public EventHandler<MessageAttachment> AttachmentsAvailable;
+    public EventHandler<Exception> ConnectionFailed;
+    public EventHandler<Exception> AuthenticationFailed;
 
     public IMAPMailWatcher(MailServerConfig config, SearchQuery query)
     {
@@ -64,9 +66,9 @@ namespace DomTurnMgr
       // create the client
       client = new ImapClient();
 
-      var timer = new System.Threading.Timer((e) =>
+      var timer = new System.Threading.Timer(async (e) =>
       {
-        CheckForMessagesAsync().Wait();
+        await CheckForMessagesAsync();
       }, null, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1));
     }
 
@@ -103,40 +105,42 @@ namespace DomTurnMgr
     }
     #endregion IDisposable
 
-    private async Task EnsureAutheticatedAsync()
-    {
-      if (!client.IsConnected)
-        await client.ConnectAsync(config.IMAPAddress, config.IMAPPort, SecureSocketOptions.SslOnConnect);
-      if (!client.IsAuthenticated)
-        await client.AuthenticateAsync(config.Username, config.Password);
-
-      // Refresh folder
-      folder = client.Inbox;
-      if (!folder.IsOpen)
-        await folder.OpenAsync(FolderAccess.ReadOnly);
-    }
-
-    public async Task CheckForMessagesAsync()
+ 
+    internal async Task CheckForMessagesAsync()
     {
       // No need to do anything if nobody is listening for events.
       if (AttachmentsAvailable != null)
-      { 
-        await EnsureAutheticatedAsync();
-
-        var uids = await folder.SearchAsync(query);
-
-        // fetch summary information for the search results (we will want the UID and the BODYSTRUCTURE
-        // of each message so that we can extract the subject and the attachments)
-        var items = await folder.FetchAsync(uids, 
-          MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
-
-        foreach (var item in items)
+      {
+        var result = await config.OpenInboxAsync(client);
+        switch (result)
         {
-          foreach (var attachment in item.Attachments)
-          {
-            MessageAttachment ma = new MessageAttachment(item, folder, attachment);
-            AttachmentsAvailable(this, ma);
-          }
+          case MailServerConfig.Status.ConnectionFailed:
+            ConnectionFailed?.Invoke(this, new ServiceNotConnectedException());
+            break;
+          case MailServerConfig.Status.AuthenticationFailed:
+            AuthenticationFailed?.Invoke(this, new AuthenticationException());
+            break;
+          case MailServerConfig.Status.InvalidFolder:
+            break;
+          case MailServerConfig.Status.OK:
+            {
+              var uids = await folder.SearchAsync(query);
+
+              // fetch summary information for the search results (we will want the UID and the BODYSTRUCTURE
+              // of each message so that we can extract the subject and the attachments)
+              var items = await folder.FetchAsync(uids,
+                MessageSummaryItems.UniqueId | MessageSummaryItems.BodyStructure | MessageSummaryItems.Envelope);
+
+              foreach (var item in items)
+              {
+                foreach (var attachment in item.Attachments)
+                {
+                  MessageAttachment ma = new MessageAttachment(item, folder, attachment);
+                  AttachmentsAvailable(this, ma);
+                }
+              }
+            }
+            break;
         }
       }
     }

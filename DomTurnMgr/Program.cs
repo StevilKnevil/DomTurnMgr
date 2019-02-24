@@ -114,14 +114,17 @@ namespace DomTurnMgr
 
       if (MailServerConfig.MailServerConfigs.Count == 0)
       {
-        AddMailServerConfig();
+        ModifyMailServerConfig();
       }
     }
 
-    private static void AddMailServerConfig()
+    public static void ModifyMailServerConfig(MailServerConfig cfg = null)
     {
       // We have no email server configured, so add one now.
       var fm = new MailServerConfigForm();
+      if (cfg != null)
+        fm.Init(cfg);
+
       if (fm.ShowDialog() == DialogResult.OK)
       {
         var configName = fm.ConfigName;

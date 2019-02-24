@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MailKit;
+using MailKit.Net.Imap;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,6 +18,14 @@ namespace DomTurnMgr
   public class MailServerConfig : IXmlSerializable
   {
     public static Dictionary<string, MailServerConfig> MailServerConfigs = new Dictionary<string, MailServerConfig>();
+    [XmlIgnore]
+    public string Name => MailServerConfigs.First(x =>
+      x.Value.IMAPAddress == this.IMAPAddress &&
+      x.Value.IMAPPort == this.IMAPPort &&
+      x.Value.SMTPAddress == this.SMTPAddress &&
+      x.Value.SMTPPort == this.SMTPPort &&
+      x.Value.Username == this.Username &&
+      x.Value.Password == this.Password).Key;
 
     public string IMAPAddress { get; set; }
     public int IMAPPort { get; set; }
@@ -36,6 +46,57 @@ namespace DomTurnMgr
       SMTPPort = smtpPort;
       Username = username;
       Password = password;
+    }
+
+    public enum Status
+    {
+      OK,
+      ConnectionFailed,
+      AuthenticationFailed,
+      InvalidFolder,
+      Unknown
+    }
+
+    public async Task<Status> OpenInboxAsync(ImapClient client)
+    {
+      if (!client.IsConnected)
+      {
+        try
+        {
+          await client.ConnectAsync(IMAPAddress, IMAPPort, MailKit.Security.SecureSocketOptions.SslOnConnect);
+        }
+        catch (Exception)
+        {
+          return Status.ConnectionFailed;
+        }
+      }
+      if (!client.IsAuthenticated)
+      {
+        try
+        {
+          await client.AuthenticateAsync(Username, Password);
+        }
+        catch (Exception)
+        {
+          return Status.AuthenticationFailed;
+        }
+      }
+
+      // Refresh folder
+      var folder = client.Inbox;
+      if (!folder.IsOpen)
+      {
+        try
+        {
+          await folder.OpenAsync(FolderAccess.ReadOnly);
+        }
+        catch (Exception)
+        {
+          return Status.InvalidFolder;
+        }
+      }
+
+      return Status.OK;
     }
 
     #region IXmlSerializable
