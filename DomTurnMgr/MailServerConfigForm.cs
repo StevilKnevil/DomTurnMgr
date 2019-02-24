@@ -33,13 +33,13 @@ namespace DomTurnMgr
 
     internal void Init(MailServerConfig cfg)
     {
-    configNameText.Text = cfg.Name;
-    imapAddressText.Text = cfg.IMAPAddress;
-    imapPortText.Text = cfg.IMAPPort.ToString();
-    smtpAddressText.Text = cfg.SMTPAddress;
-    smtpPortText.Text = cfg.SMTPPort.ToString();
-    usernameText.Text = cfg.Username;
-    passwordText.Text = cfg.Password;
+      configNameText.Text = cfg.Name;
+      imapAddressText.Text = cfg.IMAPAddress;
+      imapPortText.Text = cfg.IMAPPort.ToString();
+      smtpAddressText.Text = cfg.SMTPAddress;
+      smtpPortText.Text = cfg.SMTPPort.ToString();
+      usernameText.Text = cfg.Username;
+      passwordText.Text = cfg.Password;
     }
 
     private void enableIMAPLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
