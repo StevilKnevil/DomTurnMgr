@@ -72,6 +72,11 @@ namespace DomTurnMgr
       await CheckSMTPSettings();
     }
 
+    private async void loginText_TextChanged(object sender, EventArgs e)
+    {
+      await CheckLoginSettings();
+    }
+
     private CancellationTokenSource imapText_CancellationToken;
     private async Task CheckIMAPSettings()
     {
@@ -126,6 +131,35 @@ namespace DomTurnMgr
         }
       }
       smtpText_CancellationToken = null;
+    }
+
+    private CancellationTokenSource login_CancellationToken;
+    private async Task CheckLoginSettings()
+    {
+      // Check the new setting
+      if (login_CancellationToken != null)
+        login_CancellationToken.Cancel();
+
+      login_CancellationToken = new CancellationTokenSource();
+
+      usernamePic.Image = Properties.Resources.refreshAnim;
+      passwordPic.Image = Properties.Resources.refreshAnim;
+      using (var client = new ImapClient())
+      {
+        try
+        {
+          await client.ConnectAsync(IMAPAddress, IMAPPort, SecureSocketOptions.SslOnConnect, login_CancellationToken.Token);
+          await client.AuthenticateAsync(Username, Password);
+          usernamePic.Image = Properties.Resources.greenTick;
+          passwordPic.Image = Properties.Resources.greenTick;
+        }
+        catch (Exception)
+        {
+          usernamePic.Image = Properties.Resources.redCross;
+          passwordPic.Image = Properties.Resources.redCross;
+        }
+      }
+      login_CancellationToken = null;
     }
   }
 }

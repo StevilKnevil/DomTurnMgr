@@ -50,10 +50,14 @@
       this.imapPortPic = new System.Windows.Forms.PictureBox();
       this.smtpPortPic = new System.Windows.Forms.PictureBox();
       this.smtpAddressPic = new System.Windows.Forms.PictureBox();
+      this.passwordPic = new System.Windows.Forms.PictureBox();
+      this.usernamePic = new System.Windows.Forms.PictureBox();
       ((System.ComponentModel.ISupportInitialize)(this.imapAddressPic)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.imapPortPic)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.smtpPortPic)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.smtpAddressPic)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.passwordPic)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.usernamePic)).BeginInit();
       this.SuspendLayout();
       // 
       // label1
@@ -88,9 +92,9 @@
       this.label4.AutoSize = true;
       this.label4.Location = new System.Drawing.Point(12, 200);
       this.label4.Name = "label4";
-      this.label4.Size = new System.Drawing.Size(108, 13);
+      this.label4.Size = new System.Drawing.Size(53, 13);
       this.label4.TabIndex = 3;
-      this.label4.Text = "Application Password";
+      this.label4.Text = "Password";
       // 
       // label5
       // 
@@ -134,6 +138,7 @@
       this.usernameText.Size = new System.Drawing.Size(296, 20);
       this.usernameText.TabIndex = 7;
       this.usernameText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.usernameText.TextChanged += new System.EventHandler(this.loginText_TextChanged);
       // 
       // passwordText
       // 
@@ -145,6 +150,7 @@
       this.passwordText.Size = new System.Drawing.Size(296, 20);
       this.passwordText.TabIndex = 8;
       this.passwordText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.passwordText.TextChanged += new System.EventHandler(this.loginText_TextChanged);
       // 
       // configNameText
       // 
@@ -290,6 +296,28 @@
       this.smtpAddressPic.TabIndex = 19;
       this.smtpAddressPic.TabStop = false;
       // 
+      // passwordPic
+      // 
+      this.passwordPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.passwordPic.BackColor = System.Drawing.SystemColors.Control;
+      this.passwordPic.Location = new System.Drawing.Point(428, 197);
+      this.passwordPic.Name = "passwordPic";
+      this.passwordPic.Size = new System.Drawing.Size(20, 20);
+      this.passwordPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.passwordPic.TabIndex = 22;
+      this.passwordPic.TabStop = false;
+      // 
+      // usernamePic
+      // 
+      this.usernamePic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.usernamePic.BackColor = System.Drawing.SystemColors.Control;
+      this.usernamePic.Location = new System.Drawing.Point(428, 171);
+      this.usernamePic.Name = "usernamePic";
+      this.usernamePic.Size = new System.Drawing.Size(20, 20);
+      this.usernamePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.usernamePic.TabIndex = 21;
+      this.usernamePic.TabStop = false;
+      // 
       // MailServerConfigForm
       // 
       this.AcceptButton = this.okButton;
@@ -297,6 +325,8 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cancelButton;
       this.ClientSize = new System.Drawing.Size(460, 299);
+      this.Controls.Add(this.passwordPic);
+      this.Controls.Add(this.usernamePic);
       this.Controls.Add(this.smtpPortPic);
       this.Controls.Add(this.smtpAddressPic);
       this.Controls.Add(this.imapPortPic);
@@ -327,6 +357,8 @@
       ((System.ComponentModel.ISupportInitialize)(this.imapPortPic)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.smtpPortPic)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.smtpAddressPic)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.passwordPic)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.usernamePic)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -356,5 +388,7 @@
     private System.Windows.Forms.PictureBox imapPortPic;
     private System.Windows.Forms.PictureBox smtpPortPic;
     private System.Windows.Forms.PictureBox smtpAddressPic;
+    private System.Windows.Forms.PictureBox passwordPic;
+    private System.Windows.Forms.PictureBox usernamePic;
   }
 }
