@@ -291,6 +291,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon_grey.ico" />
+    <None Include="Resources\redCross.png" />
+    <None Include="Resources\greenTick.png" />
+    <None Include="Resources\refreshAnim.gif" />
     <None Include="Resources\new.png" />
     <None Include="Resources\icon_yellow.ico" />
     <None Include="Resources\icon_red.ico" />

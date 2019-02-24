@@ -46,6 +46,14 @@
       this.smtpAddressText = new System.Windows.Forms.TextBox();
       this.label6 = new System.Windows.Forms.Label();
       this.label7 = new System.Windows.Forms.Label();
+      this.imapAddressPic = new System.Windows.Forms.PictureBox();
+      this.imapPortPic = new System.Windows.Forms.PictureBox();
+      this.smtpPortPic = new System.Windows.Forms.PictureBox();
+      this.smtpAddressPic = new System.Windows.Forms.PictureBox();
+      ((System.ComponentModel.ISupportInitialize)(this.imapAddressPic)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.imapPortPic)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.smtpPortPic)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.smtpAddressPic)).BeginInit();
       this.SuspendLayout();
       // 
       // label1
@@ -99,10 +107,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.imapAddressText.Location = new System.Drawing.Point(126, 63);
       this.imapAddressText.Name = "imapAddressText";
-      this.imapAddressText.Size = new System.Drawing.Size(247, 20);
+      this.imapAddressText.Size = new System.Drawing.Size(296, 20);
       this.imapAddressText.TabIndex = 5;
       this.imapAddressText.Text = "imap.gmail.com";
       this.imapAddressText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.imapAddressText.TextChanged += new System.EventHandler(this.imapText_TextChanged);
       // 
       // imapPortText
       // 
@@ -110,10 +119,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.imapPortText.Location = new System.Drawing.Point(126, 91);
       this.imapPortText.Name = "imapPortText";
-      this.imapPortText.Size = new System.Drawing.Size(247, 20);
+      this.imapPortText.Size = new System.Drawing.Size(296, 20);
       this.imapPortText.TabIndex = 6;
       this.imapPortText.Text = "993";
       this.imapPortText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.imapPortText.TextChanged += new System.EventHandler(this.imapText_TextChanged);
       // 
       // usernameText
       // 
@@ -121,7 +131,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.usernameText.Location = new System.Drawing.Point(126, 171);
       this.usernameText.Name = "usernameText";
-      this.usernameText.Size = new System.Drawing.Size(247, 20);
+      this.usernameText.Size = new System.Drawing.Size(296, 20);
       this.usernameText.TabIndex = 7;
       this.usernameText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       // 
@@ -131,7 +141,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.passwordText.Location = new System.Drawing.Point(126, 197);
       this.passwordText.Name = "passwordText";
-      this.passwordText.Size = new System.Drawing.Size(247, 20);
+      this.passwordText.Size = new System.Drawing.Size(296, 20);
       this.passwordText.TabIndex = 8;
       this.passwordText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
       // 
@@ -141,7 +151,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.configNameText.Location = new System.Drawing.Point(126, 12);
       this.configNameText.Name = "configNameText";
-      this.configNameText.Size = new System.Drawing.Size(247, 20);
+      this.configNameText.Size = new System.Drawing.Size(322, 20);
       this.configNameText.TabIndex = 9;
       this.configNameText.Text = "Gmail";
       this.configNameText.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -150,7 +160,7 @@
       // 
       this.enableIMAPLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.enableIMAPLabel.AutoSize = true;
-      this.enableIMAPLabel.Location = new System.Drawing.Point(264, 225);
+      this.enableIMAPLabel.Location = new System.Drawing.Point(339, 225);
       this.enableIMAPLabel.Name = "enableIMAPLabel";
       this.enableIMAPLabel.Size = new System.Drawing.Size(109, 13);
       this.enableIMAPLabel.TabIndex = 10;
@@ -162,7 +172,7 @@
       // 
       this.createAppPasswordLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.createAppPasswordLabel.AutoSize = true;
-      this.createAppPasswordLabel.Location = new System.Drawing.Point(193, 238);
+      this.createAppPasswordLabel.Location = new System.Drawing.Point(268, 238);
       this.createAppPasswordLabel.Name = "createAppPasswordLabel";
       this.createAppPasswordLabel.Size = new System.Drawing.Size(180, 13);
       this.createAppPasswordLabel.TabIndex = 11;
@@ -174,7 +184,7 @@
       // 
       this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
       this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.cancelButton.Location = new System.Drawing.Point(298, 264);
+      this.cancelButton.Location = new System.Drawing.Point(373, 264);
       this.cancelButton.Name = "cancelButton";
       this.cancelButton.Size = new System.Drawing.Size(75, 23);
       this.cancelButton.TabIndex = 12;
@@ -185,7 +195,7 @@
       // okButton
       // 
       this.okButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.okButton.Location = new System.Drawing.Point(217, 264);
+      this.okButton.Location = new System.Drawing.Point(292, 264);
       this.okButton.Name = "okButton";
       this.okButton.Size = new System.Drawing.Size(75, 23);
       this.okButton.TabIndex = 0;
@@ -199,10 +209,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.smtpPortText.Location = new System.Drawing.Point(126, 145);
       this.smtpPortText.Name = "smtpPortText";
-      this.smtpPortText.Size = new System.Drawing.Size(247, 20);
+      this.smtpPortText.Size = new System.Drawing.Size(296, 20);
       this.smtpPortText.TabIndex = 16;
       this.smtpPortText.Text = "587";
       this.smtpPortText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.smtpPortText.TextChanged += new System.EventHandler(this.smtpText_TextChanged);
       // 
       // smtpAddressText
       // 
@@ -210,10 +221,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.smtpAddressText.Location = new System.Drawing.Point(126, 117);
       this.smtpAddressText.Name = "smtpAddressText";
-      this.smtpAddressText.Size = new System.Drawing.Size(247, 20);
+      this.smtpAddressText.Size = new System.Drawing.Size(296, 20);
       this.smtpAddressText.TabIndex = 15;
       this.smtpAddressText.Text = "smtp.gmail.com";
       this.smtpAddressText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+      this.smtpAddressText.TextChanged += new System.EventHandler(this.smtpText_TextChanged);
       // 
       // label6
       // 
@@ -233,13 +245,61 @@
       this.label7.TabIndex = 13;
       this.label7.Text = "SMTP Server";
       // 
+      // imapAddressPic
+      // 
+      this.imapAddressPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.imapAddressPic.BackColor = System.Drawing.SystemColors.Control;
+      this.imapAddressPic.Location = new System.Drawing.Point(428, 63);
+      this.imapAddressPic.Name = "imapAddressPic";
+      this.imapAddressPic.Size = new System.Drawing.Size(20, 20);
+      this.imapAddressPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.imapAddressPic.TabIndex = 17;
+      this.imapAddressPic.TabStop = false;
+      // 
+      // imapPortPic
+      // 
+      this.imapPortPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.imapPortPic.BackColor = System.Drawing.SystemColors.Control;
+      this.imapPortPic.Location = new System.Drawing.Point(428, 91);
+      this.imapPortPic.Name = "imapPortPic";
+      this.imapPortPic.Size = new System.Drawing.Size(20, 20);
+      this.imapPortPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.imapPortPic.TabIndex = 18;
+      this.imapPortPic.TabStop = false;
+      // 
+      // smtpPortPic
+      // 
+      this.smtpPortPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.smtpPortPic.BackColor = System.Drawing.SystemColors.Control;
+      this.smtpPortPic.Location = new System.Drawing.Point(428, 145);
+      this.smtpPortPic.Name = "smtpPortPic";
+      this.smtpPortPic.Size = new System.Drawing.Size(20, 20);
+      this.smtpPortPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.smtpPortPic.TabIndex = 20;
+      this.smtpPortPic.TabStop = false;
+      // 
+      // smtpAddressPic
+      // 
+      this.smtpAddressPic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.smtpAddressPic.BackColor = System.Drawing.SystemColors.Control;
+      this.smtpAddressPic.Location = new System.Drawing.Point(428, 117);
+      this.smtpAddressPic.Name = "smtpAddressPic";
+      this.smtpAddressPic.Size = new System.Drawing.Size(20, 20);
+      this.smtpAddressPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+      this.smtpAddressPic.TabIndex = 19;
+      this.smtpAddressPic.TabStop = false;
+      // 
       // MailServerConfigForm
       // 
       this.AcceptButton = this.okButton;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.CancelButton = this.cancelButton;
-      this.ClientSize = new System.Drawing.Size(385, 299);
+      this.ClientSize = new System.Drawing.Size(460, 299);
+      this.Controls.Add(this.smtpPortPic);
+      this.Controls.Add(this.smtpAddressPic);
+      this.Controls.Add(this.imapPortPic);
+      this.Controls.Add(this.imapAddressPic);
       this.Controls.Add(this.smtpPortText);
       this.Controls.Add(this.smtpAddressText);
       this.Controls.Add(this.label6);
@@ -262,6 +322,10 @@
       this.MinimizeBox = false;
       this.Name = "MailServerConfigForm";
       this.Text = "MailServerConfigForm";
+      ((System.ComponentModel.ISupportInitialize)(this.imapAddressPic)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.imapPortPic)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.smtpPortPic)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.smtpAddressPic)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -287,5 +351,9 @@
     private System.Windows.Forms.TextBox smtpAddressText;
     private System.Windows.Forms.Label label6;
     private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.PictureBox imapAddressPic;
+    private System.Windows.Forms.PictureBox imapPortPic;
+    private System.Windows.Forms.PictureBox smtpPortPic;
+    private System.Windows.Forms.PictureBox smtpAddressPic;
   }
 }
