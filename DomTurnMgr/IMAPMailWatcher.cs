@@ -124,6 +124,7 @@ namespace DomTurnMgr
             break;
           case MailServerConfig.Status.OK:
             {
+              folder = client.Inbox;
               var uids = await folder.SearchAsync(query);
 
               // fetch summary information for the search results (we will want the UID and the BODYSTRUCTURE
