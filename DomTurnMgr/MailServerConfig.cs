@@ -133,11 +133,14 @@ namespace DomTurnMgr
 
       foreach (var f in GetType().GetProperties())
       {
-        string fieldName = f.Name;
-        XmlSerializer valueSerializer = new XmlSerializer(f.PropertyType);
-        writer.WriteStartElement(fieldName);
-        valueSerializer.Serialize(writer, f.GetValue(this));
-        writer.WriteEndElement();
+        if (!Attribute.IsDefined(f, typeof(XmlIgnoreAttribute)))
+        {
+          string fieldName = f.Name;
+          XmlSerializer valueSerializer = new XmlSerializer(f.PropertyType);
+          writer.WriteStartElement(fieldName);
+          valueSerializer.Serialize(writer, f.GetValue(this));
+          writer.WriteEndElement();
+        }
       }
 
       Unprotect();
