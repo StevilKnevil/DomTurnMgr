@@ -34,7 +34,7 @@ namespace DomTurnMgr
         Process process = new Process();
         // Configure the process using the StartInfo properties.
         process.StartInfo.FileName = Program.SettingsManager.GameExePath;
-        process.StartInfo.Arguments = tempGameName;
+        process.StartInfo.Arguments = $"{tempGameName} --window";
         process.StartInfo.WindowStyle = ProcessWindowStyle.Maximized;
 
         process.Start();
