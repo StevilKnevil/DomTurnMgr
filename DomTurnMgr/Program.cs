@@ -21,23 +21,6 @@ namespace DomTurnMgr
 {
   class Program
   {
-    // If modifying these scopes, delete your previously saved credentials
-    // at ~/.credentials/skapps-domTurnManager.json
-    static string[] Scopes = { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailSend };
-    static string ApplicationName = "Domionions Turn Manager";
-    private static GmailService gmailService;
-    internal static GmailService GmailService
-    {
-      get
-      {
-        // lazy instantiation
-        if (gmailService == null)
-        {
-          createGmailService();
-        }
-        return gmailService;
-      }
-    }
 
     public static SettingsManager SettingsManager = new SettingsManager();
     public static string LibraryDirectory => System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.ProductName);
@@ -206,44 +189,6 @@ namespace DomTurnMgr
         silentInstallAppUpdate();
       }
       updateTimer.Start();
-    }
-
-    private static void createGmailService()
-    {
-      UserCredential credential; 
-      try
-      {
-        using (var stream =
-            new MemoryStream(Encoding.UTF8.GetBytes(SettingsManager.ClientSecret)))
-        {
-          string credPath = System.Environment.GetFolderPath(
-              System.Environment.SpecialFolder.Personal);
-          credPath = Path.Combine(credPath, ".credentials/skapps-domTurnManager.json");
-
-          credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-              GoogleClientSecrets.Load(stream).Secrets,
-              Scopes,
-              "user",
-              CancellationToken.None,
-              new FileDataStore(credPath, true)).Result;
-          System.Diagnostics.Trace.WriteLine("Credential file saved to: " + credPath);
-          System.Diagnostics.Trace.Flush();
-        }
-
-
-        // Create Gmail API service.
-        gmailService = new GmailService(new BaseClientService.Initializer()
-        {
-          HttpClientInitializer = credential,
-          ApplicationName = ApplicationName,
-        });
-      }
-      catch (Exception e)
-      {
-        MessageBox.Show("Unhandled Exception: " + e.ToString(), "Error");
-        // Early out
-        return;
-      }
     }
 
 #region Auto Update
