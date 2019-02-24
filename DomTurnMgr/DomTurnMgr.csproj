@@ -153,13 +153,6 @@
     <Compile Include="AddGameDialog.Designer.cs">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="FadingStatusLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FadingStatusLabel.Designer.cs">
-      <DependentUpon>FadingStatusLabel.cs</DependentUpon>
-    </Compile>
     <Compile Include="GameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -168,7 +161,6 @@
     </Compile>
     <Compile Include="GameLauncher.cs" />
     <Compile Include="GameSettings.cs" />
-    <Compile Include="GMailHelpers.cs" />
     <Compile Include="IMAPMailWatcher.cs" />
     <Compile Include="MailServerConfig.cs" />
     <Compile Include="GameSettingsForm.cs">
@@ -201,18 +193,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SMTPMailSender.cs" />
-    <Compile Include="SplashScreen.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SplashScreen.Designer.cs">
-      <DependentUpon>SplashScreen.cs</DependentUpon>
-    </Compile>
     <Compile Include="GameManager.cs" />
     <EmbeddedResource Include="AddGameDialog.resx">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FadingStatusLabel.resx">
-      <DependentUpon>FadingStatusLabel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameControl.resx">
       <DependentUpon>GameControl.cs</DependentUpon>
@@ -239,9 +222,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="SplashScreen.resx">
-      <DependentUpon>SplashScreen.cs</DependentUpon>
-    </EmbeddedResource>
     <None Include="DomTurnMgr_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
