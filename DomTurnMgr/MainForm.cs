@@ -12,16 +12,6 @@ namespace DomTurnMgr
 {
   public partial class MainForm : Form
   {
-    // Helper to make sure that we bring this to front if a different instance starts
-    protected override void WndProc(ref System.Windows.Forms.Message m)
-    {
-      if (m.Msg == NativeMethods.WM_SHOWME)
-      {
-        restoreForm();
-      }
-      base.WndProc(ref m);
-    }
-
     public MainForm()
     {
       InitializeComponent();
@@ -77,93 +67,6 @@ namespace DomTurnMgr
     private void onGameManagersChanged(object sender, GameManager gm)
     {
       UpdateUI();
-    }
-
-    /*
-    private void hostingWarningTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-    {
-      HostingWarningTimer timer = sender as HostingWarningTimer;
-      notifyIcon1.ShowBalloonTip(5, "Dominions Turn Manager", timer.Text, ToolTipIcon.Warning);
-    }
-    */
-    /*
-    private void UpdateHostingTime()
-    {
-      timeRemainingLbl.Text = "Error retrieving hosting time";
-      if (currentGame.IsValidHostingTime)
-      {
-        DateTime result = currentGame.HostingTime;
-        timeRemainingLbl.Text = "Next Turn Due: " + result.ToString();
-        // TODO: Move to update icon function
-        this.Icon = Properties.Resources.icon_green;
-        this.notifyIcon1.Icon = Properties.Resources.icon_green;
-
-        // Update the icons with correct colour coding
-        if (result - DateTime.Now < new TimeSpan(12, 0, 0))
-        {
-          this.Icon = Properties.Resources.icon_yellow;
-          this.notifyIcon1.Icon = Properties.Resources.icon_yellow;
-        }
-        if (result - DateTime.Now < new TimeSpan(6, 0, 0))
-        {
-          this.Icon = Properties.Resources.icon_red;
-          this.notifyIcon1.Icon = Properties.Resources.icon_red;
-        }
-        // TODO: If current turn has been submitted (check with server text) then icon can be grey
-
-        // Update the timers for the warnings
-        foreach (var v in hostingWarningTimers)
-        {
-          v.Reset(result);
-        }
-      }
-    }
-    */
-
-    private void restoreForm()
-    {
-      this.TopMost = true;
-      this.WindowState = FormWindowState.Normal;
-      this.Show();
-      this.Activate();
-      this.TopMost = false;
-    }
-
-    private void onRestoreForm(object sender, EventArgs e)
-    {
-      restoreForm();
-    }
-
-    private bool doClose = false;
-    public void ForceClose()
-    {
-      this.doClose = true;
-      Close();
-    }
-
-    private void onFormClosing(object sender, FormClosingEventArgs e)
-    {
-      // if we have been actually asked to exit then do so, otherwise just hide the form.
-      if (!doClose)
-      {
-        // minimise to tray
-        e.Cancel = true;
-        this.Hide();
-      }
-    }
-
-    private void onExitToolStripMenuItemClick(object sender, EventArgs e)
-    {
-      this.ForceClose();
-    }
-
-    private void onVisibleChanged(object sender, EventArgs e)
-    {
-      // Form has been hidden so perform an app update.
-      if (this.Visible == false && Program.isAppUpdateAvailable())
-      {
-        Program.silentInstallAppUpdate();
-      }
     }
   }
 }
