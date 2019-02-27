@@ -3,12 +3,6 @@ using MailKit.Net.Imap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Runtime.Serialization;
-using System.Security;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -32,6 +26,7 @@ namespace DomTurnMgr
     public string SMTPAddress { get; set; }
     public int SMTPPort { get; set; }
     public string Username { get; set; }
+    [XmlEncrypt]
     public string Password { get; set; }
 
     public MailServerConfig()
@@ -119,18 +114,19 @@ namespace DomTurnMgr
         reader.ReadStartElement(nodeName);
         object tempValue = null;
         tempValue = valueSerializer.Deserialize(reader);
+        if (Attribute.IsDefined(f, typeof(XmlEncryptAttribute)))
+        {
+          tempValue = XmlEncryptAttribute.Unprotect(tempValue as string);
+        }
+
         f.SetValue(this, tempValue);
 
         reader.ReadEndElement();
       }
-
-      Unprotect();
     }
 
     public void WriteXml(System.Xml.XmlWriter writer)
     {
-      Protect();
-
       foreach (var f in GetType().GetProperties())
       {
         if (!Attribute.IsDefined(f, typeof(XmlIgnoreAttribute)))
@@ -138,50 +134,16 @@ namespace DomTurnMgr
           string fieldName = f.Name;
           XmlSerializer valueSerializer = new XmlSerializer(f.PropertyType);
           writer.WriteStartElement(fieldName);
-          valueSerializer.Serialize(writer, f.GetValue(this));
+          object s = f.GetValue(this);
+          if (Attribute.IsDefined(f, typeof(XmlEncryptAttribute)))
+          {
+            s = XmlEncryptAttribute.Protect(s as string);
+          }
+          valueSerializer.Serialize(writer, s);
           writer.WriteEndElement();
         }
       }
-
-      Unprotect();
     }
     #endregion IXmlSerializable
-
-    #region Security
-    private void Protect()
-    {
-      Password = ProtectString(Password, null, DataProtectionScope.CurrentUser);
-    }
-
-    private void Unprotect()
-    {
-      Password = UnprotectString(Password, null, DataProtectionScope.CurrentUser);
-    }
-
-    private static string ProtectString(string stringToEncrypt, string optionalEntropy, DataProtectionScope scope)
-    {
-      byte[] encryptedData = System.Security.Cryptography.ProtectedData.Protect(
-          System.Text.Encoding.Unicode.GetBytes(stringToEncrypt),
-           optionalEntropy != null ? Encoding.UTF8.GetBytes(optionalEntropy) : null,
-          System.Security.Cryptography.DataProtectionScope.CurrentUser);
-      return Convert.ToBase64String(encryptedData);
-    }
-
-    private static string UnprotectString(string encryptedData, string optionalEntropy, DataProtectionScope scope)
-    {
-      try
-      {
-        byte[] decryptedData = System.Security.Cryptography.ProtectedData.Unprotect(
-            Convert.FromBase64String(encryptedData),
-             optionalEntropy != null ? Encoding.UTF8.GetBytes(optionalEntropy) : null,
-            System.Security.Cryptography.DataProtectionScope.CurrentUser);
-        return System.Text.Encoding.Unicode.GetString(decryptedData);
-      }
-      catch
-      {
-        return "";
-      }
-    }
-    #endregion Security
   }
 }

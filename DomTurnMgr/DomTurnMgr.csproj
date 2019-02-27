@@ -193,6 +193,7 @@
     <Compile Include="SettingsManager.cs" />
     <Compile Include="SMTPMailSender.cs" />
     <Compile Include="GameManager.cs" />
+    <Compile Include="XmlEncryptAttribute.cs" />
     <EmbeddedResource Include="AddGameDialog.resx">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </EmbeddedResource>
