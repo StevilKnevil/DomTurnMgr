@@ -212,5 +212,10 @@ namespace DomTurnMgr
     {
       Program.ModifyMailServerConfig(gameManager.MailServerConfig);
     }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+      System.Diagnostics.Process.Start(gameManager.ServerUrl);
+    }
   }
 }

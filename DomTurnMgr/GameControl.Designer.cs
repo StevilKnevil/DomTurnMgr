@@ -36,6 +36,8 @@
       this.label2 = new System.Windows.Forms.Label();
       this.submitTurnButton = new System.Windows.Forms.Button();
       this.browseFilesButton = new System.Windows.Forms.Button();
+      this.button1 = new System.Windows.Forms.Button();
+      this.button2 = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // label1
@@ -81,7 +83,7 @@
       this.webBrowser1.Location = new System.Drawing.Point(3, 59);
       this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
       this.webBrowser1.Name = "webBrowser1";
-      this.webBrowser1.Size = new System.Drawing.Size(726, 520);
+      this.webBrowser1.Size = new System.Drawing.Size(726, 469);
       this.webBrowser1.TabIndex = 5;
       // 
       // comboBox2
@@ -119,7 +121,7 @@
       // browseFilesButton
       // 
       this.browseFilesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.browseFilesButton.Location = new System.Drawing.Point(734, 529);
+      this.browseFilesButton.Location = new System.Drawing.Point(734, 508);
       this.browseFilesButton.Name = "browseFilesButton";
       this.browseFilesButton.Size = new System.Drawing.Size(75, 50);
       this.browseFilesButton.TabIndex = 9;
@@ -127,11 +129,34 @@
       this.browseFilesButton.UseVisualStyleBackColor = true;
       this.browseFilesButton.Click += new System.EventHandler(this.browseFilesButton_Click);
       // 
+      // button1
+      // 
+      this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.button1.Location = new System.Drawing.Point(3, 534);
+      this.button1.Name = "button1";
+      this.button1.Size = new System.Drawing.Size(102, 23);
+      this.button1.TabIndex = 10;
+      this.button1.Text = "Open In Browser";
+      this.button1.UseVisualStyleBackColor = true;
+      this.button1.Click += new System.EventHandler(this.button1_Click);
+      // 
+      // button2
+      // 
+      this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.button2.Location = new System.Drawing.Point(111, 534);
+      this.button2.Name = "button2";
+      this.button2.Size = new System.Drawing.Size(102, 23);
+      this.button2.TabIndex = 11;
+      this.button2.Text = "Admin Options";
+      this.button2.UseVisualStyleBackColor = true;
+      // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.Controls.Add(this.button2);
+      this.Controls.Add(this.button1);
       this.Controls.Add(this.browseFilesButton);
       this.Controls.Add(this.submitTurnButton);
       this.Controls.Add(this.label2);
@@ -141,7 +166,7 @@
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
-      this.Size = new System.Drawing.Size(812, 582);
+      this.Size = new System.Drawing.Size(812, 561);
       this.DragDrop += new System.Windows.Forms.DragEventHandler(this.GameControl_DragDrop);
       this.DragEnter += new System.Windows.Forms.DragEventHandler(this.GameControl_DragEnter);
       this.ResumeLayout(false);
@@ -159,5 +184,7 @@
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Button submitTurnButton;
     private System.Windows.Forms.Button browseFilesButton;
+    private System.Windows.Forms.Button button1;
+    private System.Windows.Forms.Button button2;
   }
 }
