@@ -153,6 +153,7 @@
     <Compile Include="AddGameDialog.Designer.cs">
       <DependentUpon>AddGameDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="EncrtptableXmlSerializable.cs" />
     <Compile Include="GameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
