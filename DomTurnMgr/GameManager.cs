@@ -20,8 +20,8 @@ namespace DomTurnMgr
     private IMAPMailWatcher mailWatcher;
     public string GameName => gameSettings.Name;
     public string UserMailAccount => gameSettings.MailServerConfig.Username;
-    public string ServerMailAccount => gameSettings.MailConfig.ServerMailAccount;
-    public string ServerUrl => gameSettings.GameServerCfg.GameServerAddress;
+    public string ServerMailAccount => gameSettings.MailServerAccount;
+    public string ServerUrl => gameSettings.GameServerAddress;
     public MailServerConfig MailServerConfig => gameSettings.MailServerConfig;
 
     public event EventHandler<Exception> MailConnectionFailed
@@ -43,8 +43,8 @@ namespace DomTurnMgr
       Directory.CreateDirectory(LibraryDir);
 
       var query =
-        MailKit.Search.SearchQuery.SubjectContains(gs.MailConfig.SubjectSearchString).And(
-          MailKit.Search.SearchQuery.FromContains(gs.MailConfig.ServerMailAccount));
+        MailKit.Search.SearchQuery.SubjectContains(gs.MailSubjectSearchString).And(
+          MailKit.Search.SearchQuery.FromContains(gs.MailServerAccount));
 
       var mailConfig = MailServerConfig.MailServerConfigs[gameSettings.MailServerConfigName];
       mailWatcher = new IMAPMailWatcher(mailConfig, query);

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace DomTurnMgr
 {
-  public class GameSettings
+  public class GameSettings : EncryptableXmlSerializable
   {
     public GameSettings() {}
 
@@ -14,28 +15,22 @@ namespace DomTurnMgr
     {
       Name = gameName;
       MailServerConfigName = mailServerConfigName;
-      MailConfig.SubjectSearchString = querySubjectText;
-      MailConfig.ServerMailAccount = querySenderText;
-      GameServerCfg.GameServerAddress = serverInfoText;
-      //GameServerCfg.AdminPassword = adminPasswordText;
+      MailSubjectSearchString = querySubjectText;
+      MailServerAccount = querySenderText;
+      GameServerAddress = serverInfoText;
+      GameServerAdminPassword = adminPasswordText;
     }
 
-    public string Name;
-    public struct MailConfiguration
-    {
-      public string SubjectSearchString;
-      public string ServerMailAccount;
-    }
-    public MailConfiguration MailConfig;
+    public string Name { get; set; }
+    public string MailSubjectSearchString { get; set; }
+    public string MailServerAccount { get; set; }
 
+    [XmlIgnore]
     public MailServerConfig MailServerConfig => MailServerConfig.MailServerConfigs[MailServerConfigName];
-    public string MailServerConfigName;
+    public string MailServerConfigName { get; set; }
 
-    public struct GameServerConfig
-    {
-      public string GameServerAddress;
-      public string AdminPassword;
-    }
-    public GameServerConfig GameServerCfg;
+    public string GameServerAddress { get; set; }
+    [XmlEncrypt]
+    public string GameServerAdminPassword { get; set; }
   }
 }
