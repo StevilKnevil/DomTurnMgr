@@ -22,6 +22,7 @@ namespace DomTurnMgr
     public string UserMailAccount => gameSettings.MailServerConfig.Username;
     public string ServerMailAccount => gameSettings.MailServerAccount;
     public string ServerUrl => gameSettings.GameServerAddress;
+    public string ServerAdminUrl => gameSettings.GameServerAddress.Replace("gameinfo.cgi", "doAdminAction.cgi");
     public string ServerAdminPassword => gameSettings.GameServerAdminPassword;
     public MailServerConfig MailServerConfig => gameSettings.MailServerConfig;
 
