@@ -17,7 +17,7 @@ namespace DomTurnMgr
 
     public GameLauncher()
     {
-      tempGameName = Guid.NewGuid().ToString();
+      tempGameName = "DTM_" + Guid.NewGuid().ToString();
       Directory.CreateDirectory(tempGameDir);
     }
 
