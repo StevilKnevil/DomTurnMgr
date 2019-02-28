@@ -42,7 +42,8 @@ namespace DomTurnMgr
         GameManager.GameManagers[GameName].TurnsChanged += GameManager_TurnsChanged;
         GameManager.GameManagers[GameName].MailConnectionFailed += Mail_ConnectionFailed;
         GameManager.GameManagers[GameName].MailAuthenticationFailed += Mail_AuthenticationFailed;
-        webBrowser1.Url = new Uri(gameManager.ServerUrl);
+        gameInfoBrowser.Url = new Uri(gameManager.ServerUrl);
+        staleDataBrowser.Url = new Uri(gameManager.ServerAdminUrl + "&action=showstales");
         UpdateUI();
       }
     }

@@ -31,13 +31,20 @@
       this.label1 = new System.Windows.Forms.Label();
       this.comboBox1 = new System.Windows.Forms.ComboBox();
       this.launchDomsButton = new System.Windows.Forms.Button();
-      this.webBrowser1 = new System.Windows.Forms.WebBrowser();
       this.comboBox2 = new System.Windows.Forms.ComboBox();
       this.label2 = new System.Windows.Forms.Label();
       this.submitTurnButton = new System.Windows.Forms.Button();
       this.browseFilesButton = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
       this.adminOptionsButton = new System.Windows.Forms.Button();
+      this.tabControl1 = new System.Windows.Forms.TabControl();
+      this.tabPage1 = new System.Windows.Forms.TabPage();
+      this.gameInfoBrowser = new System.Windows.Forms.WebBrowser();
+      this.tabPage2 = new System.Windows.Forms.TabPage();
+      this.staleDataBrowser = new System.Windows.Forms.WebBrowser();
+      this.tabControl1.SuspendLayout();
+      this.tabPage1.SuspendLayout();
+      this.tabPage2.SuspendLayout();
       this.SuspendLayout();
       // 
       // label1
@@ -71,20 +78,6 @@
       this.launchDomsButton.Text = "Launch Dominions";
       this.launchDomsButton.UseVisualStyleBackColor = true;
       this.launchDomsButton.Click += new System.EventHandler(this.launchDomsButton_Click);
-      // 
-      // webBrowser1
-      // 
-      this.webBrowser1.AllowNavigation = false;
-      this.webBrowser1.AllowWebBrowserDrop = false;
-      this.webBrowser1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-      this.webBrowser1.IsWebBrowserContextMenuEnabled = false;
-      this.webBrowser1.Location = new System.Drawing.Point(3, 59);
-      this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
-      this.webBrowser1.Name = "webBrowser1";
-      this.webBrowser1.Size = new System.Drawing.Size(550, 283);
-      this.webBrowser1.TabIndex = 5;
       // 
       // comboBox2
       // 
@@ -140,28 +133,87 @@
       this.button1.UseVisualStyleBackColor = true;
       this.button1.Click += new System.EventHandler(this.button1_Click);
       // 
-      // button2
+      // adminOptionsButton
       // 
       this.adminOptionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
       this.adminOptionsButton.Location = new System.Drawing.Point(111, 348);
-      this.adminOptionsButton.Name = "button2";
+      this.adminOptionsButton.Name = "adminOptionsButton";
       this.adminOptionsButton.Size = new System.Drawing.Size(102, 23);
       this.adminOptionsButton.TabIndex = 11;
       this.adminOptionsButton.Text = "Admin Options";
       this.adminOptionsButton.UseVisualStyleBackColor = true;
+      // 
+      // tabControl1
+      // 
+      this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.tabControl1.Controls.Add(this.tabPage1);
+      this.tabControl1.Controls.Add(this.tabPage2);
+      this.tabControl1.Location = new System.Drawing.Point(0, 59);
+      this.tabControl1.Name = "tabControl1";
+      this.tabControl1.SelectedIndex = 0;
+      this.tabControl1.Size = new System.Drawing.Size(552, 283);
+      this.tabControl1.TabIndex = 12;
+      // 
+      // tabPage1
+      // 
+      this.tabPage1.Controls.Add(this.gameInfoBrowser);
+      this.tabPage1.Location = new System.Drawing.Point(4, 22);
+      this.tabPage1.Name = "tabPage1";
+      this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage1.Size = new System.Drawing.Size(544, 257);
+      this.tabPage1.TabIndex = 0;
+      this.tabPage1.Text = "Game Details";
+      this.tabPage1.UseVisualStyleBackColor = true;
+      // 
+      // gameInfoBrowser
+      // 
+      this.gameInfoBrowser.AllowNavigation = false;
+      this.gameInfoBrowser.AllowWebBrowserDrop = false;
+      this.gameInfoBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.gameInfoBrowser.IsWebBrowserContextMenuEnabled = false;
+      this.gameInfoBrowser.Location = new System.Drawing.Point(3, 3);
+      this.gameInfoBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+      this.gameInfoBrowser.Name = "gameInfoBrowser";
+      this.gameInfoBrowser.Size = new System.Drawing.Size(538, 251);
+      this.gameInfoBrowser.TabIndex = 6;
+      // 
+      // tabPage2
+      // 
+      this.tabPage2.Controls.Add(this.staleDataBrowser);
+      this.tabPage2.Location = new System.Drawing.Point(4, 22);
+      this.tabPage2.Name = "tabPage2";
+      this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+      this.tabPage2.Size = new System.Drawing.Size(544, 257);
+      this.tabPage2.TabIndex = 1;
+      this.tabPage2.Text = "Stale Turn Data";
+      this.tabPage2.UseVisualStyleBackColor = true;
+      // 
+      // staleDataBrowser
+      // 
+      this.staleDataBrowser.AllowNavigation = false;
+      this.staleDataBrowser.AllowWebBrowserDrop = false;
+      this.staleDataBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.staleDataBrowser.IsWebBrowserContextMenuEnabled = false;
+      this.staleDataBrowser.Location = new System.Drawing.Point(3, 3);
+      this.staleDataBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+      this.staleDataBrowser.Name = "staleDataBrowser";
+      this.staleDataBrowser.Size = new System.Drawing.Size(538, 251);
+      this.staleDataBrowser.TabIndex = 6;
       // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+      this.Controls.Add(this.tabControl1);
       this.Controls.Add(this.adminOptionsButton);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.browseFilesButton);
       this.Controls.Add(this.submitTurnButton);
       this.Controls.Add(this.label2);
       this.Controls.Add(this.comboBox2);
-      this.Controls.Add(this.webBrowser1);
       this.Controls.Add(this.launchDomsButton);
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
@@ -169,6 +221,9 @@
       this.Size = new System.Drawing.Size(636, 375);
       this.DragDrop += new System.Windows.Forms.DragEventHandler(this.GameControl_DragDrop);
       this.DragEnter += new System.Windows.Forms.DragEventHandler(this.GameControl_DragEnter);
+      this.tabControl1.ResumeLayout(false);
+      this.tabPage1.ResumeLayout(false);
+      this.tabPage2.ResumeLayout(false);
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -179,12 +234,16 @@
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Button launchDomsButton;
-    private System.Windows.Forms.WebBrowser webBrowser1;
     private System.Windows.Forms.ComboBox comboBox2;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Button submitTurnButton;
     private System.Windows.Forms.Button browseFilesButton;
     private System.Windows.Forms.Button button1;
     private System.Windows.Forms.Button adminOptionsButton;
+    private System.Windows.Forms.TabControl tabControl1;
+    private System.Windows.Forms.TabPage tabPage1;
+    private System.Windows.Forms.WebBrowser gameInfoBrowser;
+    private System.Windows.Forms.TabPage tabPage2;
+    private System.Windows.Forms.WebBrowser staleDataBrowser;
   }
 }
