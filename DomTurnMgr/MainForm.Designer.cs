@@ -31,7 +31,6 @@
       this.menuStrip1 = new System.Windows.Forms.MenuStrip();
       this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
       this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-      this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.dom5InspectorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
       this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -46,7 +45,6 @@
       this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItem2,
             this.toolStripMenuItem1,
-            this.editToolStripMenuItem,
             this.dom5InspectorToolStripMenuItem,
             this.aboutToolStripMenuItem});
       this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -73,16 +71,6 @@
       this.toolStripMenuItem1.Size = new System.Drawing.Size(32, 24);
       this.toolStripMenuItem1.Text = "Refresh";
       this.toolStripMenuItem1.ToolTipText = "Refresh";
-      // 
-      // editToolStripMenuItem
-      // 
-      this.editToolStripMenuItem.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-      this.editToolStripMenuItem.Image = global::DomTurnMgr.Properties.Resources.settings;
-      this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-      this.editToolStripMenuItem.Size = new System.Drawing.Size(32, 24);
-      this.editToolStripMenuItem.Text = "Preferences";
-      this.editToolStripMenuItem.ToolTipText = "Settings";
-      this.editToolStripMenuItem.Click += new System.EventHandler(this.showPrefs_Click);
       // 
       // dom5InspectorToolStripMenuItem
       // 
@@ -143,7 +131,6 @@
     private System.Windows.Forms.MenuStrip menuStrip1;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
     private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
-    private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem dom5InspectorToolStripMenuItem;
     private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     private System.Windows.Forms.TabPage tabPage1;

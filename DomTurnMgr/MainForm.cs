@@ -44,12 +44,6 @@ namespace DomTurnMgr
       Program.AddGameManager();
     }
 
-    private void showPrefs_Click(object sender, EventArgs e)
-    {
-      PreferencesForm pf = new PreferencesForm();
-      pf.ShowDialog();
-    }
-
     private void dom5InspectorToolStripMenuItem_Click(object sender, EventArgs e)
     {
       System.Diagnostics.Process.Start("https://larzm42.github.io/dom5inspector/");
