@@ -37,7 +37,7 @@
       this.submitTurnButton = new System.Windows.Forms.Button();
       this.browseFilesButton = new System.Windows.Forms.Button();
       this.button1 = new System.Windows.Forms.Button();
-      this.button2 = new System.Windows.Forms.Button();
+      this.adminOptionsButton = new System.Windows.Forms.Button();
       this.SuspendLayout();
       // 
       // label1
@@ -57,14 +57,14 @@
       this.comboBox1.FormattingEnabled = true;
       this.comboBox1.Location = new System.Drawing.Point(44, 3);
       this.comboBox1.Name = "comboBox1";
-      this.comboBox1.Size = new System.Drawing.Size(684, 21);
+      this.comboBox1.Size = new System.Drawing.Size(508, 21);
       this.comboBox1.TabIndex = 1;
       this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
       // 
       // launchDomsButton
       // 
       this.launchDomsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.launchDomsButton.Location = new System.Drawing.Point(734, 3);
+      this.launchDomsButton.Location = new System.Drawing.Point(558, 3);
       this.launchDomsButton.Name = "launchDomsButton";
       this.launchDomsButton.Size = new System.Drawing.Size(75, 50);
       this.launchDomsButton.TabIndex = 4;
@@ -83,7 +83,7 @@
       this.webBrowser1.Location = new System.Drawing.Point(3, 59);
       this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
       this.webBrowser1.Name = "webBrowser1";
-      this.webBrowser1.Size = new System.Drawing.Size(726, 469);
+      this.webBrowser1.Size = new System.Drawing.Size(550, 283);
       this.webBrowser1.TabIndex = 5;
       // 
       // comboBox2
@@ -94,7 +94,7 @@
       this.comboBox2.FormattingEnabled = true;
       this.comboBox2.Location = new System.Drawing.Point(44, 32);
       this.comboBox2.Name = "comboBox2";
-      this.comboBox2.Size = new System.Drawing.Size(684, 21);
+      this.comboBox2.Size = new System.Drawing.Size(508, 21);
       this.comboBox2.TabIndex = 6;
       this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
       // 
@@ -110,7 +110,7 @@
       // submitTurnButton
       // 
       this.submitTurnButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.submitTurnButton.Location = new System.Drawing.Point(734, 59);
+      this.submitTurnButton.Location = new System.Drawing.Point(558, 59);
       this.submitTurnButton.Name = "submitTurnButton";
       this.submitTurnButton.Size = new System.Drawing.Size(75, 50);
       this.submitTurnButton.TabIndex = 8;
@@ -121,7 +121,7 @@
       // browseFilesButton
       // 
       this.browseFilesButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-      this.browseFilesButton.Location = new System.Drawing.Point(734, 508);
+      this.browseFilesButton.Location = new System.Drawing.Point(558, 322);
       this.browseFilesButton.Name = "browseFilesButton";
       this.browseFilesButton.Size = new System.Drawing.Size(75, 50);
       this.browseFilesButton.TabIndex = 9;
@@ -132,7 +132,7 @@
       // button1
       // 
       this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.button1.Location = new System.Drawing.Point(3, 534);
+      this.button1.Location = new System.Drawing.Point(3, 348);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(102, 23);
       this.button1.TabIndex = 10;
@@ -142,20 +142,20 @@
       // 
       // button2
       // 
-      this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.button2.Location = new System.Drawing.Point(111, 534);
-      this.button2.Name = "button2";
-      this.button2.Size = new System.Drawing.Size(102, 23);
-      this.button2.TabIndex = 11;
-      this.button2.Text = "Admin Options";
-      this.button2.UseVisualStyleBackColor = true;
+      this.adminOptionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+      this.adminOptionsButton.Location = new System.Drawing.Point(111, 348);
+      this.adminOptionsButton.Name = "button2";
+      this.adminOptionsButton.Size = new System.Drawing.Size(102, 23);
+      this.adminOptionsButton.TabIndex = 11;
+      this.adminOptionsButton.Text = "Admin Options";
+      this.adminOptionsButton.UseVisualStyleBackColor = true;
       // 
       // GameControl
       // 
       this.AllowDrop = true;
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.Controls.Add(this.button2);
+      this.Controls.Add(this.adminOptionsButton);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.browseFilesButton);
       this.Controls.Add(this.submitTurnButton);
@@ -166,7 +166,7 @@
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label1);
       this.Name = "GameControl";
-      this.Size = new System.Drawing.Size(812, 561);
+      this.Size = new System.Drawing.Size(636, 375);
       this.DragDrop += new System.Windows.Forms.DragEventHandler(this.GameControl_DragDrop);
       this.DragEnter += new System.Windows.Forms.DragEventHandler(this.GameControl_DragEnter);
       this.ResumeLayout(false);
@@ -185,6 +185,6 @@
     private System.Windows.Forms.Button submitTurnButton;
     private System.Windows.Forms.Button browseFilesButton;
     private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.Button button2;
+    private System.Windows.Forms.Button adminOptionsButton;
   }
 }

@@ -67,6 +67,7 @@ namespace DomTurnMgr
         return;
       }
 
+      adminOptionsButton.Enabled = !string.IsNullOrWhiteSpace(gameManager.ServerAdminPassword);
       UpdateRaceCombo();
       UpdateTurnList();
     }
