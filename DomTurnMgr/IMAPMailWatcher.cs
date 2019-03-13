@@ -134,7 +134,7 @@ namespace DomTurnMgr
 
               foreach (var item in items)
               {
-                foreach (var attachment in item.Attachments)
+                foreach (var attachment in item.Attachments.Reverse())
                 {
                   MessageAttachment ma = new MessageAttachment(item, folder, attachment);
                   AttachmentsAvailable(this, ma);
