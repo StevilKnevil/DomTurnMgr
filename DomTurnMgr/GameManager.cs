@@ -271,7 +271,7 @@ namespace DomTurnMgr
       string raceName = Path.GetFileNameWithoutExtension(ma.Filename);
       var gameTurn = new GameTurn(raceName, turnNumber);
       var files = GetFilesForTurn(gameTurn);
-      if (files.Contains(ma.Filename))
+      if (files.Any(s => Path.GetFileName(s) == ma.Filename))
       {
         return true;
       }
